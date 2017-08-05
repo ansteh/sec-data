@@ -1,0 +1,25 @@
+{
+  "name": "sec-data",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {},
+  "engines": {
+    "node": ">=6"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ansteh/sec-data.git"
+  },
+  "keywords": [],
+  "author": "Andre Stehle",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ansteh/sec-data/issues"
+  },
+  "dependencies": {
+    "got": "^7.1.0",
+    "parse-xbrl": "^1.1.3"
+  },
+  "devDependencies": {}
+}
