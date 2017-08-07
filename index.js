@@ -3,6 +3,7 @@ const got       = require('got');
 const fs        = require('fs');
 const xmlParser = require('xml2json');
 const _         = require('lodash');
+const cheerio = require('cheerio')
 
 const downloadFile = (sourceUrl, filename) => {
   got.stream(sourceUrl).pipe(fs.createWriteStream(`${__dirname}/resources/${filename}`));
@@ -37,19 +38,30 @@ const filter = (stack, needle) => {
   });
 };
 
-parseFile('gm-10-Q-2016.xml')
-  .then((data) => {
-    // console.log(JSON.stringify(data, null, 2));
-    let jsonObj = JSON.parse(data);
-    let documentJson = jsonObj[Object.keys(jsonObj)[0]];
+// parseFile('gm-10-Q-2016.xml')
+//   .then((data) => {
+//     // console.log(JSON.stringify(data, null, 2));
+//     let jsonObj = JSON.parse(data);
+//     let documentJson = jsonObj[Object.keys(jsonObj)[0]];
+//
+//     let keys = Object.keys(documentJson);
+//     // console.log(keys.length);
+//     // console.log(JSON.stringify(keys, null, 2));
+//
+//     console.log(documentJson['us-gaap:CommonStockDividendsPerShareDeclared']);
+//
+//     // let results = filter(keys, 'Dividend');
+//     // console.log(results);
+//   })
+//   .catch(console.log);
 
-    let keys = Object.keys(documentJson);
-    // console.log(keys.length);
-    // console.log(JSON.stringify(keys, null, 2));
-
-    console.log(documentJson['us-gaap:CommonStockDividendsPerShareDeclared']);
-
-    // let results = filter(keys, 'Dividend');
-    // console.log(results);
-  })
-  .catch(console.log);
+got('https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001467858&type=10-K&dateb=&owner=include&count=40')
+    .then(response => {
+        // console.log(response.body);
+        const $ = cheerio.load(response.body);
+        console.log($('table[summary=Results]').html())
+    })
+    .catch(error => {
+        console.log(error.response.body);
+        //=> 'Internal server error ...'
+    });
