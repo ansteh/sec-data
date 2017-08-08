@@ -55,13 +55,56 @@ const filter = (stack, needle) => {
 //   })
 //   .catch(console.log);
 
-got('https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001467858&type=10-K&dateb=&owner=include&count=40')
-    .then(response => {
-        // console.log(response.body);
-        const $ = cheerio.load(response.body);
-        console.log($('table[summary=Results]').html())
-    })
-    .catch(error => {
-        console.log(error.response.body);
-        //=> 'Internal server error ...'
-    });
+// got('https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001467858&type=10-K&dateb=&owner=include&count=40')
+//     .then(response => {
+//         // console.log(response.body);
+//         const $ = cheerio.load(response.body);
+//         console.log($('table[summary=Results]').html())
+//     })
+//     .catch(error => {
+//         console.log(error.response.body);
+//         //=> 'Internal server error ...'
+//     });
+
+const saveExmple = () => {
+  let sourceUrl = 'https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001467858&type=10-K&dateb=&owner=include&count=40';
+  got.stream(sourceUrl).pipe(fs.createWriteStream(`${__dirname}/resources/example.html`));
+}
+
+const crawlFillings = (document) => {
+  // console.log(document);
+  const $ = cheerio.load(document);
+  let table = $('table[summary=Results]');
+
+  let rows = table.find('tr');
+  let result = _.map(rows, (row, index) => {
+    if(index === 0) {
+      return parseHeader($, row);
+    }
+    return parseRow($, row);
+  });
+  console.log(result);
+}
+
+const parseHeader = ($, header) => {
+  return _.map($(header).find('th'), (column) => {
+    return $(column).text();
+  });
+}
+
+const parseRow = ($, filling) => {
+  return _.map($(filling).find('td'), (column, index) => {
+    let target = $(column);
+    if(index === 1) {
+      return target.find('a[id=documentsbutton]').attr('href')
+    }
+    return target.text();
+  });
+}
+
+const testCrawler = () => {
+  let document = fs.readFileSync(`${__dirname}/resources/example.html`)
+  crawlFillings(document);
+};
+
+testCrawler();
