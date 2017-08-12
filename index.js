@@ -14,8 +14,29 @@ const fs        = require('fs');
 
 const Filings = require('./lib/filings');
 
-let document = fs.readFileSync(`${__dirname}/resources/example.html`);
-let filings = Filings.Crawler.parseDocument(document);
-console.log(filings);
+const testParseFilingsDocument = () => {
+  let document = fs.readFileSync(`${__dirname}/resources/example.html`);
+  let filings = Filings.Crawler.parseDocument(document);
+  console.log(filings);
 
-console.log(Filings.Queries.getCompany({ cik: 0001467858 }));
+  console.log(Filings.Queries.getCompany({ cik: '0001467858' }));
+}
+
+// testParseFilingsDocument();
+
+const Filing = require('./lib/filing');
+
+const testDownloadFilingFile = () => {
+  let sourceUrl = 'https://www.sec.gov/Archives/edgar/data/1467858/000146785817000028/0001467858-17-000028-index.htm';
+  Filing.Crawler.downloadFile(sourceUrl, 'gm-test-filing.html');
+};
+
+// testDownloadFilingFile();
+
+const testCrawlFilingDocument = () => {
+  let sourceUrl = 'https://www.sec.gov/Archives/edgar/data/1467858/000146785817000028/0001467858-17-000028-index.htm';
+  let filing = Filing.Crawler.parseDocument('gm-test-filing.html');
+  console.log(filing);
+};
+
+testCrawlFilingDocument();
