@@ -40,4 +40,15 @@ const testCrawlFilingDocument = () => {
   console.log(filing);
 };
 
-testCrawlFilingDocument();
+// testCrawlFilingDocument();
+
+const Stock = require('./lib/stock');
+
+const GM = {
+  ticker: 'GM',
+  name: 'General Motors Co',
+  cik: '0001467858'
+};
+
+Stock.create(GM);
+// Stock.remove(GM);
