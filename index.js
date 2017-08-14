@@ -9,13 +9,15 @@ const GM = {
   filings: {}
 };
 
-// Stock.remove(GM)
-//   .then(() => Stock.create(GM));
+const HIBB = {
+  ticker: 'HIBB',
+  name: 'HIBBETT SPORTING GOODS INC',
+  cik: '0001017480',
+  filings: {}
+};
 
-// Stock.crawlAnnualFilings('GM')
-//   .then(console.log)
-//   .catch(console.log);
+// Stock.crawlStock(HIBB);
 
-// Stock.downloadAnnualFiles('GM')
+// Stock.parseFilingFilesByTicker('HIBB')
 //   .then(console.log)
 //   .catch(console.log);
