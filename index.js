@@ -21,3 +21,7 @@ const HIBB = {
 // Stock.parseFilingFilesByTicker('HIBB')
 //   .then(console.log)
 //   .catch(console.log);
+
+Stock.getDividends('GM')
+  .then(console.log)
+  .catch(console.log);
