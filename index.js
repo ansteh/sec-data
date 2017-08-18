@@ -22,6 +22,14 @@ const HIBB = {
 //   .then(console.log)
 //   .catch(console.log);
 
-Stock.getDividends('GM')
+// Stock.find('GM', 'Dividends')
+//   .then(console.log)
+//   .catch(console.log);
+
+// Stock.find('GM', 'EarningsPerShareBasic')
+//   .then(console.log)
+//   .catch(console.log);
+
+Stock.find('GM', 'EarningsPerShareDiluted')
   .then(console.log)
   .catch(console.log);
