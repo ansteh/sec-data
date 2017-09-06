@@ -16,11 +16,32 @@ const HIBB = {
   filings: {}
 };
 
-// Stock.crawlStock(HIBB);
+const KR = {
+  ticker: 'KR',
+  name: 'The Kroger Co',
+  cik: '0000056873',
+  filings: {}
+};
 
-// Stock.parseFilingFilesByTicker('HIBB')
+// Stock.crawlStock(KR);
+
+// Stock.parseFilingFilesByTicker('KR')
 //   .then(console.log)
 //   .catch(console.log);
+
+// Stock.crawlQuarterlyFilings('KR')
+//   .then(console.log)
+//   .catch(console.log);
+
+// Stock.downloadQuarterlyFiles('KR')
+//   .then(console.log)
+//   .catch(console.log);
+
+// Stock.parseFilingFilesByTicker('KR', '10-Q')
+//   .then(console.log)
+//   .catch(console.log);
+
+// console.log(JSON.stringify(require('./resources/stocks/KR/stock.json').filings.quarterly, null, 2));
 
 // Stock.find('GM', 'Dividends')
 //   .then(console.log)
@@ -30,6 +51,6 @@ const HIBB = {
 //   .then(console.log)
 //   .catch(console.log);
 
-Stock.find('GM', 'EarningsPerShareDiluted')
+Stock.find('KR', 'EarningsPerShareDiluted', '10-Q')
   .then(console.log)
   .catch(console.log);
