@@ -51,6 +51,14 @@ const KR = {
 //   .then(console.log)
 //   .catch(console.log);
 
-Stock.find('KR', 'EarningsPerShareDiluted', '10-Q')
+// Stock.find('KR', 'EarningsPerShareDiluted', '10-K')
+//   .then(console.log)
+//   .catch(console.log);
+
+// Stock.find('KR', 'CurrentFiscalYearEndDate', '10-K')
+//   .then(console.log)
+//   .catch(console.log);
+
+Stock.find('GM', 'DocumentPeriodEndDate', '10-K')
   .then(console.log)
   .catch(console.log);
