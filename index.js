@@ -1,4 +1,5 @@
 const fs        = require('fs');
+const _         = require('lodash');
 
 const Stock = require('./lib/stock');
 
@@ -55,10 +56,16 @@ const KR = {
 //   .then(console.log)
 //   .catch(console.log);
 
-// Stock.find('KR', 'CurrentFiscalYearEndDate', '10-K')
+// Stock.find('KR', 'CurrentFiscalYearEndDate', '10-Q')
 //   .then(console.log)
 //   .catch(console.log);
 
-Stock.find('GM', 'DocumentPeriodEndDate', '10-K')
+// Stock.find('KR', 'DocumentPeriodEndDate', '10-Q')
+//   .then(console.log)
+//   .catch(console.log);
+
+Stock.find('KR', 'EarningsPerShareDiluted')
+  .then(entries => _.map(entries, 'contextRef'))
+  .then(refs => Stock.findPathsToRefs('KR', refs))
   .then(console.log)
   .catch(console.log);
