@@ -24,7 +24,19 @@ const KR = {
   filings: {}
 };
 
-// Stock.crawlStock(KR);
+const SDLP = {
+  "ticker": "SDLP",
+  "name": "Seadrill Partners LLC",
+  "cik": "0001553467",
+  "forms": {
+    "annual": "20-F",
+    "quarterly": "6-K"
+  },
+  "filings": {}
+};
+
+// Stock.crawlStock(GM);
+Stock.crawlStock(SDLP);
 
 // Stock.parseFilingFilesByTicker('KR')
 //   .then(console.log)
@@ -65,16 +77,5 @@ const KR = {
 //   .catch(console.log);
 
 // Stock.find('KR', 'EarningsPerShareDiluted')
-//   .then(console.log)
-//   .catch(console.log);
-
-// Stock.find('KR', 'EarningsPerShareDiluted')
-//   .then(entries => _.map(entries, 'contextRef'))
-//   .then(refs => Stock.findPathsToRefs('KR', refs))
-//   .then(console.log)
-//   // .then(paths => console.log(paths.length))
-//   .catch(console.log);
-
-// Stock.getContext('KR')
 //   .then(console.log)
 //   .catch(console.log);
