@@ -35,8 +35,19 @@ const SDLP = {
   "filings": {}
 };
 
+const SORL = {
+  "ticker": "SORL",
+  "name": "Auto Parts Inc",
+  "cik": "0000714284",
+  "forms": {
+    "annual": "10-K",
+    "quarterly": "10-Q"
+  },
+  "filings": {}
+};
+
 // Stock.crawlStock(GM);
-Stock.crawlStock(SDLP);
+// Stock.crawlStock(SORL);
 
 // Stock.parseFilingFilesByTicker('KR')
 //   .then(console.log)
@@ -79,3 +90,7 @@ Stock.crawlStock(SDLP);
 // Stock.find('KR', 'EarningsPerShareDiluted')
 //   .then(console.log)
 //   .catch(console.log);
+
+Stock.crawlStocks('12-09-2017.json')
+  .then(console.log)
+  .catch(console.log);
