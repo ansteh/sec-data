@@ -1,5 +1,6 @@
 const fs        = require('fs');
 const _         = require('lodash');
+const Promise   = require('bluebird');
 
 const Stock = require('./lib/stock');
 
@@ -91,6 +92,18 @@ const SORL = {
 //   .then(console.log)
 //   .catch(console.log);
 
-Stock.crawlStocks('12-09-2017.json')
-  .then(console.log)
-  .catch(console.log);
+// Stock.crawlStocks('12-09-2017.json')
+//   .then(console.log)
+//   .catch(console.log);
+
+const Issues = require('./lib/issues');
+
+// Issues.getStocksOf('12-09-2017.json')
+//   .then((stocks) => {
+//     const forms = _.map(stocks, (stock) => {
+//       return Stock.parseForms(stock.sec.ticker);
+//     });
+//
+//     return Promise.all(forms);
+//   })
+//   .catch(console.log);
