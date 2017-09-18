@@ -96,7 +96,7 @@ const SORL = {
 //   .then(console.log)
 //   .catch(console.log);
 
-const Issues = require('./lib/issues');
+// const Issues = require('./lib/issues');
 
 // Issues.getStocksOf('12-09-2017.json')
 //   .then((stocks) => {
