@@ -4,27 +4,6 @@ const Promise   = require('bluebird');
 
 const Stock = require('./lib/stock');
 
-const GM = {
-  ticker: 'GM',
-  name: 'General Motors Co',
-  cik: '0001467858',
-  filings: {}
-};
-
-const HIBB = {
-  ticker: 'HIBB',
-  name: 'HIBBETT SPORTING GOODS INC',
-  cik: '0001017480',
-  filings: {}
-};
-
-const KR = {
-  ticker: 'KR',
-  name: 'The Kroger Co',
-  cik: '0000056873',
-  filings: {}
-};
-
 const SDLP = {
   "ticker": "SDLP",
   "name": "Seadrill Partners LLC",
@@ -36,59 +15,37 @@ const SDLP = {
   "filings": {}
 };
 
-const SORL = {
-  "ticker": "SORL",
-  "name": "Auto Parts Inc",
-  "cik": "0000714284",
-  "forms": {
-    "annual": "10-K",
-    "quarterly": "10-Q"
-  },
-  "filings": {}
-};
+// Stock.crawlStock(SDLP);
 
-// Stock.crawlStock(GM);
-// Stock.crawlStock(SORL);
-
-// Stock.parseFilingFilesByTicker('KR')
+// Stock.crawlQuarterlyFilings('SDLP')
 //   .then(console.log)
 //   .catch(console.log);
 
-// Stock.crawlQuarterlyFilings('KR')
+// Stock.downloadQuarterlyFiles('SDLP')
 //   .then(console.log)
 //   .catch(console.log);
 
-// Stock.downloadQuarterlyFiles('KR')
+// Stock.parseFilingFilesByTicker('SDLP', '10-Q')
 //   .then(console.log)
 //   .catch(console.log);
 
-// Stock.parseFilingFilesByTicker('KR', '10-Q')
+// Stock.find('SDLP', 'Dividends')
 //   .then(console.log)
 //   .catch(console.log);
 
-// console.log(JSON.stringify(require('./resources/stocks/KR/stock.json').filings.quarterly, null, 2));
-
-// Stock.find('GM', 'Dividends')
+// Stock.find('SDLP', 'EarningsPerShareBasic')
 //   .then(console.log)
 //   .catch(console.log);
 
-// Stock.find('GM', 'EarningsPerShareBasic')
+// Stock.find('SDLP', 'EarningsPerShareDiluted', '10-K')
 //   .then(console.log)
 //   .catch(console.log);
 
-// Stock.find('KR', 'EarningsPerShareDiluted', '10-K')
+// Stock.find('SDLP', 'CurrentFiscalYearEndDate', '10-Q')
 //   .then(console.log)
 //   .catch(console.log);
 
-// Stock.find('KR', 'CurrentFiscalYearEndDate', '10-Q')
-//   .then(console.log)
-//   .catch(console.log);
-
-// Stock.find('KR', 'DocumentPeriodEndDate', '10-Q')
-//   .then(console.log)
-//   .catch(console.log);
-
-// Stock.find('KR', 'EarningsPerShareDiluted')
+// Stock.find('SDLP', 'DocumentPeriodEndDate', '10-Q')
 //   .then(console.log)
 //   .catch(console.log);
 
@@ -106,4 +63,12 @@ const SORL = {
 //
 //     return Promise.all(forms);
 //   })
+//   .catch(console.log);
+
+Stock.find('BBBY', 'EarningsPerShareDiluted')
+  .then(console.log)
+  .catch(console.log);
+
+// Stock.find('SDLP', 'Dividends', '20-F')
+//   .then(console.log)
 //   .catch(console.log);
