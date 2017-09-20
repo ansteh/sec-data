@@ -65,10 +65,18 @@ const SDLP = {
 //   })
 //   .catch(console.log);
 
-Stock.find('BBBY', 'EarningsPerShareDiluted')
-  .then(console.log)
-  .catch(console.log);
-
 // Stock.find('SDLP', 'Dividends', '20-F')
 //   .then(console.log)
 //   .catch(console.log);
+
+// Stock.find('BBBY', 'EarningsPerShareDiluted')
+//   .then(console.log)
+//   .catch(console.log);
+
+// Stock.find('BBBY', 'EarningsPerShareBasic')
+//   .then(console.log)
+//   .catch(console.log);
+
+Stock.find('BBBY', 'Dividends')
+  .then(console.log)
+  .catch(console.log);
