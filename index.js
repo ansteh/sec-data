@@ -77,6 +77,24 @@ const SDLP = {
 //   .then(console.log)
 //   .catch(console.log);
 
-Stock.find('BBBY', 'Dividends')
+const moment = require('moment');
+const DATE_FORMAT = 'YYYY-MM-DD';
+
+const parseDate = (dateStr) => {
+  return moment(dateStr, DATE_FORMAT);
+};
+
+const getDiff = (start, end, unit = 'days') => {
+  return parseDate(start).diff(parseDate(end), unit);
+};
+
+const filterAnnualMetrics = (collection) => {
+  return _.filter(collection, (item) => {
+    return getDiff(item.endDate, item.startDate, 'days') > 180;
+  });
+};
+
+Stock.find('BBBY', 'EarningsPerShareDiluted')
+  .then(filterAnnualMetrics)
   .then(console.log)
   .catch(console.log);
