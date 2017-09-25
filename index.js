@@ -77,24 +77,20 @@ const SDLP = {
 //   .then(console.log)
 //   .catch(console.log);
 
-const moment = require('moment');
-const DATE_FORMAT = 'YYYY-MM-DD';
+// Stock.find('BBBY', 'EarningsPerShareDiluted', '10-K')
+//   .then(PeriodReducer.filterAnnualPeriods)
+//   .then(console.log)
+//   .catch(console.log);
 
-const parseDate = (dateStr) => {
-  return moment(dateStr, DATE_FORMAT);
-};
+// Stock.find('BBBY', 'EarningsPerShareDiluted', '10-Q')
+//   .then(PeriodReducer.filterQuartelyPeriods)
+//   .then(metrics => metrics.length)
+//   .then(console.log)
+//   .catch(console.log);
 
-const getDiff = (start, end, unit = 'days') => {
-  return parseDate(start).diff(parseDate(end), unit);
-};
+const PeriodReducer = require('./lib/stock/period.reducer');
 
-const filterAnnualMetrics = (collection) => {
-  return _.filter(collection, (item) => {
-    return getDiff(item.endDate, item.startDate, 'days') > 180;
-  });
-};
-
-Stock.find('BBBY', 'EarningsPerShareDiluted')
-  .then(filterAnnualMetrics)
+Stock.getMetrics('BBBY', 'EarningsPerShareDiluted', PeriodReducer.filterQuartelyPeriods)
+  // .then(metrics => metrics.length)
   .then(console.log)
   .catch(console.log);
