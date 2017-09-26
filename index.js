@@ -88,7 +88,7 @@ const SDLP = {
 //   .then(console.log)
 //   .catch(console.log);
 
-const PeriodReducer = require('./lib/stock/period.reducer');
+const PeriodReducer = require('./lib/stock/reducers/period.reducer');
 
 Stock.getMetrics('BBBY', 'EarningsPerShareDiluted', PeriodReducer.filterQuartelyPeriods)
   // .then(metrics => metrics.length)
