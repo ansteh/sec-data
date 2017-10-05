@@ -109,6 +109,6 @@ const InstantReducer = require('./lib/stock/reducers/instant.reducer');
 //   .then(console.log)
 //   .catch(console.log);
 
-Stock.getMetrics('GME', 'CommonStockDividendsPerShareCashPaid', PeriodReducer.filterAnnualPeriods)
-  .then(console.log)
-  .catch(console.log);
+// Stock.getMetrics('GME', 'CommonStockDividendsPerShareCashPaid', PeriodReducer.filterQuartelyPeriods)
+//   .then(console.log)
+//   .catch(console.log);
