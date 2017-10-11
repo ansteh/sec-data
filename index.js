@@ -91,10 +91,10 @@ const SDLP = {
 const PeriodReducer = require('./lib/stock/reducers/period.reducer');
 const InstantReducer = require('./lib/stock/reducers/instant.reducer');
 
-// Stock.getMetrics('BBBY', 'EarningsPerShareDiluted', PeriodReducer.filterQuartelyPeriods)
-//   // .then(metrics => metrics.length)
-//   .then(console.log)
-//   .catch(console.log);
+Stock.getMetrics('BBBY', 'EarningsPerShareDiluted', PeriodReducer.filterAnnualPeriods)
+  // .then(metrics => metrics.length)
+  .then(console.log)
+  .catch(console.log);
 
 // Stock.find('GME', 'Dividends', '10-K')
 //   .then(console.log)
