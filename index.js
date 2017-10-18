@@ -91,10 +91,10 @@ const SDLP = {
 const PeriodReducer = require('./lib/stock/reducers/period.reducer');
 const InstantReducer = require('./lib/stock/reducers/instant.reducer');
 
-Stock.getMetrics('BBBY', 'EarningsPerShareDiluted', PeriodReducer.filterAnnualPeriods)
-  // .then(metrics => metrics.length)
-  .then(console.log)
-  .catch(console.log);
+// Stock.getMetrics('BBBY', 'EarningsPerShareDiluted', PeriodReducer.filterAnnualPeriods)
+//   // .then(metrics => metrics.length)
+//   .then(console.log)
+//   .catch(console.log);
 
 // Stock.find('GME', 'Dividends', '10-K')
 //   .then(console.log)
@@ -112,3 +112,13 @@ Stock.getMetrics('BBBY', 'EarningsPerShareDiluted', PeriodReducer.filterAnnualPe
 // Stock.getMetrics('GME', 'CommonStockDividendsPerShareCashPaid', PeriodReducer.filterQuartelyPeriods)
 //   .then(console.log)
 //   .catch(console.log);
+
+const StockService = require('./lib/stock/service');
+
+// StockService.getTickersFromResources()
+//   .then(console.log)
+//   .catch(console.log);
+
+StockService.getStocksFromResources()
+  .then(console.log)
+  .catch(console.log);
