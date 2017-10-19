@@ -119,6 +119,10 @@ const StockService = require('./lib/stock/service');
 //   .then(console.log)
 //   .catch(console.log);
 
-StockService.getStocksFromResources()
+// StockService.getStocksFromResources()
+//   .then(console.log)
+//   .catch(console.log);
+
+StockService.getSummary(['BBBY', 'GME'])
   .then(console.log)
   .catch(console.log);
