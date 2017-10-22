@@ -1,28 +1,29 @@
-const express = require('express');
-const graphqlHTTP = require('express-graphql');
-const { buildSchema } = require('graphql');
-const DataLoader = require('dataloader')
+'use strict';
 
+const express        = require('express');
+const app            = express();
+const path           = require('path');
+const bodyParser     = require('body-parser');
+const cors           = require('cors');
 
-// Construct a schema, using GraphQL schema language
-const schema = buildSchema(`
-  type Query {
-    hello: String
-  }
-`);
+app.use(cors());
+app.use(bodyParser.json());
 
-// The root provides a resolver function for each API endpoint
-const root = {
-  hello: () => {
-    return 'Hello world!';
-  },
-};
+const StockService = require('./lib/stock/service');
 
-const app = express();
-app.use('/graphql', graphqlHTTP({
-  schema: schema,
-  rootValue: root,
-  graphiql: true,
-}));
-app.listen(4000);
-console.log('Running a GraphQL API server at localhost:4000/graphql');
+app.get('/resources/stocks', (req, res) => {
+  StockService.getStocksFromResources()
+    .then((stocks) => {
+      res.json(stocks);
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).send();
+    });
+});
+
+const server = require('http').Server(app);
+
+server.listen(3000, function(){
+  console.log('listening on *:3000');
+});

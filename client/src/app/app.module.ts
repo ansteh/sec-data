@@ -10,11 +10,15 @@ import { MatTableModule } from '@angular/material';
 
 import { AppComponent } from './app.component';
 import { TableFilteringExampleComponent } from './table-filtering-example/table-filtering-example.component';
+import { StocksComponent } from './stocks/stocks.component';
+
+import { StocksService } from './stocks/stocks.service';
 
 @NgModule({
   declarations: [
     AppComponent,
-    TableFilteringExampleComponent
+    TableFilteringExampleComponent,
+    StocksComponent
   ],
   imports: [
     BrowserModule,
@@ -26,7 +30,9 @@ import { TableFilteringExampleComponent } from './table-filtering-example/table-
     MatFormFieldModule,
     MatTableModule,
   ],
-  providers: [],
+  providers: [
+    StocksService,
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
