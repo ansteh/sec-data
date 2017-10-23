@@ -1,0 +1,33 @@
+<form class="stock-form">
+  <mat-form-field class="stock-field">
+    <input matInput [(ngModel)]="stock.ticker" name="ticker" placeholder="Ticker">
+  </mat-form-field>
+
+  <mat-form-field class="stock-field">
+    <input matInput [(ngModel)]="stock.name" name="name" placeholder="Name">
+  </mat-form-field>
+
+  <mat-form-field class="stock-field">
+    <input matInput [(ngModel)]="stock.cik" name="cik" placeholder="Cik">
+  </mat-form-field>
+
+  <mat-form-field class="stock-field">
+    <mat-select placeholder="annual" [(ngModel)]="stock.forms.annual" name="annual">
+      <mat-option value="10-K">10-K</mat-option>
+      <mat-option value="20-F">20-F</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field class="stock-field">
+    <mat-select placeholder="quarterly" [(ngModel)]="stock.forms.quarterly" name="quarterly">
+      <mat-option value="10-Q">10-Q</mat-option>
+      <mat-option value="6-K">6-K</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <div>
+    <button style="float: right;" mat-raised-button color="primary">create</button>
+  </div>
+
+  <pre>{{ stock | json }}</pre>
+</form>
