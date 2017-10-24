@@ -22,6 +22,20 @@ app.get('/resources/stocks', (req, res) => {
     });
 });
 
+app.post('/stock/create', (req, res) => {
+  StockService.create(req.body)
+    .then((success) => {
+      return StockService.findByTicker(req.body.ticker);
+    })
+    .then((stock) => {
+      res.json(stock);
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).send();
+    });
+});
+
 const server = require('http').Server(app);
 
 server.listen(3000, function(){

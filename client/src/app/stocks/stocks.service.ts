@@ -15,4 +15,9 @@ export class StocksService {
       .map(res => res.json());
   }
 
+  createStock(stock: any): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/stock/create`, stock)
+      .map(res => res.json());
+  }
+
 }

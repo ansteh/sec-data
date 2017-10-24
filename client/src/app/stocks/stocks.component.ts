@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 
 import { StocksService } from './stocks.service';
+import * as _ from 'lodash';
 
 @Component({
   selector: 'stocks',
@@ -17,7 +18,7 @@ export class StocksComponent implements OnInit {
   ngOnInit() {
     this.stocksService.getStocksFromResources()
       .subscribe((stocks) => {
-        this.stocks = stocks;
+        this.stocks = _.values(stocks);
       });
   }
 

@@ -1,1 +1,7 @@
+<ul>
+  <li *ngFor="let stock of stocks">
+    {{ stock.ticker }}, {{ stock.name }}
+  </li>
+</ul>
+
 <pre>{{ stocks | json }}</pre>

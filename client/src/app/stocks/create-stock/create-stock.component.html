@@ -1,33 +1,33 @@
-<form class="stock-form">
+<form #form="ngForm" class="stock-form">
   <mat-form-field class="stock-field">
-    <input matInput [(ngModel)]="stock.ticker" name="ticker" placeholder="Ticker">
+    <input matInput [(ngModel)]="stock.ticker" name="ticker" placeholder="Ticker" required>
   </mat-form-field>
 
   <mat-form-field class="stock-field">
-    <input matInput [(ngModel)]="stock.name" name="name" placeholder="Name">
+    <input matInput [(ngModel)]="stock.name" name="name" placeholder="Name" required>
   </mat-form-field>
 
   <mat-form-field class="stock-field">
-    <input matInput [(ngModel)]="stock.cik" name="cik" placeholder="Cik">
+    <input matInput [(ngModel)]="stock.cik" name="cik" placeholder="Cik" required>
   </mat-form-field>
 
   <mat-form-field class="stock-field">
-    <mat-select placeholder="annual" [(ngModel)]="stock.forms.annual" name="annual">
+    <mat-select placeholder="annual" [(ngModel)]="stock.forms.annual" name="annual" required (change)="fitQuarterly()">
       <mat-option value="10-K">10-K</mat-option>
       <mat-option value="20-F">20-F</mat-option>
     </mat-select>
   </mat-form-field>
 
   <mat-form-field class="stock-field">
-    <mat-select placeholder="quarterly" [(ngModel)]="stock.forms.quarterly" name="quarterly">
+    <mat-select placeholder="quarterly" [(ngModel)]="stock.forms.quarterly" name="quarterly" required (change)="fitAnnual()">
       <mat-option value="10-Q">10-Q</mat-option>
       <mat-option value="6-K">6-K</mat-option>
     </mat-select>
   </mat-form-field>
 
   <div>
-    <button style="float: right;" mat-raised-button color="primary">create</button>
+    <button style="float: right;" mat-raised-button color="primary" (click)="create()" [disabled]="form.invalid">create</button>
   </div>
 
-  <pre>{{ stock | json }}</pre>
+  <!-- <pre>{{ stock | json }}</pre> -->
 </form>
