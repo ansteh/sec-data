@@ -5,6 +5,8 @@ import { Observable } from 'rxjs/Observable';
 import { StocksService } from './stocks.service';
 import * as _ from 'lodash';
 
+import { StockDatabase } from './stocks.data-source';
+
 @Component({
   selector: 'stocks',
   templateUrl: './stocks.component.html',
