@@ -4,4 +4,51 @@
   </li>
 </ul>
 
-<pre>{{ stocks | json }}</pre>
+<div class="example-container mat-elevation-z8">
+  <div class="example-header">
+    <mat-form-field floatPlaceholder="never">
+      <input matInput #filter placeholder="Filter users">
+    </mat-form-field>
+  </div>
+
+  <mat-table #table [dataSource]="dataSource">
+
+    <!--- Note that these columns can be defined in any order.
+          The actual rendered columns are set as a property on the row definition" -->
+
+    <ng-container matColumnDef="name">
+      <mat-header-cell *matHeaderCellDef> name </mat-header-cell>
+      <mat-cell *matCellDef="let row"> {{row.name}} </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="ticker">
+      <mat-header-cell *matHeaderCellDef> ticker </mat-header-cell>
+      <mat-cell *matCellDef="let row"> {{row.ticker}} </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="cik">
+      <mat-header-cell *matHeaderCellDef> cik </mat-header-cell>
+      <mat-cell *matCellDef="let row"> {{row.cik}} </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="annual">
+      <mat-header-cell *matHeaderCellDef> annual </mat-header-cell>
+      <mat-cell *matCellDef="let row"> {{row.forms.annual}} </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="quarterly">
+      <mat-header-cell *matHeaderCellDef> quarterly </mat-header-cell>
+      <mat-cell *matCellDef="let row"> {{row.forms.quarterly}} </mat-cell>
+    </ng-container>
+
+    <!-- <ng-container matColumnDef="color">
+      <mat-header-cell *matHeaderCellDef> Color </mat-header-cell>
+      <mat-cell *matCellDef="let row" [style.color]="row.color"> {{row.color}} </mat-cell>
+    </ng-container> -->
+
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row class="stock-row" *matRowDef="let row; columns: displayedColumns;" (click)="select(row)"></mat-row>
+  </mat-table>
+</div>
+
+<!-- <pre>{{ stocks | json }}</pre> -->

@@ -16,6 +16,10 @@ export class StockDatabase {
   constructor() {
 
   }
+
+  setData(data: any[]) {
+    this.dataChange.next(data);
+  }
 }
 
 export class StocksDataSource extends DataSource<any> {
@@ -34,7 +38,7 @@ export class StocksDataSource extends DataSource<any> {
     ];
 
     return Observable.merge(...displayDataChanges).map(() => {
-      return this.database.data.slice();
+      return this.database.data;
     });
   }
 
