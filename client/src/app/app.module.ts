@@ -4,7 +4,7 @@ import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
 import { RouterModule } from '@angular/router';
-
+import { FlexLayoutModule } from '@angular/flex-layout';
 
 import { MatFormFieldModule } from '@angular/material';
 import { MatInputModule } from '@angular/material';
@@ -22,19 +22,24 @@ import { CreateStockComponent } from './stocks/create-stock/create-stock.compone
 import { StocksService } from './stocks/stocks.service';
 
 import { appRoutes } from './app.routes';
+import { StockComponent } from './stock/stock.component';
+import { ProposalsComponent } from './stocks/proposals/proposals.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     TableFilteringExampleComponent,
     StocksComponent,
-    CreateStockComponent
+    CreateStockComponent,
+    StockComponent,
+    ProposalsComponent
   ],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
     FormsModule,
     HttpModule,
+    FlexLayoutModule,
 
     RouterModule.forRoot(
       appRoutes,

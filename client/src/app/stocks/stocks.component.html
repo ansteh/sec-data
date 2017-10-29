@@ -1,21 +1,15 @@
-<ul>
-  <li *ngFor="let stock of stocks">
-    {{ stock.ticker }}, {{ stock.name }}
-  </li>
-</ul>
-
 <div class="example-container mat-elevation-z8">
-  <div class="example-header">
-    <mat-form-field floatPlaceholder="never">
-      <input matInput #filter placeholder="Filter users">
+  <div class="stocks-header" fxLayout="row" fxLayoutAlign="center">
+    <mat-form-field floatPlaceholder="never" fxFlex>
+      <input matInput #filter placeholder="Filer name">
+    </mat-form-field>
+
+    <mat-form-field floatPlaceholder="never" fxFlex>
+      <input matInput #filterTicker placeholder="Filer ticker">
     </mat-form-field>
   </div>
 
   <mat-table #table [dataSource]="dataSource">
-
-    <!--- Note that these columns can be defined in any order.
-          The actual rendered columns are set as a property on the row definition" -->
-
     <ng-container matColumnDef="name">
       <mat-header-cell *matHeaderCellDef> name </mat-header-cell>
       <mat-cell *matCellDef="let row"> {{row.name}} </mat-cell>
