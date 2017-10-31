@@ -58,6 +58,7 @@ export class StockComponent implements OnInit, OnDestroy {
     this.stockService
       .summarize(this.stock.ticker)
       .subscribe((metrics) => {
+        console.log('summarize metrics', metrics);
         this.metrics = metrics;
       });
   }
