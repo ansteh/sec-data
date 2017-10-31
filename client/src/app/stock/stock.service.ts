@@ -25,4 +25,14 @@ export class StockService {
       .map(res => res.json());
   }
 
+  getSummary(ticker: string): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/resources/stock/${ticker}/summary`)
+      .map(res => res.json());
+  }
+
+  summarize(ticker: string): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/resources/stock/${ticker}/summarize`)
+      .map(res => res.json());
+  }
+
 }

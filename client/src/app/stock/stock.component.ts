@@ -11,6 +11,7 @@ import { StockService } from './stock.service';
 })
 export class StockComponent implements OnInit, OnDestroy {
   public stock: any;
+  public metrics: any;
   private routeParamsSub: Subscription;
 
   constructor(private route: ActivatedRoute, private stockService: StockService) { }
@@ -22,6 +23,12 @@ export class StockComponent implements OnInit, OnDestroy {
           .findByTicker(params.ticker)
           .subscribe((stock) => {
             this.stock = stock;
+          });
+
+        this.stockService
+          .getSummary(params.ticker)
+          .subscribe((metrics) => {
+            this.metrics = metrics;
           });
       }
     });
@@ -44,6 +51,14 @@ export class StockComponent implements OnInit, OnDestroy {
       .parseFilings(this.stock.ticker)
       .subscribe((res) => {
         console.log(res);
+      });
+  }
+
+  summarize() {
+    this.stockService
+      .summarize(this.stock.ticker)
+      .subscribe((metrics) => {
+        this.metrics = metrics;
       });
   }
 

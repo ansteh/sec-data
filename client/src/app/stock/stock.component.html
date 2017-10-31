@@ -1,4 +1,6 @@
 <button mat-raised-button color="primary" (click)="crawlAndDownload()">crawl filings</button>
 <button mat-raised-button color="primary" (click)="parseFilings()">parse filings</button>
+<button mat-raised-button color="primary" (click)="summarize()">summarize</button>
 
 <pre>{{ stock | json }}</pre>
+<pre>{{ metrics | json }}</pre>

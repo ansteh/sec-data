@@ -11,6 +11,7 @@ app.use(bodyParser.json());
 
 const StockService = require('./lib/stock/service');
 const Stock        = require('./lib/stock');
+const Summarizer   = require('./lib/stock/summary');
 
 app.get('/resources/stocks', (req, res) => {
   StockService.getStocksFromResources()
@@ -53,6 +54,33 @@ app.get('/resources/stock/:ticker/parse', (req, res) => {
   Stock.parseFilings(req.params.ticker)
     .then((stock) => {
       res.json({});
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).send();
+    });
+});
+
+app.get('/resources/stock/:ticker/summary', (req, res) => {
+  StockService.getSummary(req.params.ticker)
+    .then((summary) => {
+      res.json(summary);
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).send();
+    });
+});
+
+app.get('/resources/stock/:ticker/summarize', (req, res) => {
+  const ticker = req.params.ticker;
+
+  Summarizer.getAndSaveGaapMetrics(ticker)
+    .then(() => {
+      return StockService.getSummary(ticker);
+    })
+    .then((summary) => {
+      res.json(summary);
     })
     .catch((err) => {
       console.log(err);
