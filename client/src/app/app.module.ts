@@ -20,6 +20,7 @@ import { StocksComponent } from './stocks/stocks.component';
 import { CreateStockComponent } from './stocks/create-stock/create-stock.component';
 
 import { StocksService } from './stocks/stocks.service';
+import { StockService } from './stock/stock.service';
 
 import { appRoutes } from './app.routes';
 import { StockComponent } from './stock/stock.component';
@@ -54,6 +55,7 @@ import { ProposalsComponent } from './stocks/proposals/proposals.component';
     MatButtonModule,
   ],
   providers: [
+    StockService,
     StocksService,
   ],
   bootstrap: [AppComponent]

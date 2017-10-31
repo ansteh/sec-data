@@ -6,6 +6,7 @@ import { StocksService } from './stocks.service';
 import * as _ from 'lodash';
 
 import { StocksDataSource } from './stocks.data-source';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'stocks',
@@ -17,7 +18,7 @@ export class StocksComponent implements OnInit {
   public stocks: any;
   public dataSource: StocksDataSource;
 
-  constructor(private stocksService: StocksService) { }
+  constructor(private router: Router, private stocksService: StocksService) { }
 
   ngOnInit() {
     this.dataSource = this.stocksService.dataSource;
@@ -30,6 +31,7 @@ export class StocksComponent implements OnInit {
 
   select(stock: any) {
     console.log(stock);
+    this.router.navigate([`/stock/${stock.ticker}`]);
   }
 
 }
