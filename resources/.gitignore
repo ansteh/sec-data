@@ -1,5 +1,7 @@
 *.xml
 *.html
+
 stocks
 issues
+tickers
 stocks-dump
