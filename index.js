@@ -123,6 +123,14 @@ const StockService = require('./lib/stock/service');
 //   .then(console.log)
 //   .catch(console.log);
 
-StockService.getSummary(['BBBY', 'GME'])
-  .then(console.log)
-  .catch(console.log);
+// StockService.getSummary(['BBBY', 'GME'])
+//   .then(console.log)
+//   .catch(console.log);
+
+// Stock.findStockWithUnparsedFilings()
+//   .then(console.log)
+//   .catch(console.log);
+
+// const Tickers = require('./lib/tickers');
+
+Stock.parseUnparsedFilings();
