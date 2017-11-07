@@ -13,6 +13,17 @@ const StockService = require('./lib/stock/service');
 const Stock        = require('./lib/stock');
 const Summarizer   = require('./lib/stock/summary');
 
+app.get('/stock/fundamental-accounting-concepts/:ticker/:formType', (req, res) => {
+  Summarizer.getFundamentalsByTicker(req.params.ticker, req.params.formType)
+    .then((concepts) => {
+      res.json(concepts);
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).send();
+    });
+});
+
 app.get('/resources/stocks', (req, res) => {
   StockService.getStocksFromResources()
     .then((stocks) => {
