@@ -1,6 +1,20 @@
-<button mat-raised-button color="primary" (click)="crawlAndDownload()">crawl filings</button>
-<button mat-raised-button color="primary" (click)="parseFilings()">parse filings</button>
-<button mat-raised-button color="primary" (click)="summarize()">summarize</button>
+<button mat-raised-button color="primary" disabled (click)="crawlAndDownload()">crawl filings</button>
+<button mat-raised-button color="primary" disabled (click)="parseFilings()">parse filings</button>
+<button mat-raised-button color="primary" disabled (click)="summarize()">summarize</button>
 
-<pre>{{ stock | json }}</pre>
-<pre>{{ metrics | json }}</pre>
+<!-- <pre>{{ stock | json }}</pre> -->
+<!-- <pre>{{ metrics | json }}</pre> -->
+
+<div style="display: block;">
+  <canvas baseChart width="400" height="400"
+          [datasets]="lineChartData"
+          [labels]="lineChartLabels"
+          [options]="lineChartOptions"
+          [colors]="lineChartColors"
+          [legend]="lineChartLegend"
+          [chartType]="lineChartType"
+          (chartHover)="chartHovered($event)"
+          (chartClick)="chartClicked($event)"></canvas>
+</div>
+
+<pre>{{ metrics?.annual?.EarningsPerShareBasic | json }}</pre>

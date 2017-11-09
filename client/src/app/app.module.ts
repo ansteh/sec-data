@@ -13,6 +13,7 @@ import { MatOptionModule } from '@angular/material';
 import { MatSelectModule } from '@angular/material';
 import { MatButtonModule } from '@angular/material';
 
+import { ChartsModule } from 'ng2-charts/ng2-charts';
 
 import { AppComponent } from './app.component';
 import { TableFilteringExampleComponent } from './table-filtering-example/table-filtering-example.component';
@@ -53,6 +54,8 @@ import { ProposalsComponent } from './stocks/proposals/proposals.component';
     MatOptionModule,
     MatSelectModule,
     MatButtonModule,
+
+    ChartsModule,
   ],
   providers: [
     StockService,

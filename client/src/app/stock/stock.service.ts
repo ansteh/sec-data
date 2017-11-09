@@ -2,6 +2,9 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map'
 
+import * as _ from 'lodash';
+import { Stock } from './stock.helper';
+
 import { Http } from '@angular/http';
 import { environment } from '../../environments/environment';
 
