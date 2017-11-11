@@ -26,6 +26,7 @@ import { StockService } from './stock/stock.service';
 import { appRoutes } from './app.routes';
 import { StockComponent } from './stock/stock.component';
 import { ProposalsComponent } from './stocks/proposals/proposals.component';
+import { StockMetricChartComponent } from './stock/stock-metric-chart/stock-metric-chart.component';
 
 @NgModule({
   declarations: [
@@ -34,7 +35,8 @@ import { ProposalsComponent } from './stocks/proposals/proposals.component';
     StocksComponent,
     CreateStockComponent,
     StockComponent,
-    ProposalsComponent
+    ProposalsComponent,
+    StockMetricChartComponent
   ],
   imports: [
     BrowserModule,

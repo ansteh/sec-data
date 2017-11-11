@@ -2,6 +2,8 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs/Subscription';
 
+import * as _ from 'lodash';
+
 import { StockService } from './stock.service';
 
 @Component({
@@ -14,12 +16,10 @@ export class StockComponent implements OnInit, OnDestroy {
   public metrics: any;
   private routeParamsSub: Subscription;
 
-  public lineChartData:Array<any> = [
-    {data: [65, 59, 80, 81, 56, 55, 40], label: 'Series A'},
-    {data: [28, 48, 40, 19, 86, 27, 90], label: 'Series B'},
-    {data: [18, 48, 77, 9, 100, 27, 40], label: 'Series C'}
+  public lineChartData: Array<any> = [
+    {data: [], label: ''},
   ];
-  public lineChartLabels:Array<any> = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
+  public lineChartLabels:Array<any> = [];
   public lineChartOptions:any = {
     responsive: true
   };
@@ -50,7 +50,7 @@ export class StockComponent implements OnInit, OnDestroy {
     }
   ];
   public lineChartLegend:boolean = true;
-  public lineChartType:string = 'line';
+  public lineChartType:string = 'bar';
 
   constructor(private route: ActivatedRoute, private stockService: StockService) { }
 
@@ -67,6 +67,8 @@ export class StockComponent implements OnInit, OnDestroy {
           .getSummary(params.ticker)
           .subscribe((metrics) => {
             this.metrics = metrics[params.ticker];
+
+            this.updateChart('annual.EarningsPerShareBasic', 'EarningsPerShareBasic');
           });
       }
     });
@@ -101,15 +103,35 @@ export class StockComponent implements OnInit, OnDestroy {
       });
   }
 
-  public randomize():void {
-    let _lineChartData:Array<any> = new Array(this.lineChartData.length);
-    for (let i = 0; i < this.lineChartData.length; i++) {
-      _lineChartData[i] = {data: new Array(this.lineChartData[i].data.length), label: this.lineChartData[i].label};
-      for (let j = 0; j < this.lineChartData[i].data.length; j++) {
-        _lineChartData[i].data[j] = Math.floor((Math.random() * 100) + 1);
+  updateChart(path: string, label: string) {
+    let data = _.clone(_.get(this.metrics, path, []));
+    data = _.reverse(data);
+
+    this.setData(label, data);
+    setTimeout(() => { this.setLabels(data); }, 0);
+  }
+
+  setLabels(data: any[] = []) {
+    this.lineChartLabels =  _.map(data, 'endDate');
+  }
+
+  setData(label: string, data: any[] = []) {
+    const values = _.map(data, 'value');
+    const backgroundColor = this.getColors(values);
+
+    this.lineChartData = [
+      { data: values, label, backgroundColor},
+    ];
+  }
+
+  getColors(values: any[] = []): any[] {
+    return _.map(values, (value) => {
+      if(value < 0) {
+        return 'red';
       }
-    }
-    this.lineChartData = _lineChartData;
+
+      return 'green';
+    });
   }
 
   // events
