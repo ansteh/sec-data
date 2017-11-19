@@ -11,4 +11,6 @@
                     }">
 </stock-metric-chart>
 
-<pre>{{ metrics?.annual?.EarningsPerShareBasic | json }}</pre>
+<sec-stock-metrics-tree [metrics]="metrics?.annual" [path]="'annual'"></sec-stock-metrics-tree>
+
+<!-- <pre>{{ metrics?.annual?.EarningsPerShareBasic | json }}</pre> -->

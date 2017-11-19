@@ -5,6 +5,7 @@ import { Subscription } from 'rxjs/Subscription';
 import * as _ from 'lodash';
 
 import { StockService } from './stock.service';
+import { StockMetricsTreeService } from './stock-metrics-tree/stock-metrics-tree.service';
 
 @Component({
   selector: 'app-stock',
@@ -14,45 +15,18 @@ import { StockService } from './stock.service';
 export class StockComponent implements OnInit, OnDestroy {
   public stock: any;
   public metrics: any;
+
   private routeParamsSub: Subscription;
+  private metricPathSub: Subscription;
 
   public lineChartData: Array<any> = [
     {data: [], label: ''},
   ];
   public lineChartLabels:Array<any> = [];
-  public lineChartOptions:any = {
-    responsive: true
-  };
-  public lineChartColors:Array<any> = [
-    { // grey
-      backgroundColor: 'rgba(148,159,177,0.2)',
-      borderColor: 'rgba(148,159,177,1)',
-      pointBackgroundColor: 'rgba(148,159,177,1)',
-      pointBorderColor: '#fff',
-      pointHoverBackgroundColor: '#fff',
-      pointHoverBorderColor: 'rgba(148,159,177,0.8)'
-    },
-    { // dark grey
-      backgroundColor: 'rgba(77,83,96,0.2)',
-      borderColor: 'rgba(77,83,96,1)',
-      pointBackgroundColor: 'rgba(77,83,96,1)',
-      pointBorderColor: '#fff',
-      pointHoverBackgroundColor: '#fff',
-      pointHoverBorderColor: 'rgba(77,83,96,1)'
-    },
-    { // grey
-      backgroundColor: 'rgba(148,159,177,0.2)',
-      borderColor: 'rgba(148,159,177,1)',
-      pointBackgroundColor: 'rgba(148,159,177,1)',
-      pointBorderColor: '#fff',
-      pointHoverBackgroundColor: '#fff',
-      pointHoverBorderColor: 'rgba(148,159,177,0.8)'
-    }
-  ];
-  public lineChartLegend:boolean = true;
-  public lineChartType:string = 'bar';
 
-  constructor(private route: ActivatedRoute, private stockService: StockService) { }
+  constructor(private route: ActivatedRoute,
+              private stockService: StockService,
+              private metricsTree: StockMetricsTreeService) { }
 
   ngOnInit() {
     this.routeParamsSub = this.route.params.subscribe((params) => {
@@ -72,10 +46,20 @@ export class StockComponent implements OnInit, OnDestroy {
           });
       }
     });
+
+    this.metricPathSub = this.metricsTree.metricPath.subscribe((metricPath: string) => {
+      // console.log('metricPath', metricPath);
+
+      const index = _.lastIndexOf(metricPath, '.');
+      const label = metricPath.substr(index + 1);
+
+      this.updateChart(metricPath, label);
+    });
   }
 
   ngOnDestroy() {
     this.routeParamsSub.unsubscribe();
+    this.metricPathSub.unsubscribe();
   }
 
   crawlAndDownload() {
@@ -104,11 +88,32 @@ export class StockComponent implements OnInit, OnDestroy {
   }
 
   updateChart(path: string, label: string) {
-    let data = _.clone(_.get(this.metrics, path, []));
-    data = _.reverse(data);
+    let data = this.extractData(path, label);
 
     this.setData(label, data);
     setTimeout(() => { this.setLabels(data); }, 0);
+  }
+
+  private extractData(path: string, label: string): any {
+    let data;
+
+    if(_.includes(path, 'FundamentalAccountingConcepts') === false) {
+      data = _.clone(_.get(this.metrics, path, []));
+    } else {
+      path = _.replace(path, `.${label}`, '');
+
+      data = _
+        .chain(_.get(this.metrics, path, []))
+        .map((filing) => {
+          return {
+            endDate: _.get(filing, 'DocumentPeriodEndDate'),
+            value: _.get(filing, label),
+          }
+        })
+        .value();
+    }
+
+    return data;
   }
 
   setLabels(data: any[] = []) {

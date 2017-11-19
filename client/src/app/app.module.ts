@@ -22,11 +22,13 @@ import { CreateStockComponent } from './stocks/create-stock/create-stock.compone
 
 import { StocksService } from './stocks/stocks.service';
 import { StockService } from './stock/stock.service';
+import { StockMetricsTreeService } from './stock/stock-metrics-tree/stock-metrics-tree.service';
 
 import { appRoutes } from './app.routes';
 import { StockComponent } from './stock/stock.component';
 import { ProposalsComponent } from './stocks/proposals/proposals.component';
 import { StockMetricChartComponent } from './stock/stock-metric-chart/stock-metric-chart.component';
+import { StockMetricsTreeComponent } from './stock/stock-metrics-tree/stock-metrics-tree.component';
 
 @NgModule({
   declarations: [
@@ -36,7 +38,8 @@ import { StockMetricChartComponent } from './stock/stock-metric-chart/stock-metr
     CreateStockComponent,
     StockComponent,
     ProposalsComponent,
-    StockMetricChartComponent
+    StockMetricChartComponent,
+    StockMetricsTreeComponent
   ],
   imports: [
     BrowserModule,
@@ -60,6 +63,7 @@ import { StockMetricChartComponent } from './stock/stock-metric-chart/stock-metr
     ChartsModule,
   ],
   providers: [
+    StockMetricsTreeService,
     StockService,
     StocksService,
   ],
