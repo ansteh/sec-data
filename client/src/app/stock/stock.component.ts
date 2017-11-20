@@ -19,10 +19,10 @@ export class StockComponent implements OnInit, OnDestroy {
   private routeParamsSub: Subscription;
   private metricPathSub: Subscription;
 
-  public lineChartData: Array<any> = [
-    {data: [], label: ''},
+  private paths: string[] = [
+    'annual.EarningsPerShareBasic',
+    'annual.WeightedAverageNumberOfDilutedSharesOutstanding'
   ];
-  public lineChartLabels:Array<any> = [];
 
   constructor(private route: ActivatedRoute,
               private stockService: StockService,
@@ -42,18 +42,14 @@ export class StockComponent implements OnInit, OnDestroy {
           .subscribe((metrics) => {
             this.metrics = metrics[params.ticker];
 
-            this.updateChart('annual.EarningsPerShareBasic', 'EarningsPerShareBasic');
+            // this.updateChart('annual.EarningsPerShareBasic', 'EarningsPerShareBasic');
           });
       }
     });
 
     this.metricPathSub = this.metricsTree.metricPath.subscribe((metricPath: string) => {
       // console.log('metricPath', metricPath);
-
-      const index = _.lastIndexOf(metricPath, '.');
-      const label = metricPath.substr(index + 1);
-
-      this.updateChart(metricPath, label);
+      this.paths.push(metricPath);
     });
   }
 
@@ -85,66 +81,5 @@ export class StockComponent implements OnInit, OnDestroy {
         console.log('summarize metrics', metrics);
         this.metrics = metrics;
       });
-  }
-
-  updateChart(path: string, label: string) {
-    let data = this.extractData(path, label);
-
-    this.setData(label, data);
-    setTimeout(() => { this.setLabels(data); }, 0);
-  }
-
-  private extractData(path: string, label: string): any {
-    let data;
-
-    if(_.includes(path, 'FundamentalAccountingConcepts') === false) {
-      data = _.clone(_.get(this.metrics, path, []));
-    } else {
-      path = _.replace(path, `.${label}`, '');
-
-      data = _
-        .chain(_.get(this.metrics, path, []))
-        .map((filing) => {
-          return {
-            endDate: _.get(filing, 'DocumentPeriodEndDate'),
-            value: _.get(filing, label),
-          }
-        })
-        .value();
-    }
-
-    return data;
-  }
-
-  setLabels(data: any[] = []) {
-    this.lineChartLabels =  _.map(data, 'endDate');
-  }
-
-  setData(label: string, data: any[] = []) {
-    const values = _.map(data, 'value');
-    const backgroundColor = this.getColors(values);
-
-    this.lineChartData = [
-      { data: values, label, backgroundColor},
-    ];
-  }
-
-  getColors(values: any[] = []): any[] {
-    return _.map(values, (value) => {
-      if(value < 0) {
-        return 'red';
-      }
-
-      return 'green';
-    });
-  }
-
-  // events
-  public chartClicked(e:any):void {
-    console.log(e);
-  }
-
-  public chartHovered(e:any):void {
-    console.log(e);
   }
 }

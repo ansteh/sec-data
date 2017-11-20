@@ -5,12 +5,14 @@
 <!-- <pre>{{ stock | json }}</pre> -->
 <!-- <pre>{{ metrics | json }}</pre> -->
 
-<stock-metric-chart [data]="{
-                      labels: lineChartLabels,
-                      datasets: lineChartData
-                    }">
-</stock-metric-chart>
+<div *ngFor="let path of paths">
+  <stock-metric-chart [metrics]="metrics"
+                      [path]="path">
+  </stock-metric-chart>
+</div>
 
-<sec-stock-metrics-tree [metrics]="metrics?.annual" [path]="'annual'"></sec-stock-metrics-tree>
+<sec-stock-metrics-tree [metrics]="metrics?.annual"
+                        [path]="'annual'">
+</sec-stock-metrics-tree>
 
 <!-- <pre>{{ metrics?.annual?.EarningsPerShareBasic | json }}</pre> -->
