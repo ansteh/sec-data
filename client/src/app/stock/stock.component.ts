@@ -20,8 +20,9 @@ export class StockComponent implements OnInit, OnDestroy {
   private metricPathSub: Subscription;
 
   private paths: string[] = [
-    'annual.EarningsPerShareBasic',
-    'annual.WeightedAverageNumberOfDilutedSharesOutstanding'
+    'annual.EarningsPerShareDiluted',
+    'annual.WeightedAverageNumberOfDilutedSharesOutstanding',
+    'annual.CommonStockDividendsPerShareDeclared',
   ];
 
   constructor(private route: ActivatedRoute,
