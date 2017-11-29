@@ -9,9 +9,10 @@ const cors           = require('cors');
 app.use(cors());
 app.use(bodyParser.json());
 
-const StockService = require('./lib/stock/service');
-const Stock        = require('./lib/stock');
-const Summarizer   = require('./lib/stock/summary');
+const StockService  = require('./lib/stock/service');
+const Stock         = require('./lib/stock');
+const Summarizer    = require('./lib/stock/summary');
+const PricesService = require('./lib/stock/price/service');
 
 app.get('/stock/fundamental-accounting-concepts/:ticker/:formType', (req, res) => {
   Summarizer.getFundamentalsByTicker(req.params.ticker, req.params.formType)
@@ -106,6 +107,19 @@ app.post('/stock/create', (req, res) => {
     })
     .then((stock) => {
       res.json(stock);
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).send();
+    });
+});
+
+app.get('/resources/stock/:ticker/historical-prices', (req, res) => {
+  const ticker = req.params.ticker;
+
+  PricesService.get(ticker)
+    .then((data) => {
+      res.json(data);
     })
     .catch((err) => {
       console.log(err);

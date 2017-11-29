@@ -133,4 +133,4 @@ const StockService = require('./lib/stock/service');
 
 // const Tickers = require('./lib/tickers');
 
-Stock.parseUnparsedFilings();
+// Stock.parseUnparsedFilings();
