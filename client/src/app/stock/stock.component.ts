@@ -45,6 +45,8 @@ export class StockComponent implements OnInit, OnDestroy {
 
             // this.updateChart('annual.EarningsPerShareBasic', 'EarningsPerShareBasic');
           });
+
+        this.getHistoricalPrices(params.ticker);
       }
     });
 
@@ -81,6 +83,13 @@ export class StockComponent implements OnInit, OnDestroy {
       .subscribe((metrics) => {
         console.log('summarize metrics', metrics);
         this.metrics = metrics;
+      });
+  }
+
+  getHistoricalPrices(ticker: string) {
+    this.stockService.getHistoricalPrices(ticker)
+      .subscribe((historical: any[]) => {
+        console.log(historical);
       });
   }
 }

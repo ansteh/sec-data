@@ -38,4 +38,9 @@ export class StockService {
       .map(res => res.json());
   }
 
+  getHistoricalPrices(ticker: string): Observable<any> {
+    return this.http.get(`${environment.apiUrl}/resources/stock/${ticker}/historical-prices`)
+      .map(res => res.json());
+  }
+
 }

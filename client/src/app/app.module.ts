@@ -29,6 +29,7 @@ import { StockComponent } from './stock/stock.component';
 import { ProposalsComponent } from './stocks/proposals/proposals.component';
 import { StockMetricChartComponent } from './stock/stock-metric-chart/stock-metric-chart.component';
 import { StockMetricsTreeComponent } from './stock/stock-metrics-tree/stock-metrics-tree.component';
+import { StockPricesChartComponent } from './stock/stock-prices-chart/stock-prices-chart.component';
 
 @NgModule({
   declarations: [
@@ -39,7 +40,8 @@ import { StockMetricsTreeComponent } from './stock/stock-metrics-tree/stock-metr
     StockComponent,
     ProposalsComponent,
     StockMetricChartComponent,
-    StockMetricsTreeComponent
+    StockMetricsTreeComponent,
+    StockPricesChartComponent
   ],
   imports: [
     BrowserModule,
