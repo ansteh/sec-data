@@ -5,6 +5,8 @@
 <!-- <pre>{{ stock | json }}</pre> -->
 <!-- <pre>{{ metrics | json }}</pre> -->
 
+<sec-stock-prices-chart [data]="historical"></sec-stock-prices-chart>
+
 <div *ngFor="let path of paths">
   <stock-metric-chart [metrics]="metrics"
                       [path]="path">

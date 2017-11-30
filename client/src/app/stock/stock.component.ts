@@ -15,6 +15,7 @@ import { StockMetricsTreeService } from './stock-metrics-tree/stock-metrics-tree
 export class StockComponent implements OnInit, OnDestroy {
   public stock: any;
   public metrics: any;
+  public historical: any[];
 
   private routeParamsSub: Subscription;
   private metricPathSub: Subscription;
@@ -90,6 +91,7 @@ export class StockComponent implements OnInit, OnDestroy {
     this.stockService.getHistoricalPrices(ticker)
       .subscribe((historical: any[]) => {
         console.log(historical);
+        this.historical = historical;
       });
   }
 }
