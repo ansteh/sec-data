@@ -13,6 +13,7 @@ const StockService  = require('./lib/stock/service');
 const Stock         = require('./lib/stock');
 const Summarizer    = require('./lib/stock/summary');
 const PricesService = require('./lib/stock/price/service');
+const Market        = require('./lib/share-market/');
 
 app.get('/stock/fundamental-accounting-concepts/:ticker/:formType', (req, res) => {
   Summarizer.getFundamentalsByTicker(req.params.ticker, req.params.formType)
