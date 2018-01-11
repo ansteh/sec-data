@@ -1,4 +1,5 @@
 'use strict';
+const _ = require('lodash');
 
 const express        = require('express');
 const app            = express();
@@ -15,6 +16,27 @@ const Summarizer    = require('./lib/stock/summary');
 const PricesService = require('./lib/stock/price/service');
 const ShareMarket   = require('./lib/share-market/');
 
+const Promise = require('bluebird');
+
+// ShareMarket.getMarket()
+//   .then((market) => {
+//     console.log(market.getShareMarketSpreads());
+//   });
+
+const cache = {};
+
+const getStocksFromResources = () => {
+  if(_.has(cache, 'StocksFromResources')) {
+    return Promise.resolve(_.get(cache, 'StocksFromResources'));
+  } else {
+    return StockService.getStocksFromResources()
+      .then((resources) => {
+        _.set(cache, 'StocksFromResources', resources);
+        return resources;
+      });
+  }
+};
+
 app.get('/stock/fundamental-accounting-concepts/:ticker/:formType', (req, res) => {
   Summarizer.getFundamentalsByTicker(req.params.ticker, req.params.formType)
     .then((concepts) => {
@@ -27,7 +49,8 @@ app.get('/stock/fundamental-accounting-concepts/:ticker/:formType', (req, res) =
 });
 
 app.get('/resources/stocks', (req, res) => {
-  StockService.getStocksFromResources()
+  // StockService.getStocksFromResources()
+  getStocksFromResources()
     .then((stocks) => {
       res.json(stocks);
     })
