@@ -14,16 +14,35 @@ const StockService  = require('./lib/stock/service');
 const Stock         = require('./lib/stock');
 const Summarizer    = require('./lib/stock/summary');
 const PricesService = require('./lib/stock/price/service');
+
 const ShareMarket   = require('./lib/share-market/');
+const MarketModels  = require('./lib/share-market/model');
+const Filters       = require('./lib/share-market/filters.js');
 
 const Promise = require('bluebird');
 
-// ShareMarket.getMarket()
-//   .then((market) => {
-//     console.log(market.getShareMarketSpreads());
-//   });
-
 const cache = {};
+
+const getShareMarket = () => {
+  if(_.has(cache, 'ShareMarket')) {
+    return Promise.resolve(_.get(cache, 'ShareMarket'));
+  } else {
+    return ShareMarket.getMarket()
+      .then((market) => {
+        const scopes = [{
+          buildTime: 'aot',
+          path: 'annual.DerivedDCF_IntrinsicValue_MAX_GROWTH_RATE_20_BY_MEAN',
+          aggregate: 'getAllMetricMarginByPrice',
+        }];
+
+        return MarketModels.createShareMarketTimeline({ market, scopes });
+      })
+      .then((market) => {
+        _.set(cache, 'ShareMarket', market);
+        return market;
+      });
+  }
+};
 
 const getStocksFromResources = () => {
   if(_.has(cache, 'StocksFromResources')) {
@@ -36,6 +55,20 @@ const getStocksFromResources = () => {
       });
   }
 };
+
+app.get('/share-market/:date', (req, res) => {
+  getShareMarket()
+    .then((marketTimeline) => {
+      return marketTimeline.filterBy(Filters.filterCandidatesForBuying, req.params.date);
+    })
+    .then((candidates) => {
+      res.json(candidates);
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).send();
+    });
+});
 
 app.get('/stock/fundamental-accounting-concepts/:ticker/:formType', (req, res) => {
   Summarizer.getFundamentalsByTicker(req.params.ticker, req.params.formType)
