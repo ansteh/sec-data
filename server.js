@@ -59,7 +59,7 @@ const getStocksFromResources = () => {
 app.get('/share-market/:date', (req, res) => {
   getShareMarket()
     .then((marketTimeline) => {
-      return marketTimeline.filterBy(Filters.filterCandidatesForBuying, req.params.date);
+      return marketTimeline.filterBy(Filters.filterCandidates, req.params.date);
     })
     .then((candidates) => {
       res.json(candidates);
