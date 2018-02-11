@@ -20,9 +20,6 @@ One of the great faults of investment analysts is to try to put limits on what t
 [Stock.parseUnparsedFilings();](https://github.com/ansteh/sec-data/blob/master/lib/stock/test.js)
 
 * update summaries
-[Stock.parseUnparsedFilings();](https://github.com/ansteh/sec-data/blob/master/lib/stock/test.js)
-
-* update summaries
 [Summary.prepareAndSaveAll();](https://github.com/ansteh/sec-data/blob/master/lib/stock/summary/test.js)
 
 * update prices
