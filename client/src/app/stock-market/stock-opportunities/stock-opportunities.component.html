@@ -1,1 +1,13 @@
-<pre>{{ opportunities | json }}</pre>
+<div class="example-container mat-elevation-z8">
+  <mat-table #table [dataSource]="dataSource">
+    <ng-container matColumnDef="{{ column }}" *ngFor="let column of stockMarket.columns">
+      <mat-header-cell *matHeaderCellDef> {{ column }} </mat-header-cell>
+      <mat-cell *matCellDef="let row"> {{ column === 'ticker' ? row.ticker : (row.params[column] | number:'1.2-2') }} </mat-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row class="stock-row" *matRowDef="let row; columns: displayedColumns;" (click)="null"></mat-row>
+  </mat-table>
+</div>
+
+<!-- <pre>{{ opportunities | json }}</pre> -->

@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs/Subscription';
 
 import { StockMarketService } from '../stock-market.service';
+import { OpportunitiesDataSource } from './stock-opportunities.data-source';
 
 import * as _ from 'lodash';
 
@@ -17,10 +18,15 @@ export class StockOpportunitiesComponent implements OnInit, OnDestroy {
   public date: Date;
   public opportunities: any[];
 
+  public displayedColumns = [];
+  public dataSource: OpportunitiesDataSource;
+
   constructor(private route: ActivatedRoute,
               private stockMarket: StockMarketService) { }
 
   ngOnInit() {
+    this.dataSource = this.stockMarket.dataSource;
+
     this.routeParamsSub = this.route.params.subscribe((params) => {
       if(params.date){
         console.log(params.date);
@@ -28,6 +34,7 @@ export class StockOpportunitiesComponent implements OnInit, OnDestroy {
         this.stockMarket
           .getOpportunitiesBy(params.date)
           .subscribe((opportunities) => {
+            this.displayedColumns = this.stockMarket.columns;
             this.opportunities = opportunities;
           });
       }
