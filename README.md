@@ -10,20 +10,20 @@ One of the great faults of investment analysts is to try to put limits on what t
 
 # UPDATES
 
-# crawl missing filing links for existing stock resources
-[Stock.updateMissingStockFilings();](https://github.com/ansteh/sec-data/blob/master/lib/stock/test.js);
+crawl missing filing links for existing stock resources
+[Stock.updateMissingStockFilings();](https://github.com/ansteh/sec-data/blob/master/lib/stock/test.js)
 
-# download missing filing files by filing links
-[Stock.downloadMissingFilingFilesBy();](https://github.com/ansteh/sec-data/blob/master/lib/stock/test.js);
+download missing filing files by filing links
+[Stock.downloadMissingFilingFilesBy();](https://github.com/ansteh/sec-data/blob/master/lib/stock/test.js)
 
-# parse unparsed filing files
-[Stock.parseUnparsedFilings();](https://github.com/ansteh/sec-data/blob/master/lib/stock/test.js);
+parse unparsed filing files
+[Stock.parseUnparsedFilings();](https://github.com/ansteh/sec-data/blob/master/lib/stock/test.js)
 
-# update summaries
-[Stock.parseUnparsedFilings();](https://github.com/ansteh/sec-data/blob/master/lib/stock/test.js);
+update summaries
+[Stock.parseUnparsedFilings();](https://github.com/ansteh/sec-data/blob/master/lib/stock/test.js)
 
-# update summaries
-[Summary.prepareAndSaveAll();](https://github.com/ansteh/sec-data/blob/master/lib/stock/summary/test.js);
+update summaries
+[Summary.prepareAndSaveAll();](https://github.com/ansteh/sec-data/blob/master/lib/stock/summary/test.js)
 
-# update prices
-[Price.updateAll();](https://github.com/ansteh/sec-data/blob/master/lib/stock/price/test.js);
+update prices
+[Price.updateAll();](https://github.com/ansteh/sec-data/blob/master/lib/stock/price/test.js)
