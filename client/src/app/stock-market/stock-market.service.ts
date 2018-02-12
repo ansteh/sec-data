@@ -28,7 +28,15 @@ export class StockMarketService {
 
         const items = _
           .chain(_.values(opportunities))
-          .sortBy(['params.margin', 'params.revenuesRate'])
+          .filter((row) => {
+            return _.has(row, 'params.margin')
+              && _.get(row, 'params.margin') < 0.95
+              && _.has(row, 'params.PE')
+              && _.get(row, 'params.PE') > 0
+              && _.has(row, 'params.PB')
+              && _.has(row, 'params.ROE')
+          })
+          .sortBy(['params.margin', 'params.ROE', 'params.ROA'])
           .reverse()
           .value();
 
@@ -36,7 +44,9 @@ export class StockMarketService {
 
         const reference = _.first(items);
         if(reference) {
-          this.columns = _.keys(_.get(reference, 'params'));
+          this.columns = ["ticker", "margin", "PE", "PB", "ROE", "ROE%", "ROA", "ROA%", "CurrentRatio", "QuickRatio", "profit%", "revenues%", "NetCash%"];
+          // this.columns = _.keys(_.get(reference, 'params'));
+          // this.columns = ['ticker', ...this.columns];
         } else {
           this.columns = [];
         }

@@ -1,12 +1,24 @@
 <div class="example-container mat-elevation-z8">
   <mat-table #table [dataSource]="dataSource">
     <ng-container matColumnDef="{{ column }}" *ngFor="let column of stockMarket.columns">
-      <mat-header-cell *matHeaderCellDef> {{ column }} </mat-header-cell>
-      <mat-cell *matCellDef="let row"> {{ column === 'ticker' ? row.ticker : (row.params[column] | number:'1.2-2') }} </mat-cell>
+      <mat-header-cell *matHeaderCellDef style="text-align: right;"> {{ column }} </mat-header-cell>
+      <mat-cell *matCellDef="let row"
+                [style.color]="getStyleColor(column, row)"
+                style="text-align: right;"
+                [ngClass]="{
+                  'text-right': isNumber(row.params[column])
+                }">
+        {{ column === 'ticker' ? row.ticker : (row.params[column] | number:'1.2-2') }}
+      </mat-cell>
     </ng-container>
 
     <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-    <mat-row class="stock-row" *matRowDef="let row; columns: displayedColumns;" (click)="null"></mat-row>
+    <mat-row class="stock-row"
+             *matRowDef="let row; columns: displayedColumns;"
+             (click)="null"
+             [ngClass]="{
+               'all-positive': allPositive(row)
+             }"></mat-row>
   </mat-table>
 </div>
 

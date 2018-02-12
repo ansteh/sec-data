@@ -45,4 +45,19 @@ export class StockOpportunitiesComponent implements OnInit, OnDestroy {
     this.routeParamsSub.unsubscribe();
   }
 
+  getStyleColor(column: string, row: any): string {
+    if(column === 'margin') {
+      const margin = _.get(row, 'params.margin');
+      return margin >= 0 ? 'green' : 'red';
+    }
+  }
+
+  allPositive(row: any): boolean {
+    const values = _.values(_.get(row, 'params'));
+    return _.every(values, x => x > 0);
+  }
+
+  isNumber(value: any): boolean {
+    return _.isNumber(value);
+  }
 }
