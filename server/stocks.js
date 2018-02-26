@@ -68,12 +68,46 @@ const updateStock = _.curry((stock, db) => {
     });
 });
 
+const getHistoricals = _.curry((range, db) => {
+  const collection = db.collection('stocks');
+  const pipeline = [
+    { $match: { ticker: 'AAPL' } },
+    // { $unwind: '$historicals' },
+    // { $project: {_id : 0, ticker: 1, historicals: 1 } },
+    {
+      $project: {
+        historicals: {
+          $filter: {
+            input: '$historicals',
+            as: 'item',
+            cond: { $gt: ['$$item.date', range.start ] }
+          }
+        }
+      }
+    }
+  ];
+
+  return new Promise((resolve, reject) => {
+    collection.aggregate(pipeline).toArray((err, result) => {
+      if(err) {
+        reject(err);
+      } else {
+        console.log(`getHistoricals`, result);
+        resolve(result);
+      }
+    });
+  });
+});
+
 module.exports = {
   dropCollection: () => {
     return execute(dropCollection('stocks'));
   },
   findStocks: (stocks) => {
     return execute(findStocks(stocks));
+  },
+  getHistoricals: (range) => {
+    return execute(getHistoricals(range));
   },
   insertStocks: (stocks) => {
     return execute(insertStocks(stocks));
