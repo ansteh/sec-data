@@ -20,7 +20,9 @@ const execute = (operation) => {
       return result;
     })
     .catch((err) => {
-      instance.close();
+      if(instance) {
+        instance.close();
+      }
       throw new Error(err);
     });
 };
