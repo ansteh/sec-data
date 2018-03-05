@@ -14,10 +14,8 @@ const stocks = [
   { ticker: 'GM' },
 ];
 
-// execute(insertStocks(stocks))
-//   .then((rows) => {
-//     console.log('insertStocks inserted', rows);
-//   })
+// insertStocks(stocks)
+//   .then(console.log)
 //   .catch(console.log);
 
 // findStocks({})
@@ -25,6 +23,7 @@ const stocks = [
 //   .catch(console.log);
 
 getHistoricals({ start: '2012-01-02T23:00:00.000Z'})
+  .then(_.first)
   .then(console.log)
   .catch(console.log);
 
@@ -33,6 +32,6 @@ const updateStockResourcesBy = (ticker) => {
     .then(updateStock)
 };
 
-// updateStockResourcesBy('AAPL')
+// updateStockResourcesBy('GM')
 //   .then(console.log)
 //   .catch(console.log);

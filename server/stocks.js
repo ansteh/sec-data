@@ -3,16 +3,22 @@ const assert      = require('assert');
 
 const MongoClient = require('mongodb').MongoClient;
 
-const url = 'mongodb://localhost:27017';
-const dbName = 'sec-data';
+const config = require('./credentials.json');
+
+const getSourceUrl = () => {
+  const user = encodeURIComponent(config.client.user);
+  const password = encodeURIComponent(config.client.password);
+  return `mongodb://${user}:${password}@${config.remote.host}:${config.remote.port}`;
+};
 
 const execute = (operation) => {
+  const source = getSourceUrl();
   let instance;
 
-  return MongoClient.connect(url)
+  return MongoClient.connect(source)
     .then((client) => {
       instance = client;
-      return client.db(dbName);
+      return client.db('sec-data');
     })
     .then(operation)
     .then((result) => {
@@ -94,7 +100,7 @@ const getHistoricals = _.curry((range, db) => {
       if(err) {
         reject(err);
       } else {
-        console.log(`getHistoricals`, result);
+        // console.log(`getHistoricals`, result);
         resolve(result);
       }
     });
