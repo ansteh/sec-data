@@ -31,6 +31,11 @@ const getStock = (ticker) => {
     })
 };
 
+const getAllTickers = () => {
+  return StockService.getTickersFromResources();
+};
+
 module.exports = {
+  getAllTickers,
   getStock,
 };

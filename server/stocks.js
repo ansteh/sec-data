@@ -37,6 +37,28 @@ const dropCollection = _.curry((collectionName, db) => {
   return db.dropCollection(collectionName);
 });
 
+const findAllTickers = (db) => {
+  const collection = db.collection('stocks');
+
+  return new Promise((resolve, reject) => {
+    collection.find({}, { projection: { _id: 1, ticker: 1 } })
+      .toArray((err, stocks) => {
+        if(err) {
+          reject(err);
+        } else {
+          resolve(stocks);
+        }
+      });
+  });
+};
+
+const findByTicker = _.curry((ticker, db) => {
+  return db.collection('stocks').findOne(
+    { ticker },
+    { projection: { _id: 1 }, limit: 1 },
+  );
+});
+
 const findStocks = _.curry((clauses, db) => {
   const collection = db.collection('stocks');
 
@@ -56,9 +78,9 @@ const insertStocks = _.curry((stocks, db) => {
 
   return collection.insertMany(stocks)
     .then((result) => {
-      assert.equal(2, result.result.n);
-      assert.equal(2, result.ops.length);
-      console.log("Inserted 2 documents into the collection");
+      // assert.equal(2, result.result.n);
+      // assert.equal(2, result.ops.length);
+      // console.log("Inserted 2 documents into the collection");
 
       return result;
     });
@@ -76,10 +98,10 @@ const updateStock = _.curry((stock, db) => {
     });
 });
 
-const getHistoricals = _.curry((range, db) => {
+const getHistoricals = _.curry(({ ticker, range }, db) => {
   const collection = db.collection('stocks');
   const pipeline = [
-    { $match: { ticker: 'AAPL' } },
+    { $match: { ticker } },
     // { $unwind: '$historicals' },
     // { $project: {_id : 0, ticker: 1, historicals: 1 } },
     {
@@ -110,6 +132,12 @@ const getHistoricals = _.curry((range, db) => {
 module.exports = {
   dropCollection: () => {
     return execute(dropCollection('stocks'));
+  },
+  findAllTickers: () => {
+    return execute(findAllTickers)
+  },
+  findByTicker: (ticker) => {
+    return execute(findByTicker(ticker))
   },
   findStocks: (stocks) => {
     return execute(findStocks(stocks));
