@@ -130,6 +130,7 @@ const getHistoricals = _.curry(({ ticker, range }, db) => {
 });
 
 module.exports = {
+  execute,
   dropCollection: () => {
     return execute(dropCollection('stocks'));
   },

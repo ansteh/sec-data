@@ -62,6 +62,6 @@ module.exports = {
 //   .then(console.log)
 //   .catch(console.log);
 
-addUser(config.client)
-  .then(console.log)
-  .catch(console.log);
+// addUser(config.client)
+//   .then(console.log)
+//   .catch(console.log);

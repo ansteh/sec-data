@@ -10,34 +10,12 @@ const {
   getHistoricals,
   insertStocks,
   updateStock,
-} = require('./stocks.js');
-
-const stocks = [
-  { ticker: 'AAPL' },
-  { ticker: 'GM' },
-];
-
-// insertStocks(stocks)
-//   .then(console.log)
-//   .catch(console.log);
-
-// findStocks({})
-//   .then(stocks => console.log(_.get(_.first(stocks), 'historicals')))
-//   .catch(console.log);
-
-getHistoricals({ ticker: 'GM', range: { start: '2012-01-02T23:00:00.000Z'} })
-  .then(_.first)
-  .then(console.log)
-  .catch(console.log);
+} = require('../stocks.js');
 
 const updateStockResourcesBy = (ticker) => {
   return Resources.getStock(ticker)
     .then(updateStock)
 };
-
-// updateStockResourcesBy('GM')
-//   .then(console.log)
-//   .catch(console.log);
 
 const insertStocksByResources = () => {
   return Promise
@@ -65,14 +43,6 @@ const insertStocksByResources = () => {
     // })
 };
 
-// insertStocksByResources()
-//   .then(() => { console.log(`Insertions finished!`) })
-//   .catch(console.log);
-
-// findAllTickers()
-//   .then(console.log)
-//   .catch(console.log);
-
 const updateNextStockByTickers = (tickers) => {
   const ticker = _.head(tickers);
 
@@ -90,6 +60,31 @@ const updateAllStocksByResources = () => {
       return updateNextStockByTickers(tickers);
     })
 };
+
+const stocks = [
+  { ticker: 'AAPL' },
+  { ticker: 'GM' },
+];
+
+// insertStocks(stocks)
+//   .then(console.log)
+//   .catch(console.log);
+
+// findStocks({})
+//   .then(stocks => console.log(_.get(_.first(stocks), 'historicals')))
+//   .catch(console.log);
+
+// updateStockResourcesBy('GM')
+//   .then(console.log)
+//   .catch(console.log);
+
+// insertStocksByResources()
+//   .then(() => { console.log(`Insertions finished!`) })
+//   .catch(console.log);
+
+// findAllTickers()
+//   .then(console.log)
+//   .catch(console.log);
 
 // updateAllStocksByResources()
 //   .then(() => { console.log(`All stocks have been updated!`) })
