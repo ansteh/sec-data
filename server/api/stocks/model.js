@@ -37,9 +37,39 @@ const getResourcesByTicker = (db) => {
     })
 };
 
+const filter = _.curry(({ find, options }, db) => {
+  return new Promise((resolve, reject) => {
+    db.collection('stocks').find(find, options).toArray((err, stocks) => {
+      if(err) {
+        reject(err);
+      } else {
+        resolve(stocks);
+      }
+    });
+  });
+});
+
+const aggregate = _.curry(({ pipeline, options }, db) => {
+  return new Promise((resolve, reject) => {
+    db.collection('stocks').aggregate(pipeline, options).toArray((err, stocks) => {
+      if(err) {
+        reject(err);
+      } else {
+        resolve(stocks);
+      }
+    });
+  });
+});
+
 module.exports = {
+  aggregate: (options) => {
+    return Stocks.execute(aggregate(options));
+  },
   getResources: () => {
     return Stocks.execute(getResources);
+  },
+  filter: (options) => {
+    return Stocks.execute(filter(options));
   },
   getResourcesByTicker: () => {
     return Stocks.execute(getResourcesByTicker);
