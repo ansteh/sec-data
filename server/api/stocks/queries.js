@@ -63,7 +63,7 @@ const aggregateBy = (path, { ticker, start, end }) => {
   const pipeline = [
     { $match: ticker ? { ticker } : {} },
     _.merge({}, projection, mapEndDates(path)),
-    // _.merge({}, projection, filterEntryByDate(path, start, end)),
+    _.merge({}, projection, filterEntryByDate(path, start, end)),
     _.merge({}, projection, createProjection(path)),
   ];
 
