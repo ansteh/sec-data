@@ -1,6 +1,46 @@
 const _      = require('lodash');
 const moment = require('moment')
 
+const aggregateBy = (path, { ticker, date }) => {
+  const end = moment(date).startOf('day').add(1, 'days');
+  const start = moment(end).subtract(1, 'year');
+
+  // console.log(start.toDate(), end.toDate());
+
+  const pipeline = [
+    { $match: ticker ? { ticker } : {} },
+    {
+      $project: {
+        ticker: 1,
+        'summary.annual.DerivedDCF_IntrinsicValue': {
+          $map: {
+             input: '$summary.annual.DerivedDCF_IntrinsicValue',
+             as: 'parameter',
+             in: {
+               value: '$$parameter.value',
+               endDate: {
+                 $dateFromString: {
+                   dateString: '$$parameter.endDate',
+                 }
+               }
+             }
+          }
+        }
+      }
+    },
+    {
+      $project: {
+        ticker: 1,
+        'summary.annual.DerivedDCF_IntrinsicValue': {
+          $slice: ['$summary.annual.DerivedDCF_IntrinsicValue', -1],
+        }
+      }
+    },
+  ];
+
+  return { pipeline };
+};
+
 const aggregateBy__DerivedDCF_IntrinsicValue = ({ ticker, date }) => {
   const end = moment(date).startOf('day').add(1, 'days');
   const start = moment(end).subtract(1, 'year');
