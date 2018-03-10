@@ -37,6 +37,18 @@ const testAggregate = Filters.batch(
 );
 // console.log(JSON.stringify(testAggregate, null, 2));
 
+// const { pipeline } = testAggregate;
+// pipeline.push({
+//   $project: {
+//     ticker: 1,
+//     // historicals: 1,
+//     // 'summary.annual.DerivedDCF_IntrinsicValue': 1,
+//     DerivedDCF_IntrinsicValue: { $arrayElemAt: [ "$summary.annual.DerivedDCF_IntrinsicValue", -1 ] },
+//     historical: { $arrayElemAt: [ "$historicals", -1 ] },
+//     // total: { $add: [ "$historicals.close", "$summary.annual.DerivedDCF_IntrinsicValue.value" ] }
+//   }
+// });
+
 Stocks.aggregate(testAggregate)
   .then(result => JSON.stringify(result, null, 2))
   .then(console.log)
