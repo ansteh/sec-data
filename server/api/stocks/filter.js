@@ -1,13 +1,30 @@
 const _      = require('lodash');
 const moment = require('moment');
 
-const Queries = require('./queries.js');
+const { aggregate, Historicals, Summary } = require('../../modules/queries');
+
+const aggregateHistoricalBy = (options) => {
+  const date = _.get(options, 'date');
+  const end = moment(date).startOf('day').add(1, 'days');
+  const start = moment(end).subtract(8, 'days');
+
+  const params = {
+    start: start.toDate(),
+    end: end.toDate()
+  };
+
+  if(_.has(options, 'ticker')) {
+    params.ticker = options.ticker;
+  }
+
+  return Historicals.aggregateBy(params);
+};
 
 const aggregateBy = (path, { ticker, date }) => {
   const end = moment(date).startOf('day').add(1, 'days');
   const start = moment(end).subtract(1, 'year');
 
-  return Queries.aggregateBy(path, {
+  return Summary.aggregateBy(path, {
     ticker,
     start: start.toDate(),
     end: end.toDate()
@@ -39,7 +56,11 @@ const filterBy__DerivedDCF_IntrinsicValue = ({ ticker, date }) => {
 };
 
 module.exports = {
+  batch: (...args) => {
+    return aggregate(...args);
+  },
   aggregateBy,
+  aggregateHistoricalBy,
   aggregateBy__DerivedDCF_IntrinsicValue,
   filterBy__DerivedDCF_IntrinsicValue,
 };
