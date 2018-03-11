@@ -2,12 +2,6 @@ const _       = require('lodash');
 const Stocks  = require('./model.js');
 const Filters = require('./filter.js');
 
-// const {
-//   aggregateHistoricalBy,
-//   aggregateBy__DerivedDCF_IntrinsicValue,
-//   filterBy__DerivedDCF_IntrinsicValue,
-// } = require('./filter.js');
-
 module.exports = {
   getResources: Stocks.getResources,
   getResourcesByTicker: Stocks.getResourcesByTicker,
@@ -36,7 +30,7 @@ const testAggregate = Filters.batch(
   { ticker: 'AAPL', date: '2018-01-11' }
 );
 // console.log(JSON.stringify(testAggregate, null, 2));
-
+//
 // const { pipeline } = testAggregate;
 // pipeline.push({
 //   $project: {

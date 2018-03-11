@@ -1,5 +1,6 @@
 const _      = require('lodash');
 const moment = require('moment');
+const Query  = require('./query.js');
 
 const parseHistoricalDateFromString = () => {
   const target = `historicals`;
@@ -24,38 +25,9 @@ const parseHistoricalDateFromString = () => {
   return { $project: body };
 };
 
-const filterHistoricalEntries = (start, end) => {
-  const target = `historicals`;
-
-  const body = {};
-
-  body[target] = {
-    $filter: {
-      input: `$${target}`,
-      as: 'parameter',
-      cond: {
-        $and: [
-          { "$gte": ['$$parameter.date', start] },
-          { "$lte": ['$$parameter.date', end] },
-        ]
-      }
-    }
-  };
-
-  return { $project: body };
-};
-
-const createHistoricalProjection = () => {
-  const target = `historicals`;
-
-  const body = {};
-
-  body[target] = {
-    $slice: [`$${target}`, -1],
-  };
-
-  return { $project: body };
-};
+const filterEntries = Query.filterEntriesByRange('historicals', 'date');
+const projectSlice = Query.projectSlice('historicals');
+const projectLatest = Query.projectLatest('historicals');
 
 const aggregateBy = (options) => {
   const ticker = _.get(options, 'ticker');
@@ -66,9 +38,9 @@ const aggregateBy = (options) => {
 
   const pipeline = [
     { $match: ticker ? { ticker } : {} },
-    _.merge({}, projection, parseHistoricalDateFromString()),
-    _.merge({}, projection, filterHistoricalEntries(start, end)),
-    _.merge({}, projection, createHistoricalProjection()),
+    // _.merge({}, projection, parseHistoricalDateFromString()),
+    _.merge({}, projection, filterEntries(start, end)),
+    _.merge({}, projection, projectLatest),
   ];
 
   return { pipeline };

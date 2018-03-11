@@ -1,6 +1,7 @@
 const _         = require('lodash');
-const Resources = require('./stock.resources.js');
 const Promise   = require('bluebird');
+
+const Resources = require('../stock.resources.js');
 
 const {
   dropCollection,
@@ -61,10 +62,10 @@ const updateAllStocksByResources = () => {
     })
 };
 
-const stocks = [
-  { ticker: 'AAPL' },
-  { ticker: 'GM' },
-];
+// const stocks = [
+//   { ticker: 'AAPL' },
+//   { ticker: 'GM' },
+// ];
 
 // insertStocks(stocks)
 //   .then(console.log)
@@ -74,7 +75,7 @@ const stocks = [
 //   .then(stocks => console.log(_.get(_.first(stocks), 'historicals')))
 //   .catch(console.log);
 
-// updateStockResourcesBy('GM')
+// updateStockResourcesBy('AAPL')
 //   .then(console.log)
 //   .catch(console.log);
 

@@ -1,5 +1,6 @@
 const _      = require('lodash');
 const moment = require('moment');
+const Query  = require('./query.js');
 
 const mapEndDates = (path) => {
   const target = `summary.${path}`;
@@ -26,52 +27,34 @@ const mapEndDates = (path) => {
 
 const filterEntryByDate = (path, start, end) => {
   const target = `summary.${path}`;
-
-  const body = {};
-
-  body[target] = {
-    $filter: {
-      input: `$${target}`,
-      as: 'parameter',
-      cond: {
-        $and: [
-          { "$gte": ['$$parameter.endDate', start] },
-          { "$lte": ['$$parameter.endDate', end] },
-        ]
-      }
-    }
-  };
-
-  return { $project: body };
+  return Query.filterEntriesByRange(target, 'endDate', start, end);
 };
 
-const createProjection = (path) => {
+const projectSlice = (path) => {
   const target = `summary.${path}`;
-
-  const body = {};
-
-  body[target] = {
-    $slice: [`$${target}`, -1],
-  };
-
-  return { $project: body };
+  return Query.projectSlice(target);
 };
+
+const projectLatest = (path) => {
+  const target = `summary.${path}`;
+  return Query.projectLatest(target);
+};
+
 
 const aggregateBy = (path, { ticker, start, end }) => {
   const projection = { $project: { ticker: 1 } };
 
   const pipeline = [
     { $match: ticker ? { ticker } : {} },
-    _.merge({}, projection, mapEndDates(path)),
+    // _.merge({}, projection, mapEndDates(path)),
     _.merge({}, projection, filterEntryByDate(path, start, end)),
-    _.merge({}, projection, createProjection(path)),
+    _.merge({}, projection, projectLatest(path)),
   ];
 
   return { pipeline };
 };
 
 module.exports = {
-  createProjection,
   mapEndDates,
   filterEntryByDate,
   aggregateBy,
