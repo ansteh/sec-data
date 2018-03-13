@@ -16,4 +16,15 @@ router.get('/resources/stocks', (req, res) => {
     });
 });
 
+router.get('/share-market/:date', (req, res) => {
+  Stocks.filter(req.params.date)
+    .then((candidates) => {
+      res.json(candidates);
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).send();
+    });
+});
+
 module.exports = router;
