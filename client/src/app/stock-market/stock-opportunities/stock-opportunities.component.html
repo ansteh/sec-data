@@ -1,6 +1,6 @@
 <div class="example-container mat-elevation-z8">
   <mat-table #table [dataSource]="dataSource">
-    <ng-container matColumnDef="{{ column }}" *ngFor="let column of stockMarket.columns">
+    <ng-container matColumnDef="{{ column }}" *ngFor="let column of columnsSource">
       <mat-header-cell *matHeaderCellDef style="text-align: right;"> {{ column }} </mat-header-cell>
       <mat-cell *matCellDef="let row"
                 [style.color]="getStyleColor(column, row)"

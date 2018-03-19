@@ -18,6 +18,7 @@ export class StockOpportunitiesComponent implements OnInit, OnDestroy {
   public date: Date;
   public opportunities: any[];
 
+  public columnsSource: any[];
   public displayedColumns = [];
   public dataSource: OpportunitiesDataSource;
 
@@ -25,6 +26,7 @@ export class StockOpportunitiesComponent implements OnInit, OnDestroy {
               private stockMarket: StockMarketService) { }
 
   ngOnInit() {
+    this.columnsSource = this.stockMarket.columns;
     this.dataSource = this.stockMarket.dataSource;
 
     this.routeParamsSub = this.route.params.subscribe((params) => {
