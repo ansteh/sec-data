@@ -15,6 +15,6 @@ app.use('/', express.static(path.join(__dirname, '../dist')));
 
 const server = require('http').Server(app);
 
-server.listen(4200, () => {
-  console.log('listening on *:4200');
+server.listen(4202, () => {
+  console.log('listening on *:4202');
 });
