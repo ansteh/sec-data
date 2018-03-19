@@ -11,7 +11,9 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use('/', express.static(path.join(__dirname, '../dist')));
+app.all('/*', (req, res, next) => {
+  res.sendFile('index.html', { root: path.join(__dirname, '../dist') });
+});
 
 const server = require('http').Server(app);
 
