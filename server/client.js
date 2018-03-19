@@ -11,8 +11,12 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.all('/*', (req, res, next) => {
-  res.sendFile('index.html', { root: path.join(__dirname, '../dist') });
+app.use('/', express.static(path.join(__dirname, '../dist')));
+
+['stocks', 'stock/*', 'stock-market/*'].map((endpoint) => {
+  app.all(`/${endpoint}`, (req, res, next) => {
+    res.sendFile('index.html', { root: path.join(__dirname, '../dist') });
+  });
 });
 
 const server = require('http').Server(app);
