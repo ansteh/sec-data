@@ -11,11 +11,10 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use(require('./api/stocks'));
-app.use(require('./api/stock'));
+app.use('/', express.static(path.join(__dirname, '../dist')));
 
 const server = require('http').Server(app);
 
-server.listen(4201, () => {
-  console.log('listening on *:4201');
+server.listen(4200, () => {
+  console.log('listening on *:4200');
 });
