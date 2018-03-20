@@ -1,6 +1,6 @@
 const _      = require('lodash');
 const moment = require('moment');
-const Query  = require('./query.js');
+const Query  = require('./query');
 
 const parseHistoricalDateFromString = () => {
   const target = `historicals`;
