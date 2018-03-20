@@ -40,6 +40,10 @@ const projectLatest = (path) => {
   return Query.projectLatest(target);
 };
 
+const projectTarget = (path) => {
+  const target = `summary.${path}`;
+  return Query.projectTarget(target);
+};
 
 const aggregateBy = (path, { ticker, start, end }) => {
   const projection = { $project: { ticker: 1 } };
@@ -49,6 +53,7 @@ const aggregateBy = (path, { ticker, start, end }) => {
     // _.merge({}, projection, mapEndDates(path)),
     _.merge({}, projection, filterEntryByDate(path, start, end)),
     _.merge({}, projection, projectLatest(path)),
+    _.merge({}, projection, projectTarget(path)),
   ];
 
   return { pipeline };

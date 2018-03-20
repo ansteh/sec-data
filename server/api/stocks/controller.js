@@ -98,3 +98,17 @@ module.exports = {
 //   .then(result => JSON.stringify(result, null, 2))
 //   .then(console.log)
 //   .catch(console.log)
+
+// const testAggregate = Filters.batch(
+//   [
+//     { path: 'annual.DerivedBookValuePerShare' },
+//     { path: 'quarterly.FundamentalAccountingConcepts.ROE' },
+//     // { path: 'quarterly.FundamentalAccountingConcepts.ROA' },
+//   ],
+//   { date: '2018-01-11', ticker: 'FL' }
+// );
+//
+// Stocks.aggregate(testAggregate)
+//   .then(result => JSON.stringify(result, null, 2))
+//   .then(console.log)
+//   .catch(console.log)
