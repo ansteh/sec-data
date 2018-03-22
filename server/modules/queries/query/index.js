@@ -49,6 +49,10 @@ const projectSlice = (target) => {
 };
 
 const projectTarget = (target) => {
+  if(_.includes(target, 'FundamentalAccountingConcepts')) {
+    return Fundamentals.projectTarget(target);
+  }
+
   const body = {
     historicals: 1,
   };

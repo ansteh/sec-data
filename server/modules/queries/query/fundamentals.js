@@ -42,8 +42,24 @@ const projectLatest = (target) => {
   return { $project: body };
 };
 
+const projectTarget = (target) => {
+  const body = {
+    historicals: 1,
+  };
+
+  const { source } = extractTargets(target);
+
+  body[target] = {
+    value: `$${target}`,
+    endDate: `$${source}.DocumentPeriodEndDate`
+  };
+
+  return { $project: body };
+};
+
 module.exports = {
   extractTargets,
   filterEntriesByRange,
   projectLatest,
+  projectTarget,
 };

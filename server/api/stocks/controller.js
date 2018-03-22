@@ -15,7 +15,7 @@ const prepare = (results) => {
     .value();
 };
 
-const filter = (date = '2018-01-11') => {
+const filter = (options) => {
   // const DerivedTrailingTwelveMonthsEarningsPerShareDiluted
   const paths = {
     intrinsicValue: 'annual.DerivedDCF_IntrinsicValue_MAX_GROWTH_RATE_20_BY_MEAN',
@@ -31,7 +31,7 @@ const filter = (date = '2018-01-11') => {
       // { path: 'quarterly.FundamentalAccountingConcepts.ROE' },
       // { path: 'quarterly.FundamentalAccountingConcepts.ROA' },
     ],
-    { date }
+    options
   );
   // console.log(JSON.stringify(testAggregate, null, 2));
 
@@ -70,9 +70,6 @@ const filter = (date = '2018-01-11') => {
 
   return Stocks.aggregate(testAggregate)
     .then(prepare)
-    // .then(result => JSON.stringify(result, null, 2))
-    // .then(console.log)
-    // .catch(console.log)
 };
 
 module.exports = {
@@ -101,7 +98,8 @@ module.exports = {
 
 // const testAggregate = Filters.batch(
 //   [
-//     { path: 'annual.DerivedBookValuePerShare' },
+//     { path: 'annual.DerivedDCF_IntrinsicValue_MAX_GROWTH_RATE_20_BY_MEAN', valuation: { type: 'margin' } },
+//     { path: 'annual.DerivedBookValuePerShare', valuation: { type: 'closePricePer' } },
 //     { path: 'quarterly.FundamentalAccountingConcepts.ROE' },
 //     // { path: 'quarterly.FundamentalAccountingConcepts.ROA' },
 //   ],
@@ -109,6 +107,11 @@ module.exports = {
 // );
 //
 // Stocks.aggregate(testAggregate)
+//   .then(result => JSON.stringify(result, null, 2))
+//   .then(console.log)
+//   .catch(console.log)
+
+// filter({ date: '2018-01-11', ticker: 'FL' })
 //   .then(result => JSON.stringify(result, null, 2))
 //   .then(console.log)
 //   .catch(console.log)

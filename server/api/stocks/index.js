@@ -17,7 +17,7 @@ router.get('/resources/stocks', (req, res) => {
 });
 
 router.get('/share-market/:date', (req, res) => {
-  Stocks.filter(req.params.date)
+  Stocks.filter({ date: req.params.date })
     .then((candidates) => {
       res.json(candidates);
     })
