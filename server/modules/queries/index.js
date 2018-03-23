@@ -2,8 +2,21 @@ const _      = require('lodash');
 const moment = require('moment');
 
 const Historicals = require('./historicals.js');
+const Query = require('./query');
 const Summary = require('./summary.js');
 const Valuations = require('./valuations');
+
+const projectValuations = (clauses) => {
+  const valuables = _.filter(clauses, clause => _.has(clause, 'valuation'));
+  return _.map(valuables, Valuations.aggregateBy);
+};
+
+const projectFilters = (clauses) => {
+  const filterables = _.filter(clauses, clause => _.has(clause, 'filter'));
+  return _.map(filterables, ({ path, filter }) => {
+    return Query.filter(`summary.${path}`, filter);
+  });
+};
 
 const aggregate = (clauses, params) => {
   const { date } = params;
@@ -26,13 +39,16 @@ const aggregate = (clauses, params) => {
 
   const aggregation = _.merge({}, ...summaries, historical);
 
-  const valuables = _.filter(clauses, clause => _.has(clause, 'valuation'));
-  if(valuables.length > 0) {
-    const valuations = _.map(valuables, Valuations.aggregateBy);
-    // console.log(JSON.stringify(valuations, null, 2));
-
+  const valuations = projectValuations(clauses);
+  if(valuations.length > 0) {
     aggregation.pipeline.push(_.merge({}, ...valuations));
   }
+
+  // const filters = projectFilters(clauses);
+  // if(filters.length > 0) {
+  //   aggregation.pipeline.push(_.merge({}, ...filters));
+  // }
+  // console.log(JSON.stringify(aggregation, null, 2));
 
   return aggregation;
 };

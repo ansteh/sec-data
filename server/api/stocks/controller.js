@@ -98,12 +98,21 @@ module.exports = {
 
 // const testAggregate = Filters.batch(
 //   [
-//     { path: 'annual.DerivedDCF_IntrinsicValue_MAX_GROWTH_RATE_20_BY_MEAN', valuation: { type: 'margin' } },
-//     { path: 'annual.DerivedBookValuePerShare', valuation: { type: 'closePricePer' } },
+//     {
+//       path: 'annual.DerivedDCF_IntrinsicValue_MAX_GROWTH_RATE_20_BY_MEAN',
+//       valuation: { type: 'margin' },
+//       filter: { $gte: 0 },
+//     },
+//     {
+//       path: 'annual.DerivedBookValuePerShare',
+//       valuation: { type: 'closePricePer' },
+//       // filter: { $gte: 0, $lte: 15 },
+//     },
 //     { path: 'quarterly.FundamentalAccountingConcepts.ROE' },
 //     // { path: 'quarterly.FundamentalAccountingConcepts.ROA' },
 //   ],
-//   { date: '2018-01-11', ticker: 'FL' }
+//   { date: '2018-01-11' }
+//   // { date: '2018-01-11', ticker: 'FL' }
 // );
 //
 // Stocks.aggregate(testAggregate)

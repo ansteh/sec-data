@@ -62,8 +62,38 @@ const projectTarget = (target) => {
   return { $project: body };
 };
 
+const filter = _.curry((target, conditions) => {
+  const body = {};
+
+  // body[target] = {
+  //   $filter: {
+  //     input: `$${target}`,
+  //     as: 'parameter',
+  //     cond: {
+  //       $and: _.map(conditions, (value, operator) => {
+  //         return _.set({}, operator, [`$$parameter.value`, value]);
+  //       })
+  //     }
+  //   }
+  // };
+
+  // body[target] = {
+  //   $and: _.map(conditions, (value, operator) => {
+  //     return _.set({}, operator, [target, value]);
+  //   })
+  // };
+
+  _.forEach(conditions, (value, operator) => {
+    const condition = _.set({}, operator, value);
+    _.set(body, `${target}.value`, condition);
+  });
+
+  return { $match: body };
+});
+
 module.exports = {
   extractTargets: Fundamentals.extractTargets,
+  filter,
   filterEntriesByRange,
   projectLatest,
   projectSlice,
