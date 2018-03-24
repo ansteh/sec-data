@@ -101,12 +101,12 @@ module.exports = {
 //     {
 //       path: 'annual.DerivedDCF_IntrinsicValue_MAX_GROWTH_RATE_20_BY_MEAN',
 //       valuation: { type: 'margin' },
-//       filter: { $gte: 0 },
+//       filter: { $gt: 0 },
 //     },
 //     {
 //       path: 'annual.DerivedBookValuePerShare',
 //       valuation: { type: 'closePricePer' },
-//       // filter: { $gte: 0, $lte: 15 },
+//       // filter: { $gte: 0, $lte: 2 },
 //     },
 //     { path: 'quarterly.FundamentalAccountingConcepts.ROE' },
 //     // { path: 'quarterly.FundamentalAccountingConcepts.ROA' },
@@ -119,6 +119,7 @@ module.exports = {
 //   .then(result => JSON.stringify(result, null, 2))
 //   .then(console.log)
 //   .catch(console.log)
+
 
 // filter({ date: '2018-01-11', ticker: 'FL' })
 //   .then(result => JSON.stringify(result, null, 2))

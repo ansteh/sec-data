@@ -65,27 +65,9 @@ const projectTarget = (target) => {
 const filter = _.curry((target, conditions) => {
   const body = {};
 
-  // body[target] = {
-  //   $filter: {
-  //     input: `$${target}`,
-  //     as: 'parameter',
-  //     cond: {
-  //       $and: _.map(conditions, (value, operator) => {
-  //         return _.set({}, operator, [`$$parameter.value`, value]);
-  //       })
-  //     }
-  //   }
-  // };
-
-  // body[target] = {
-  //   $and: _.map(conditions, (value, operator) => {
-  //     return _.set({}, operator, [target, value]);
-  //   })
-  // };
-
   _.forEach(conditions, (value, operator) => {
     const condition = _.set({}, operator, value);
-    _.set(body, `${target}.value`, condition);
+    body[target] = condition;
   });
 
   return { $match: body };

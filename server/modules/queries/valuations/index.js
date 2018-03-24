@@ -18,6 +18,15 @@ const closePricePer = (path) => {
   }
 };
 
+const isClause = (clause) => {
+  return _.has(clause, 'valuation');
+};
+
+const getTarget = (clause) => {
+  const type = _.get(clause, 'valuation.type');
+  return `valuations.${type}.${clause.path}`;
+};
+
 const METHODS = {
   margin: margin,
   closePricePer: closePricePer,
@@ -41,6 +50,8 @@ const aggregateBy = (clause) => {
 
 module.exports = {
   aggregateBy,
+  getTarget,
+  isClause,
   margin,
   closePricePer,
 };
