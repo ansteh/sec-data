@@ -36,33 +36,69 @@ const filter = (options) => {
   // console.log(JSON.stringify(testAggregate, null, 2));
 
   const { pipeline } = testAggregate;
+
   pipeline.push({
     $project: {
       ticker: 1,
       historicals: 1,
       summary: 1,
       margin: {
-        $divide: [
-          { $subtract: [ `$summary.${paths.intrinsicValue}.value`, "$historicals.close" ] },
-          `$summary.${paths.intrinsicValue}.value`
+        $cond: [
+          {
+            $or: [
+              { $eq: [ `$summary.${paths.intrinsicValue}.value`, null ] },
+              { $eq: [ `$summary.${paths.intrinsicValue}.value`, 0 ] }
+            ]
+          },
+          "N/A",
+          {
+            $divide: [
+              { $subtract: [ `$summary.${paths.intrinsicValue}.value`, "$historicals.close" ] },
+              `$summary.${paths.intrinsicValue}.value`
+            ]
+          }
         ]
       },
       PE: {
-        $divide: [
-          "$historicals.close",
-          `$summary.${paths.earnings}.value`,
+        $cond: [
+          {
+            $or: [
+              { $eq: [ `$summary.${paths.earnings}.value`, null ] },
+              { $eq: [ `$summary.${paths.earnings}.value`, 0 ] }
+            ]
+          },
+          "N/A",
+          {
+            $divide: [
+              "$historicals.close",
+              `$summary.${paths.earnings}.value`,
+            ]
+          }
         ]
       },
       PB: {
-        $divide: [
-          "$historicals.close",
-          `$summary.${paths.bookValue}.value`,
+        $cond: [
+          {
+            $or: [
+              { $eq: [ `$summary.${paths.bookValue}.value`, null ] },
+              { $eq: [ `$summary.${paths.bookValue}.value`, 0 ] }
+            ]
+          },
+          "N/A",
+          {
+            $divide: [
+              "$historicals.close",
+              `$summary.${paths.bookValue}.value`,
+            ]
+          }
         ]
       },
       // ROE: '$summary.FundamentalAccountingConcepts.ROE.value',
       // ROA: '$summary.FundamentalAccountingConcepts.ROA.value',
     }
-  }, {
+  });
+
+  pipeline.push({
     $match: {
       margin: { $ne : null }
     }
