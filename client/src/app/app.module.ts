@@ -24,6 +24,7 @@ import { StocksService } from './stocks/stocks.service';
 import { StockService } from './stock/stock.service';
 import { StockMetricsTreeService } from './stock/stock-metrics-tree/stock-metrics-tree.service';
 import { StockMarketService } from './stock-market/stock-market.service';
+import { CandidatesService } from './candidates/candidates.service';
 
 import { appRoutes } from './app.routes';
 import { StockComponent } from './stock/stock.component';
@@ -33,6 +34,7 @@ import { StockMetricsTreeComponent } from './stock/stock-metrics-tree/stock-metr
 import { StockPricesChartComponent } from './stock/stock-prices-chart/stock-prices-chart.component';
 import { StockMarketComponent } from './stock-market/stock-market.component';
 import { StockOpportunitiesComponent } from './stock-market/stock-opportunities/stock-opportunities.component';
+import { CandidatesComponent } from './candidates/candidates.component';
 
 @NgModule({
   declarations: [
@@ -46,7 +48,8 @@ import { StockOpportunitiesComponent } from './stock-market/stock-opportunities/
     StockMetricsTreeComponent,
     StockPricesChartComponent,
     StockMarketComponent,
-    StockOpportunitiesComponent
+    StockOpportunitiesComponent,
+    CandidatesComponent
   ],
   imports: [
     BrowserModule,
@@ -70,6 +73,7 @@ import { StockOpportunitiesComponent } from './stock-market/stock-opportunities/
     ChartsModule,
   ],
   providers: [
+    CandidatesService,
     StockMetricsTreeService,
     StockMarketService,
     StockService,

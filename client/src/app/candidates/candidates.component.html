@@ -1,0 +1,19 @@
+<div *ngFor="let stock of stocks">
+  <form *ngIf="!(stock?.saved)" #form="ngForm" class="stock-form">
+    <mat-form-field class="stock-field">
+      <input matInput [(ngModel)]="stock.name" name="name" placeholder="Name" required disabled>
+    </mat-form-field>
+
+    <mat-form-field class="stock-field">
+      <input matInput [(ngModel)]="stock.cik" name="cik" placeholder="cik" required disabled>
+    </mat-form-field>
+
+    <mat-form-field class="stock-field">
+      <input matInput [(ngModel)]="stock.ticker" name="ticker" placeholder="Ticker" required>
+    </mat-form-field>
+
+    <!-- <div> -->
+      <button mat-raised-button color="primary" (click)="update(stock)" [disabled]="form.invalid">update</button>
+    <!-- </div> -->
+  </form>
+</div>

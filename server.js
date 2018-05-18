@@ -19,6 +19,8 @@ const ShareMarket   = require('./lib/share-market/');
 const MarketModels  = require('./lib/share-market/model');
 const Filters       = require('./lib/share-market/filters.js');
 
+const Candidates    = require('./lib/industries/stock/candidates.js');
+
 const Promise = require('bluebird');
 
 const cache = {};
@@ -56,19 +58,19 @@ const getStocksFromResources = () => {
   }
 };
 
-app.get('/share-market/:date', (req, res) => {
-  getShareMarket()
-    .then((marketTimeline) => {
-      return marketTimeline.filterBy(Filters.filterCandidates, req.params.date);
-    })
-    .then((candidates) => {
-      res.json(candidates);
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).send();
-    });
-});
+// app.get('/share-market/:date', (req, res) => {
+//   getShareMarket()
+//     .then((marketTimeline) => {
+//       return marketTimeline.filterBy(Filters.filterCandidates, req.params.date);
+//     })
+//     .then((candidates) => {
+//       res.json(candidates);
+//     })
+//     .catch((err) => {
+//       console.log(err);
+//       res.status(500).send();
+//     });
+// });
 
 app.get('/stock/fundamental-accounting-concepts/:ticker/:formType', (req, res) => {
   Summarizer.getFundamentalsByTicker(req.params.ticker, req.params.formType)
@@ -177,6 +179,33 @@ app.get('/resources/stock/:ticker/historical-prices', (req, res) => {
   PricesService.get(ticker)
     .then((data) => {
       res.json(data);
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).send();
+    });
+});
+
+app.get('/candidates', (req, res) => {
+  Candidates.findAllCandidatesWithoutTicker()
+    .then((candidates) => {
+      return _.map(candidates, (stock) => {
+        return _.pick(stock, ['cik', 'name', 'sic', 'location', 'forms']);
+      });
+    })
+    .then((candidates) => {
+      res.json(candidates);
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).send();
+    });
+});
+
+app.put('/candidates', (req, res) => {
+  Candidates.updateStock(req.body)
+    .then((stock) => {
+      res.json(req.body);
     })
     .catch((err) => {
       console.log(err);

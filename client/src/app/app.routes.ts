@@ -5,6 +5,7 @@ import { StocksComponent } from './stocks/stocks.component';
 import { StockComponent } from './stock/stock.component';
 import { StockMarketComponent } from './stock-market/stock-market.component';
 import { StockOpportunitiesComponent } from './stock-market/stock-opportunities/stock-opportunities.component';
+import { CandidatesComponent } from './candidates/candidates.component';
 
 export const appRoutes: Routes = [
   {
@@ -30,6 +31,10 @@ export const appRoutes: Routes = [
     children: [
       { path: 'opportunities/:date', component: StockOpportunitiesComponent },
     ]
+  },
+  {
+    path: 'candidates',
+    component: CandidatesComponent
   },
   //{ path: '**', component: PageNotFoundComponent },
 ];
