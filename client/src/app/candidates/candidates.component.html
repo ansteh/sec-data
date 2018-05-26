@@ -12,8 +12,8 @@
       <input matInput [(ngModel)]="stock.ticker" name="ticker" placeholder="Ticker" required>
     </mat-form-field>
 
-    <!-- <div> -->
-      <button mat-raised-button color="primary" (click)="update(stock)" [disabled]="form.invalid">update</button>
-    <!-- </div> -->
+    <button mat-raised-button color="primary" (click)="update(stock)" [disabled]="form.invalid">update</button>
+    <button mat-raised-button color="primary" (click)="stock.saved = true">hide</button>
+
   </form>
 </div>
