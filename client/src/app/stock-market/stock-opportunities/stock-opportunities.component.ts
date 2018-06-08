@@ -10,7 +10,7 @@ import * as _ from 'lodash';
 @Component({
   selector: 'sec-stock-opportunities',
   templateUrl: './stock-opportunities.component.html',
-  styleUrls: ['./stock-opportunities.component.css']
+  styleUrls: ['./stock-opportunities.component.scss']
 })
 export class StockOpportunitiesComponent implements OnInit, OnDestroy {
   private routeParamsSub: Subscription;

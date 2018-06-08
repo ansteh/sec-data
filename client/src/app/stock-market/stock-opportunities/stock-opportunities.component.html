@@ -8,14 +8,14 @@
                 [ngClass]="{
                   'text-right': isNumber(row.params[column])
                 }">
-        {{ column === 'ticker' ? row.ticker : (row.params[column] | number:'1.2-2') }}
+        {{ column === 'ticker' ? row.ticker : (row.params[column] !== 'N/A' ? (row.params[column] | number:'1.2-2') : 'N/A') }}
       </mat-cell>
     </ng-container>
 
     <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
     <mat-row class="stock-row"
              *matRowDef="let row; columns: displayedColumns;"
-             (click)="null"
+             routerLink="/stock/{{ row.ticker }}"
              [ngClass]="{
                'all-positive': allPositive(row)
              }"></mat-row>
