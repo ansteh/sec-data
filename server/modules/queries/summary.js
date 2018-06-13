@@ -45,11 +45,11 @@ const projectTarget = (path) => {
   return Query.projectTarget(target);
 };
 
-const aggregateBy = (path, { ticker, start, end }) => {
+const aggregateBy = (path, { ticker, tickers, start, end }) => {
   const projection = { $project: { ticker: 1 } };
 
   const pipeline = [
-    { $match: ticker ? { ticker } : {} },
+    matchTicker({ ticker, tickers }),
     // _.merge({}, projection, mapEndDates(path)),
     _.merge({}, projection, filterEntryByDate(path, start, end)),
     _.merge({}, projection, projectLatest(path)),
@@ -57,6 +57,18 @@ const aggregateBy = (path, { ticker, start, end }) => {
   ];
 
   return { pipeline };
+};
+
+const matchTicker = ({ ticker, tickers }) => {
+  if(tickers) {
+    return {
+      $match: {
+        ticker: { $in: tickers }
+      }
+    };
+  }
+
+  return { $match: ticker ? { ticker } : {} };
 };
 
 module.exports = {
