@@ -11,8 +11,9 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use(require('./api/stocks'));
-app.use(require('./api/stock'));
+const apiUrl = '/api';
+app.use(apiUrl, require('./api/stocks'));
+app.use(apiUrl, require('./api/stock'));
 
 const server = require('http').Server(app);
 
