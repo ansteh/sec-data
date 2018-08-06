@@ -1,6 +1,8 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs/Subscription';
+import { Observable } from 'rxjs/Observable';
+import 'rxjs/add/observable/combineLatest';
 
 import { StockMarketService } from '../stock-market.service';
 import { OpportunitiesDataSource } from './stock-opportunities.data-source';
@@ -27,18 +29,29 @@ export class StockOpportunitiesComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.dataSource = this.stockMarket.dataSource;
 
-    this.routeParamsSub = this.route.params.subscribe((params) => {
-      if(params.date){
-        console.log(params.date);
+    this.routeParamsSub = Observable.combineLatest(this.route.params, this.route.queryParams)
+      .subscribe(([params, queryParams]) => {
+        if(params.date) {
+          // console.log(params.date);
+          // console.log(queryParams.portfolio);
 
-        this.stockMarket
-          .getOpportunitiesBy(params.date)
-          .subscribe((opportunities) => {
-            this.displayedColumns = this.stockMarket.columns;
-            this.opportunities = opportunities;
-          });
-      }
-    });
+          if(queryParams.portfolio) {
+            this.stockMarket
+              .getPortfolioBy(params.date)
+              .subscribe((opportunities) => {
+                this.displayedColumns = this.stockMarket.columns;
+                this.opportunities = opportunities;
+              });
+          } else {
+            this.stockMarket
+              .getOpportunitiesBy(params.date)
+              .subscribe((opportunities) => {
+                this.displayedColumns = this.stockMarket.columns;
+                this.opportunities = opportunities;
+              });
+          }
+        }
+      });
   }
 
   ngOnDestroy() {

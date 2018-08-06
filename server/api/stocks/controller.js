@@ -201,8 +201,12 @@ module.exports = {
 //   .then(console.log)
 //   .catch(console.log)
 
-
 // filter({ date: '2018-01-11', ticker: 'FL' })
+//   .then(result => JSON.stringify(result, null, 2))
+//   .then(console.log)
+//   .catch(console.log)
+
+// filter({ date: '2018-01-11', tickers: ['FL', 'GM'] })
 //   .then(result => JSON.stringify(result, null, 2))
 //   .then(console.log)
 //   .catch(console.log)
