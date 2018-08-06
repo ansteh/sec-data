@@ -30,15 +30,6 @@ router.get('/share-market/:date', (req, res) => {
 });
 
 router.get('/share-market/portfolio/:date', (req, res) => {
-  // let tickers;
-  //
-  // try {
-  //   tickers = require('../../../lib/account/importers/degiro/resources/tickers.json');
-  // } catch(err) {
-  //   console.log(err);
-  //   tickers = [];
-  // }
-
   Util.loadFileContent(`${__dirname}/../../../lib/account/importers/degiro/resources/tickers.json`)
     .then(JSON.parse)
     .catch((err) => {
