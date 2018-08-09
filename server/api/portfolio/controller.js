@@ -1,15 +1,40 @@
 const _       = require('lodash');
-const Stocks  = require('./model.js');
-const Filters = require('./filter.js');
+const Stocks  = require('../stocks/model.js');
+const Filters = require('../stocks/filter.js');
+
+const Account = require('../../../lib/account/importers/degiro/index.js');
 
 const { appendValuationsTo } = require('../../modules/valuations');
 
-const filter = (options) => {
+const getBy = (options) => {
+  let tickers;
+
+  return Account.getPortfolio()
+    .then((portfolio) => {
+      const tickers = _
+        .chain(portfolio)
+        .map('ticker')
+        .filter(_.isString)
+        .value();
+
+      return getStocks(_.assign({ tickers }, options))
+        .then((stocks) => {
+          return _.map(portfolio, (position) => {
+            position.stock = _.find(stocks, { ticker: position.ticker });
+            return position;
+          });
+        });
+    })
+};
+
+const getStocks = (options) => {
   // const DerivedTrailingTwelveMonthsEarningsPerShareDiluted
   const paths = {
     intrinsicValue: 'annual.DerivedDCF_IntrinsicValue_MAX_GROWTH_RATE_20_BY_MEAN',
     earnings: 'quarterly.DerivedTrailingTwelveMonthsEarningsPerShareDiluted', //'annual.EarningsPerShareDiluted',
     bookValue: 'annual.DerivedBookValuePerShare',
+    roe: 'annual.FundamentalAccountingConcepts.ROE',
+    roa: 'annual.FundamentalAccountingConcepts.ROA',
   };
 
   const testAggregate = Filters.batch(
@@ -17,8 +42,8 @@ const filter = (options) => {
       { path: paths.intrinsicValue },
       { path: paths.earnings },
       { path: paths.bookValue },
-      // { path: 'quarterly.FundamentalAccountingConcepts.ROE' },
-      // { path: 'quarterly.FundamentalAccountingConcepts.ROA' },
+      { path: paths.roe },
+      { path: paths.roa },
     ],
     options
   );
@@ -28,14 +53,14 @@ const filter = (options) => {
 
   appendValuationsTo(paths, pipeline);
 
-  pipeline.push({
-    $match: {
-      margin: { $ne : null }
-    }
-  });
+  // pipeline.push({
+  //   $match: {
+  //     margin: { $ne : null }
+  //   }
+  // });
 
   return Stocks.aggregate(testAggregate)
-    .then(prepare)
+    // .then(prepare)
 };
 
 const prepare = (results) => {
@@ -52,13 +77,11 @@ const prepare = (results) => {
 };
 
 module.exports = {
-  getResources: Stocks.getResources,
-  getResourcesByTicker: Stocks.getResourcesByTicker,
-  filter: filter,
+  getBy,
 };
 
 // const tickers = require('../../../lib/account/importers/degiro/resources/tickers.json');
-// filter({ tickers, date: new Date(2018, 6, 27) })
+// getStocks({ tickers, date: new Date(2018, 6, 27) })
 //   .then(result => JSON.stringify(result, null, 2))
 //   .then(console.log)
 //   .catch(console.log)
