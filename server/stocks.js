@@ -1,5 +1,6 @@
 const _           = require('lodash');
 const assert      = require('assert');
+const moment      = require('moment');
 
 const MongoClient = require('mongodb').MongoClient;
 
@@ -98,6 +99,48 @@ const updateStock = _.curry((stock, db) => {
     });
 });
 
+const findLastHistoricals = _.curry((params, db) => {
+  const collection = db.collection('stocks');
+
+  let pipeline = [];
+
+  if(_.has(params, 'ticker')) {
+    pipeline.push({ $match: { ticker: params.ticker } });
+  }
+
+  pipeline.push({
+    $project: {
+      ticker: 1,
+      historical: { $arrayElemAt: [ "$historicals", -1 ] }
+    }
+  });
+
+  if(_.has(params, 'olderThan')) {
+    const unit = _.get(params, 'olderThan.unit');
+    const value = _.get(params, 'olderThan.value');
+
+    pipeline.push({
+      $match: {
+        // historical: null
+        'historical.date': {
+          $lte: moment().subtract(value, unit).toDate()
+        }
+      }
+    });
+  }
+
+  return new Promise((resolve, reject) => {
+    collection.aggregate(pipeline).toArray((err, result) => {
+      if(err) {
+        reject(err);
+      } else {
+        // console.log(`getHistoricals`, result);
+        resolve(result);
+      }
+    });
+  });
+});
+
 const getHistoricals = _.curry(({ ticker, range }, db) => {
   const collection = db.collection('stocks');
   const pipeline = [
@@ -142,6 +185,9 @@ module.exports = {
   },
   findStocks: (stocks) => {
     return execute(findStocks(stocks));
+  },
+  findLastHistoricals: (params) => {
+    return execute(findLastHistoricals(params));
   },
   getHistoricals: (range) => {
     return execute(getHistoricals(range));
