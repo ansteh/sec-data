@@ -1,4 +1,7 @@
-const Stocks = require('../stocks.js');
+const _      = require('lodash');
+
+const Stocks      = require('../../stocks.js');
+const StockPrice  = require('../../../lib/stock/price/index.js');
 
 const updateAll = (stocks) => {
   let promisedStocks;
@@ -12,7 +15,7 @@ const updateAll = (stocks) => {
   }
 
   return promisedStocks
-    .then(requestAndSaveHistoricalsOf)
+    .then(requestAndSaveAllHistoricalsBy)
     .then(() => {
       console.log('All historical prices have been updated!');
     })
@@ -34,5 +37,19 @@ const requestAndSaveAllHistoricalsBy = (stocks = []) => {
 };
 
 const requestAndSaveHistoricalsBy = (stock) => {
+  // console.log(stock);
+  const ticker = _.get(stock, 'ticker');
+  const lastUpdate = _.get(stock, 'historical.date');
 
+  return StockPrice.requestTimeseriesByTickerAndDate(ticker, lastUpdate)
+    .then((series) => {
+      return Stocks.appendHistoricalPricesBy({ ticker, series });
+    })
+    .catch((err) => {
+      console.log(`Failed to request historical prices for ${ticker}`, err);
+    });
+};
+
+module.exports = {
+  updateAll,
 };

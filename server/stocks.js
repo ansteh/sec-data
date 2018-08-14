@@ -99,6 +99,22 @@ const updateStock = _.curry((stock, db) => {
     });
 });
 
+const appendHistoricalPricesBy = _.curry((stock, db) => {
+  const collection = db.collection('stocks');
+  const ticker = _.get(stock, 'ticker');
+  const series = _.get(stock, 'series');
+
+  const inserts = {
+    $push: { historicals: { $each: series } }
+  };
+
+  return collection.updateOne({ ticker }, inserts)
+    .then((result) => {
+      console.log(`${ticker} updated!`);
+      return result;
+    });
+});
+
 const findLastHistoricals = _.curry((params, db) => {
   const collection = db.collection('stocks');
 
@@ -174,6 +190,9 @@ const getHistoricals = _.curry(({ ticker, range }, db) => {
 
 module.exports = {
   execute,
+  appendHistoricalPricesBy: (stock) => {
+    return execute(appendHistoricalPricesBy(stock))
+  },
   dropCollection: () => {
     return execute(dropCollection('stocks'));
   },
