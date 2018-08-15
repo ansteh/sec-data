@@ -2,7 +2,8 @@ const _       = require('lodash');
 const Stocks  = require('../stocks/model.js');
 const Filters = require('../stocks/filter.js');
 
-const Account = require('../../../lib/account/importers/degiro/index.js');
+const Account   = require('../../../lib/account/importers/degiro/index.js');
+const Portfolio = require('./model.js');
 
 const { appendValuationsTo } = require('../../modules/valuations');
 
@@ -25,6 +26,7 @@ const getBy = (options) => {
           });
         });
     })
+    .then(Portfolio.create)
 };
 
 const getStocks = (options) => {
@@ -79,9 +81,3 @@ const prepare = (results) => {
 module.exports = {
   getBy,
 };
-
-// const tickers = require('../../../lib/account/importers/degiro/resources/tickers.json');
-// getStocks({ tickers, date: new Date(2018, 6, 27) })
-//   .then(result => JSON.stringify(result, null, 2))
-//   .then(console.log)
-//   .catch(console.log)
