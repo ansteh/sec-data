@@ -6,7 +6,8 @@ const create = (positions) => {
 
   const totalValue = getValue(positions);
   positions = setStakeWeightedProperties(positions, totalValue);
-  const margin = getMargin(positions);
+  
+  const margin = _.sumBy(positions, (position) => { return position.marginOfSafetyPortfolioWeight; });
 
   const stake = _
     .chain(positions)
@@ -14,8 +15,8 @@ const create = (positions) => {
     .sum()
     .value();
 
-  const PE = _.meanBy(positions, (position) => { return position.PE; });
-  const PB = _.meanBy(positions, (position) => { return position.PB; });
+  const PE = _.sumBy(positions, (position) => { return position.PE; });
+  const PB = _.sumBy(positions, (position) => { return position.PB; });
 
   return {
     positions,
@@ -79,12 +80,6 @@ const setStakeWeightedProperties = (positions, totalValue) => {
     position.PB = position.stake * PB;
 
     return position;
-  });
-};
-
-const getMargin = (positions) => {
-  return _.meanBy(positions, (position) => {
-    return position.marginOfSafetyPortfolioWeight;
   });
 };
 
