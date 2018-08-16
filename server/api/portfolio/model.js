@@ -2,16 +2,29 @@ const _ = require('lodash');
 
 const create = (positions) => {
   positions = setValuationProperties(positions);
-  // positions = _.filter(positions, p => p.currentValue);
+  // positions = _.filter(positions, p => _.get(p, 'stock.margin'));
 
   const totalValue = getValue(positions);
-  positions = setWeightedMarginOfSafety(positions, totalValue);
+  positions = setStakeWeightedProperties(positions, totalValue);
   const margin = getMargin(positions);
+
+  const stake = _
+    .chain(positions)
+    .map('stake')
+    .sum()
+    .value();
+
+  const PE = _.meanBy(positions, (position) => { return position.PE; });
+  const PB = _.meanBy(positions, (position) => { return position.PB; });
 
   return {
     positions,
     value: totalValue,
+
+    stake,
     margin,
+    PE,
+    PB,
   };
 };
 
@@ -50,7 +63,7 @@ const isValidNumber = (value) => {
   return _.isNumber(value) && _.isNaN(value) === false;
 };
 
-const setWeightedMarginOfSafety = (positions, totalValue) => {
+const setStakeWeightedProperties = (positions, totalValue) => {
   return _.map(positions, (position) => {
     const value = position.currentValue || position.value || 0;
 
@@ -59,7 +72,11 @@ const setWeightedMarginOfSafety = (positions, totalValue) => {
     const marginOfSafety = _.get(position, 'stock.margin') || 0;
     position.marginOfSafetyPortfolioWeight = position.stake * marginOfSafety;
 
-    // console.log(position.ticker, position.stake, marginOfSafety, position.marginOfSafetyPortfolioWeight);
+    const PE = _.get(position, 'stock.PE') || 0;
+    position.PE = position.stake * PE;
+
+    const PB = _.get(position, 'stock.PB') || 0;
+    position.PB = position.stake * PB;
 
     return position;
   });
