@@ -3,7 +3,7 @@ const express        = require('express');
 const router         = express.Router();
 
 const _              = require('lodash');
-const Stock         = require('./controller');
+const Stock          = require('./controller');
 
 router.get('/resources/stock/:ticker', (req, res) => {
   Stock.findByTicker(req.params.ticker)

@@ -115,6 +115,22 @@ const appendHistoricalPricesBy = _.curry((stock, db) => {
     });
 });
 
+const removeHistoricalPricesByDateStrings = _.curry((params, db) => {
+  const collection = db.collection('stocks');
+  const ticker = _.get(params, 'ticker');
+  const dates = _.get(params, 'dates');
+
+  const removes = {
+    $pull: { historicals: { date: { $in: dates } } }
+  };
+
+  return collection.updateOne({ ticker }, removes)
+    .then((result) => {
+      console.log(`${ticker} cleared by removing date strings!`);
+      return result;
+    });
+});
+
 const findLastHistoricals = _.curry((params, db) => {
   const collection = db.collection('stocks');
 
@@ -210,6 +226,9 @@ module.exports = {
   },
   getHistoricals: (range) => {
     return execute(getHistoricals(range));
+  },
+  removeHistoricalPricesByDateStrings: (params) => {
+    return execute(removeHistoricalPricesByDateStrings(params));
   },
   insertStocks: (stocks) => {
     return execute(insertStocks(stocks));
