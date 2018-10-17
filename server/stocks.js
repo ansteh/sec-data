@@ -90,7 +90,7 @@ const insertStocks = _.curry((stocks, db) => {
 const updateStock = _.curry((stock, db) => {
   const collection = db.collection('stocks');
   const ticker = _.get(stock, 'resource.ticker');
-  const content = _.pick(stock, ['resource', 'summary', 'historicals']);
+  const content = _.pick(stock, ['resource', 'summary']); // 'historicals'
 
   return collection.updateOne({ ticker }, { $set: content })
     .then((result) => {
