@@ -28,11 +28,11 @@ const filter = (options) => {
 
   appendValuationsTo(paths, pipeline);
 
-  pipeline.push({
-    $match: {
-      margin: { $ne : null }
-    }
-  });
+  // pipeline.push({
+  //   $match: {
+  //     margin: { $ne : null }
+  //   }
+  // });
 
   return Stocks.aggregate(testAggregate)
     .then(prepare)

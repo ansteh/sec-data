@@ -24,6 +24,7 @@ export class StockMarketService {
   getOpportunitiesBy(date: Date): Observable<any> {
     return this.http.get(`${environment.apiUrl}/share-market/${date}`)
       .map(res => res.json())
+      .map(stocks => _.filter(stocks, stock => this.hasSoundFundamentals(stock)))
       .map(stocks => this.prepareOpportunities(stocks));
   }
 
@@ -34,20 +35,21 @@ export class StockMarketService {
   }
 
   private prepareOpportunities(opportunities: any): any {
-    const items = _
-      .chain(_.values(opportunities))
-      .filter((row) => {
-        return _.has(row, 'params.margin')
-          && _.get(row, 'params.margin') < 0.95
-          && _.has(row, 'params.PE')
-          && _.get(row, 'params.PE') > 0
-          && _.has(row, 'params.PB')
-          // && _.has(row, 'params.ROE')
-      })
+    let [ withMargin, withoutMargin ] = _.partition(_.values(opportunities), stock => _.get(stock, 'params.margin'));
+
+    withMargin = _
+      .chain(withMargin)
       .sortBy(['params.margin', 'params.PE', 'params.PB'])
       // .sortBy(['params.margin', 'params.ROE', 'params.ROA'])
       .reverse()
       .value();
+
+    withoutMargin = _
+      .chain(withoutMargin)
+      .sortBy(['params.PE', 'params.PB'])
+      .value();
+
+    const items = [...withMargin, ...withoutMargin];
 
     this.database.setData(items);
 
@@ -64,4 +66,12 @@ export class StockMarketService {
     return opportunities;
   }
 
+  private hasSoundFundamentals(stock: any): boolean {
+    return _.has(stock, 'params.margin')
+      && _.get(stock, 'params.margin') < 0.95
+      && _.has(stock, 'params.PE')
+      && _.get(stock, 'params.PE') > 0
+      && _.has(stock, 'params.PB')
+      // && _.has(stock, 'params.ROE')
+  }
 }
