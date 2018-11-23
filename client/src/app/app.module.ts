@@ -35,6 +35,7 @@ import { StockPricesChartComponent } from './stock/stock-prices-chart/stock-pric
 import { StockMarketComponent } from './stock-market/stock-market.component';
 import { StockOpportunitiesComponent } from './stock-market/stock-opportunities/stock-opportunities.component';
 import { CandidatesComponent } from './candidates/candidates.component';
+import { TransactionsComponent } from './transactions/transactions.component';
 
 @NgModule({
   declarations: [
@@ -49,7 +50,8 @@ import { CandidatesComponent } from './candidates/candidates.component';
     StockPricesChartComponent,
     StockMarketComponent,
     StockOpportunitiesComponent,
-    CandidatesComponent
+    CandidatesComponent,
+    TransactionsComponent
   ],
   imports: [
     BrowserModule,
