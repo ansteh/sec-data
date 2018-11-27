@@ -98,4 +98,18 @@ export class TransactionsComponent implements OnInit {
       .value();
   }
 
+  exportAsJSON(element) {
+    if(this.transactions) {
+      try {
+        const filename = 'transactions.json';
+        const body = encodeURIComponent(JSON.stringify(this.transactions, null, 2));
+        element.setAttribute('href', `data:text/json;charset=utf-8,${body}`);
+        element.setAttribute('download', filename);
+        element.click();
+      } catch(err) {
+        console.log(err);
+      }
+    }
+  }
+
 }
