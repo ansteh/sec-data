@@ -204,6 +204,46 @@ const getHistoricals = _.curry(({ ticker, range }, db) => {
   });
 });
 
+const getAllHistoricalsByTickers = _.curry(({ tickers, range }, db) => {
+  const collection = db.collection('stocks');
+
+  const pipeline = [
+    {
+      $match: {
+        ticker: { $in: tickers },
+      }
+    },
+  ];
+
+  if(range) {
+    pipeline.push({
+      $project: {
+        ticker: 1,
+        historicals: {
+          $filter: {
+            input: '$historicals',
+            as: 'item',
+            cond: { $gt: ['$$item.date', range.start ] }
+          }
+        }
+      }
+    });
+  } else {
+    pipeline.push({ $project: { ticker: 1, historicals: 1 } });
+  }
+
+  return new Promise((resolve, reject) => {
+    collection.aggregate(pipeline).toArray((err, result) => {
+      if(err) {
+        reject(err);
+      } else {
+        // console.log(`getHistoricals`, result);
+        resolve(result);
+      }
+    });
+  });
+});
+
 module.exports = {
   execute,
   appendHistoricalPricesBy: (stock) => {
@@ -224,8 +264,11 @@ module.exports = {
   findLastHistoricals: (params) => {
     return execute(findLastHistoricals(params));
   },
-  getHistoricals: (range) => {
-    return execute(getHistoricals(range));
+  getHistoricals: (options) => {
+    return execute(getHistoricals(options));
+  },
+  getAllHistoricalsByTickers: (options) => {
+    return execute(getAllHistoricalsByTickers(options));
   },
   removeHistoricalPricesByDateStrings: (params) => {
     return execute(removeHistoricalPricesByDateStrings(params));
