@@ -17,6 +17,17 @@ const searchOptions = {
 //   .then(console.log)
 //   .catch(console.log)
 
+const getValuation = () => {
+  return getTransaction()
+    .then((transactions) => {
+      return getHistoricalsBy(transactions)
+        .then((historicals) => {
+          return { transactions, historicals };
+        });
+    })
+    .then(createPortfolioHistoricals)
+};
+
 const getTransaction = () => {
   return Promise.resolve(require(`${__dirname}/../../../../lib/account/importers/degiro/resources/transactions.json`))
     .then((transactions) => {
@@ -45,16 +56,85 @@ const getHistoricalsBy = (transactions) => {
     .then((tickers) => {
       if(tickers.length > 0) {
         const start = _.first(transactions).date;
-        return Stocks.getAllHistoricalsByTickers({ tickers, range: { start } })
+        return Stocks.getAllHistoricalsByTickers({ tickers: ['AAPL'], range: { start } })
       }
     })
 };
 
-const getValuation = () => {
-  return getTransaction()
-    .then(getHistoricalsBy)
+const createPortfolioHistoricals = ({ transactions, historicals }) => {
+  const { start, end } = getRange({ transactions, historicals });
+  return createSeries({ start, end, historicals });
+};
+
+const getRange = ({ transactions, historicals }) => {
+  const start = _.get(_.first(transactions), 'date');
+
+  const end = _
+    .chain(historicals)
+    .map('historicals')
+    .map((historicals) => {
+      return _.maxBy(historicals, 'date');
+    })
+
+    .map('date')
+    .max()
+    .value();
+
+  return { start, end };
+};
+
+const createSeries = ({ start, end, historicals }) => {
+  const series = [];
+  const endDate = moment(end);
+  let step = moment(start).clone();
+
+  const stockIndices = {};
+
+  do {
+    // console.log(step);
+
+    const portfolioQuote = {
+      date: step.clone().toDate(),
+      entries: {},
+    };
+
+    _.forEach(historicals, ({ ticker, historicals }, index) => {
+      const stockIndex = stockIndices[index] || 0;
+      let quote = historicals[stockIndex];
+
+      // if(ticker === 'AAPL') { console.log(historicals.length); }
+      // if(!(quote && step.isSame(moment(quote.date).startOf("day")))) {
+      //   console.log(step, moment(quote.date).startOf("day"), stockIndices);
+      // }
+      console.log(step, moment(quote.date).startOf("day"), stockIndices);
+
+      if(quote && step.isSame(moment(quote.date).startOf("day"))) {
+        // console.log('quote && step.isSame');
+        // console.log(step, quote.date);
+        stockIndices[index] = stockIndex + 1;
+      } else {
+        if(stockIndex > 0) {
+          quote = historicals[stockIndex - 1];
+        }
+      }
+
+      if(quote) {
+        portfolioQuote.entries[ticker] = quote;
+      }
+    });
+
+    step.add(1, 'day');
+
+    series.push(portfolioQuote);
+  } while(moment(step).isSameOrBefore(endDate));
+
+  return series;// .then(_.last)
+  // .then(content => JSON.stringify(content, null, 2))
+  // .then(con
 };
 
 getValuation()
+  .then(_.last)
+  .then(content => JSON.stringify(content, null, 2))
   .then(console.log)
   .catch(console.log);
