@@ -56,7 +56,7 @@ const getHistoricalsBy = (transactions) => {
     .then((tickers) => {
       if(tickers.length > 0) {
         const start = _.first(transactions).date;
-        return Stocks.getAllHistoricalsByTickers({ tickers: ['AAPL'], range: { start } })
+        return Stocks.getAllHistoricalsByTickers({ tickers, range: { start } })
       }
     })
 };
@@ -106,7 +106,7 @@ const createSeries = ({ start, end, historicals }) => {
       // if(!(quote && step.isSame(moment(quote.date).startOf("day")))) {
       //   console.log(step, moment(quote.date).startOf("day"), stockIndices);
       // }
-      console.log(step, moment(quote.date).startOf("day"), stockIndices);
+      // console.log(step, moment(quote.date).startOf("day"), stockIndices);
 
       if(quote && step.isSame(moment(quote.date).startOf("day"))) {
         // console.log('quote && step.isSame');
