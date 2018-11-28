@@ -244,6 +244,34 @@ const getAllHistoricalsByTickers = _.curry(({ tickers, range }, db) => {
   });
 });
 
+const removeQuotesFromStockByIndices = _.curry(({ ticker, indices }, db) => {
+  const collection = db.collection('stocks');
+
+  let nulledAllDuplicates = Promise.resolve();
+
+  if(indices.length > 0) {
+    const unset = _.reduce(indices, (accu, index) => {
+      accu[`historicals.${index}`] = 1;
+      return accu;
+    }, {});
+
+    nulledAllDuplicates = collection.updateOne({ ticker }, { $unset: unset })
+      .then((result) => {
+        console.log(`${ticker} updated!`);
+        return result;
+      })
+  }
+
+  return nulledAllDuplicates
+    .then(() => {
+      return collection.updateOne({ ticker }, { $pull: { historicals: null } })
+        .then((result) => {
+          console.log(`${ticker} updated!`);
+          return result;
+        })
+    });
+});
+
 module.exports = {
   execute,
   appendHistoricalPricesBy: (stock) => {
@@ -272,6 +300,9 @@ module.exports = {
   },
   removeHistoricalPricesByDateStrings: (params) => {
     return execute(removeHistoricalPricesByDateStrings(params));
+  },
+  removeQuotesFromStockByIndices: (params) => {
+    return execute(removeQuotesFromStockByIndices(params));
   },
   insertStocks: (stocks) => {
     return execute(insertStocks(stocks));

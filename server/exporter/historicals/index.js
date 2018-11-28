@@ -1,6 +1,7 @@
 const _      = require('lodash');
+const moment = require('moment');
 
-const Stock       = require('../..//api/stock/model.js');
+const Stock       = require('../../api/stock/model.js');
 const Stocks      = require('../../stocks.js');
 const StockPrice  = require('../../../lib/stock/price/index.js');
 
@@ -94,9 +95,70 @@ const removeDateStringsFromHistoricals = (stock) => {
     })
 };
 
+const removeDuplicatesFromHistoricalsOfAllTickers = (stocks) => {
+  let promisedStocks;
+
+  if(stocks){
+    promisedStocks = Promise.resolve(stocks);
+  } else {
+    promisedStocks = Stocks.findAllTickers();
+  }
+
+  return promisedStocks
+    .then(stocks => _.map(stocks, 'ticker'))
+    .then(removeDuplicatesFromHistoricalsOf)
+    .then(() => {
+      console.log('All historical DUPLICATES have been removed!');
+    })
+    .catch(console.log);
+};
+
+const removeDuplicatesFromHistoricalsOf = (tickers = []) => {
+  if(tickers.length === 0) {
+    return Promise.resolve(null);
+  } else {
+    const ticker = _.head(tickers);
+    console.log(`Remove duplicates from historicals of ${ticker}! Left ${tickers.length-1}`);
+
+    return removeDuplicatesFromHistoricals(ticker)
+      .then(() => {
+        return removeDuplicatesFromHistoricalsOf(_.tail(tickers));
+      })
+  }
+};
+
+const removeDuplicatesFromHistoricals = (ticker) => {
+  return Stock.getHistoricals(ticker)
+    .then((historicals) => {
+      let lastDate;
+      return _
+        .chain(historicals)
+        .filter(x => x)
+        .reduce((duplicates, { date }, index) => {
+          const current = moment(date).clone().startOf('day');
+
+          if(lastDate && lastDate.isSame(current)) {
+            duplicates.push({ date, index });
+          }
+
+          lastDate = current;
+
+          return duplicates;
+        }, [])
+        .value();
+    })
+    .then((duplicates) => {
+      const indices = _.map(duplicates, 'index');
+      return Stocks.removeQuotesFromStockByIndices({ ticker, indices });
+    });
+};
+
 module.exports = {
   removeDateStringsFromHistoricalsOfAllTickers,
   removeDateStringsFromHistoricals,
+
+  removeDuplicatesFromHistoricalsOfAllTickers,
+  removeDuplicatesFromHistoricals,
 
   updateAll,
 };
