@@ -20,12 +20,96 @@ const searchOptions = {
 const getValuation = () => {
   return getTransaction()
     .then((transactions) => {
-      return getHistoricalsBy(transactions)
-        .then((historicals) => {
-          return { transactions, historicals };
-        });
+      return Promise.all([
+        getPortfolioHistoricals(transactions),
+        getPortfolioSharesCompositionByDate(transactions),
+      ])
+      .then(([historicals, shareCompositionByDate]) => {
+        return { shareCompositionByDate, historicals };
+      })
     })
-    .then(createPortfolioHistoricals)
+    .then(setNetValueByClose)
+    .then(series => _.map(series, quote => _.pick(quote, ['date', 'netValue'])))
+    .then(series => _.slice(series, series.length - 100))
+};
+
+const setNetValueByClose = ({ shareCompositionByDate, historicals }) => {
+  let previousSharedComposition;
+
+  return _.map(historicals, (historical) => {
+    const shares = shareCompositionByDate[moment(historical.date).startOf('day').format('YYYY-MM-DD')] || previousSharedComposition;
+    // historical.entries;
+
+    historical.netValue = 0;
+
+    _.forOwn(historical.entries, (quote, ticker) => {
+      quote.amount = shares[ticker] || 0;
+      quote.netValue = quote.amount * quote.close;
+      historical.netValue += quote.netValue;
+    });
+
+    previousSharedComposition = _.cloneDeep(shares);
+
+    return historical;
+  });
+};
+
+const getPortfolioSharesCompositionByDate = (transactions) => {
+  // return _.slice(transactions, 10, 20);
+
+  return Securities.getISINtoTickersByResourceFile()
+    .then((isinsToTickers) => {
+      return _
+        .chain(transactions)
+        .groupBy(transaction => moment(transaction.date).format('YYYY-MM-DD'))
+        .reduce((compositions, transactions, date) => {
+          const composition = _.reduce(transactions, (composition, { ISIN, amount }) => {
+            const ticker = isinsToTickers[ISIN];
+
+            if(ticker) {
+              composition[ticker] = composition[ticker] || 0;
+              composition[ticker] += amount;
+            } else {
+              console.error(`missing ticker for ISIN: ${ ISIN }`);
+            }
+
+            return composition;
+          }, {});
+
+          const previous = _.last(compositions);
+
+          if(previous) {
+            const current = _.cloneDeep(previous);
+
+            const tickers = _.uniq([
+              ..._.keys(current.shares),
+              ..._.keys(composition),
+            ]);
+
+            _.forOwn(tickers, (ticker) => {
+              current.shares[ticker] = (current.shares[ticker] || 0) + (composition[ticker] || 0);
+            });
+
+            compositions.push({ date, shares: current.shares });
+          } else {
+            compositions.push({ date, shares: composition });
+          }
+
+          return compositions;
+        }, [])
+        .reduce((graph, { date, shares }) => {
+          return _.set(graph, date, shares);
+        }, {})
+        .value();
+    });
+};
+
+const getPortfolioHistoricals = (transactions) => {
+  return getHistoricalsBy(transactions)
+    .then((historicals) => {
+      return { transactions, historicals };
+    })
+    .then(createPortfolioHistoricals);
 };
 
 const getTransaction = () => {
@@ -128,13 +212,11 @@ const createSeries = ({ start, end, historicals }) => {
     series.push(portfolioQuote);
   } while(moment(step).isSameOrBefore(endDate));
 
-  return series;// .then(_.last)
-  // .then(content => JSON.stringify(content, null, 2))
-  // .then(con
+  return series;
 };
 
 getValuation()
-  .then(_.last)
-  .then(content => JSON.stringify(content, null, 2))
+  // .then(_.last)
+  // .then(content => JSON.stringify(content, null, 2))
   .then(console.log)
   .catch(console.log);
