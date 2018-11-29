@@ -23,29 +23,48 @@ const getValuation = () => {
       return Promise.all([
         getPortfolioHistoricals(transactions),
         getPortfolioSharesCompositionByDate(transactions),
+        getCommitmentByDate(transactions),
       ])
-      .then(([historicals, shareCompositionByDate]) => {
-        return { shareCompositionByDate, historicals };
+      .then(([historicals, shareCompositionByDate, commitment]) => {
+        return { historicals, shareCompositionByDate, commitment };
       })
     })
     .then(setNetValueByClose)
-    .then(series => _.map(series, quote => _.pick(quote, ['date', 'netValue'])))
+    .then(log)
     .then(series => _.slice(series, series.length - 100))
 };
 
-const setNetValueByClose = ({ shareCompositionByDate, historicals }) => {
+const log = (series) => {
+  return _
+    .chain(series)
+    .forEach((quote) => {
+      quote.rate = _.round(quote.netValue / quote.commitment, 2);
+    })
+    // .map(quote => _.pick(quote, ['date', 'commitment', 'netValue', 'rate']))
+    .map(quote => _.pick(quote, ['date', 'rate']))
+    .value();
+};
+
+const setNetValueByClose = ({ shareCompositionByDate, historicals, commitment }) => {
   let previousSharedComposition;
+  let currentCommitment = {};
 
   return _.map(historicals, (historical) => {
-    const shares = shareCompositionByDate[moment(historical.date).startOf('day').format('YYYY-MM-DD')] || previousSharedComposition;
-    // historical.entries;
+    const date = moment(historical.date).startOf('day').format('YYYY-MM-DD');
+    const shares = shareCompositionByDate[date] || previousSharedComposition;
+    const commitmentByDate = commitment[date] || {};
 
     historical.netValue = 0;
+    historical.commitment = 0;
 
     _.forOwn(historical.entries, (quote, ticker) => {
       quote.amount = shares[ticker] || 0;
       quote.netValue = quote.amount * quote.close;
       historical.netValue += quote.netValue;
+
+      quote.commitment = (currentCommitment[ticker] || 0) + ((commitmentByDate[ticker] || 0) * quote.close);
+      historical.commitment += quote.commitment;
+      currentCommitment[ticker] = quote.commitment;
     });
 
     previousSharedComposition = _.cloneDeep(shares);
@@ -94,6 +113,37 @@ const getPortfolioSharesCompositionByDate = (transactions) => {
           } else {
             compositions.push({ date, shares: composition });
           }
+
+          return compositions;
+        }, [])
+        .reduce((graph, { date, shares }) => {
+          return _.set(graph, date, shares);
+        }, {})
+        .value();
+    });
+};
+
+const getCommitmentByDate = (transactions) => {
+  return Securities.getISINtoTickersByResourceFile()
+    .then((isinsToTickers) => {
+      return _
+        .chain(transactions)
+        .groupBy(transaction => moment(transaction.date).format('YYYY-MM-DD'))
+        .reduce((compositions, transactions, date) => {
+          const composition = _.reduce(transactions, (composition, { ISIN, amount }) => {
+            const ticker = isinsToTickers[ISIN];
+
+            if(ticker) {
+              composition[ticker] = composition[ticker] || 0;
+              composition[ticker] += amount;
+            } else {
+              console.error(`missing ticker for ISIN: ${ ISIN }`);
+            }
+
+            return composition;
+          }, {});
+
+          compositions.push({ date, shares: composition });
 
           return compositions;
         }, [])
