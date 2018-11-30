@@ -14,6 +14,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 const apiUrl = '/api';
 app.use(apiUrl, require('./api/stocks'));
 app.use(apiUrl, require('./api/stock'));
+app.use(apiUrl, require('./api/portfolio/audit'));
 
 const server = require('http').Server(app);
 

@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 
 import { CandidatesComponent } from './candidates/candidates.component';
 import { CreateStockComponent } from './stocks/create-stock/create-stock.component';
+import { PortfolioComponent } from './portfolio/portfolio.component';
 import { StocksComponent } from './stocks/stocks.component';
 import { StockComponent } from './stock/stock.component';
 import { StockMarketComponent } from './stock-market/stock-market.component';
@@ -40,6 +41,10 @@ export const appRoutes: Routes = [
   {
     path: 'transactions',
     component: TransactionsComponent
+  },
+  {
+    path: 'portfolio',
+    component: PortfolioComponent
   },
   //{ path: '**', component: PageNotFoundComponent },
 ];
