@@ -1,0 +1,10 @@
+FreeCashFlow
+
+  Operating Cashflow
+
+  CAPEX:
+    DepreciationDepletionAndAmortization
+    PropertyPlantAndEquipmentNet
+      DepreciationDepletionAndAmortizationPropertyPlantAndEquipment (?)
+
+    CapitalExpendituresIncurredButNotYetPaid (?)
