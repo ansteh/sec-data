@@ -1,10 +1,20 @@
 FreeCashFlow
 
-  Operating Cashflow
+  FreeCashFlow = Operating Cashflow (NetCashFlowsOperating) - CAPEX
 
   CAPEX:
-    DepreciationDepletionAndAmortization
-    PropertyPlantAndEquipmentNet
-      DepreciationDepletionAndAmortizationPropertyPlantAndEquipment (?)
+    DepreciationDepletionAndAmortization (present)
+    PropertyPlantAndEquipmentNet (?)
+    PaymentsToAcquirePropertyPlantAndEquipment (present)
+    DepreciationDepletionAndAmortizationPropertyPlantAndEquipment (?)
 
     CapitalExpendituresIncurredButNotYetPaid (?)
+
+  AAPL: 2018-09
+    NetCashFlowsOperating = 77434000000
+    DepreciationDepletionAndAmortization = 10903000000
+    PaymentsToAcquirePropertyPlantAndEquipment = 13313000000
+
+Examples:
+  FreeCashFlow By MarketWatch
+    FreeCashFlow = NetCashFlowsOperating - PaymentsToAcquirePropertyPlantAndEquipment = 64121000000
