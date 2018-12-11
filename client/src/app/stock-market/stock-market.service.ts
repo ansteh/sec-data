@@ -39,7 +39,7 @@ export class StockMarketService {
 
     withMargin = _
       .chain(withMargin)
-      .sortBy(['params.margin', 'params.PE', 'params.PB'])
+      .sortBy(['params.margin', 'params.freeCashFlowMargin', 'params.PE', 'params.PB'])
       // .sortBy(['params.margin', 'params.ROE', 'params.ROA'])
       .reverse()
       .value();
@@ -55,7 +55,7 @@ export class StockMarketService {
 
     const reference = _.first(items);
     if(reference) {
-      this.columns = ["ticker", "margin", "PE", "PB"];
+      this.columns = ["ticker", "margin", "freeCashFlowMargin", "PE", "PB"];
       // this.columns = ["ticker", "margin", "PE", "PB", "ROE", "ROE%", "ROA", "ROA%", "CurrentRatio", "QuickRatio", "profit%", "revenues%", "NetCash%"];
       // this.columns = _.keys(_.get(reference, 'params'));
       // this.columns = ['ticker', ...this.columns];
@@ -68,7 +68,7 @@ export class StockMarketService {
 
   private hasSoundFundamentals(stock: any): boolean {
     return _.has(stock, 'params.margin')
-      && _.get(stock, 'params.margin') < 0.95
+      // && _.get(stock, 'params.margin') < 0.95
       && _.has(stock, 'params.PE')
       && _.get(stock, 'params.PE') > 0
       && _.has(stock, 'params.PB')

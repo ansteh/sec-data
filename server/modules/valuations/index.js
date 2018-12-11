@@ -21,6 +21,23 @@ const appendValuationsTo = (paths, pipeline) => {
           }
         ]
       },
+      freeCashFlowMargin: {
+        $cond: [
+          {
+            $or: [
+              { $eq: [ `$summary.${paths.freeCashFlowIntrinsicValue}.value`, null ] },
+              { $eq: [ `$summary.${paths.freeCashFlowIntrinsicValue}.value`, 0 ] }
+            ]
+          },
+          "N/A",
+          {
+            $divide: [
+              { $subtract: [ `$summary.${paths.freeCashFlowIntrinsicValue}.value`, "$historicals.close" ] },
+              `$summary.${paths.freeCashFlowIntrinsicValue}.value`
+            ]
+          }
+        ]
+      },
       PE: {
         $cond: [
           {
