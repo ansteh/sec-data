@@ -1,0 +1,14 @@
+<input #upload style="display: none;" type="file" (change)="handleFiles($event?.target?.files)"/>
+
+<button mat-raised-button (click)="upload.click()">
+  import
+</button>
+
+<a #exportTarget style="display:none"></a>
+
+<button *ngIf="transactions" mat-raised-button (click)="exportAsJSON(exportTarget)">
+  export as JSON
+</button>
+
+
+<pre>{{ transactions | json }}</pre>
