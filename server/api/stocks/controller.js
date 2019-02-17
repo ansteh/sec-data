@@ -53,14 +53,14 @@ const prepare = (results) => {
     .value();
 };
 
-module.exports = {
-  getResources: Stocks.getResources,
-  getResourcesByTicker: Stocks.getResourcesByTicker,
-  filter: filter,
+const get = (options, paths) => {
+  const instructions = Filters.batch(paths, options);
+  return Stocks.aggregate(instructions);
 };
 
-// const tickers = require('../../../lib/account/importers/degiro/resources/tickers.json');
-// filter({ tickers, date: new Date(2018, 6, 27) })
-//   .then(result => JSON.stringify(result, null, 2))
-//   .then(console.log)
-//   .catch(console.log)
+module.exports = {
+  get,
+  getResources: Stocks.getResources,
+  getResourcesByTicker: Stocks.getResourcesByTicker,
+  filter,
+};

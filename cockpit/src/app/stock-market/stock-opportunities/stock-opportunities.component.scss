@@ -1,0 +1,14 @@
+.all-positive {
+  background-color: #62d543;
+  opacity: 0.6;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.stock-row {
+  &:hover {
+    cursor: pointer;
+  }
+}
