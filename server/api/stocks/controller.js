@@ -53,13 +53,7 @@ const prepare = (results) => {
     .value();
 };
 
-const get = (options, paths) => {
-  const instructions = Filters.batch(paths, options);
-  return Stocks.aggregate(instructions);
-};
-
 module.exports = {
-  get,
   getResources: Stocks.getResources,
   getResourcesByTicker: Stocks.getResourcesByTicker,
   filter,
