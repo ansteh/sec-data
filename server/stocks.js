@@ -16,7 +16,7 @@ const execute = (operation) => {
   const source = getSourceUrl();
   let instance;
 
-  return MongoClient.connect(source)
+  return MongoClient.connect(source, { useNewUrlParser: true })
     .then((client) => {
       instance = client;
       return client.db('sec-data');

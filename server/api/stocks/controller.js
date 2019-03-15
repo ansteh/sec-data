@@ -11,6 +11,8 @@ const filter = (options) => {
     freeCashFlowIntrinsicValue: 'annual.FreeCashFlow_IntrinsicValue',
     earnings: 'quarterly.DerivedTrailingTwelveMonthsEarningsPerShareDiluted', //'annual.EarningsPerShareDiluted',
     bookValue: 'annual.DerivedBookValuePerShare',
+    // roe: 'annual.FundamentalAccountingConcepts.ROE',
+    // roa: 'annual.FundamentalAccountingConcepts.ROA',
   };
 
   const testAggregate = Filters.batch(
@@ -19,8 +21,8 @@ const filter = (options) => {
       { path: paths.freeCashFlowIntrinsicValue },
       { path: paths.earnings },
       { path: paths.bookValue },
-      // { path: 'quarterly.FundamentalAccountingConcepts.ROE' },
-      // { path: 'quarterly.FundamentalAccountingConcepts.ROA' },
+      // { path: paths.roe },
+      // { path: paths.roa },
     ],
     options
   );
@@ -46,7 +48,7 @@ const prepare = (results) => {
     .map((row) => {
       return {
         ticker: row.ticker,
-        params: _.pick(row, ['margin', 'freeCashFlowMargin', 'PE', 'PB'])
+        params: _.pick(row, ['margin', 'freeCashFlowMargin', 'PE', 'PB', 'ROE', 'ROA'])
       }
     })
     .keyBy('ticker')

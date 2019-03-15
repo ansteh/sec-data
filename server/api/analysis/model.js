@@ -87,18 +87,20 @@ const compromiseMetric = _.curry((metrics, content) => {
 });
 
 const calculateGrowthRatesByYear = (earnings) => {
-  const rates = _.map(earnings, 'value');
+  const rates = _.map(earnings, 'growth');
 
   return {
+    'count': earnings.length,
     '1y': calculateAverageGrowthRate(rates, -1),
     '3y': calculateAverageGrowthRate(rates, -3),
     '5y': calculateAverageGrowthRate(rates, -5),
     '10y': calculateAverageGrowthRate(rates, -10),
+    'all': calculateAverageGrowthRate(rates),
   };
 };
 
 const calculateAverageGrowthRate = (rates, position) => {
-  return _.mean(_.slice(rates, position));
+  return _.mean(position ? _.slice(rates, position) : rates);
 };
 
 module.exports = {

@@ -13,7 +13,7 @@ const options = {
 //   .then(console.log)
 //   .catch(console.log);
 
-Analysis.getEarnings(['AAPL'])
+Analysis.getEarnings(['GM'])
   .then(content => JSON.stringify(content, null, 2))
   .then(console.log)
   .catch(console.log);
