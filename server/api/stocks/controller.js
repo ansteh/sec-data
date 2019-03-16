@@ -38,6 +38,8 @@ const filter = (options) => {
   //   }
   // });
 
+  // console.log(JSON.stringify(testAggregate, null, 2));
+
   return Stocks.aggregate(testAggregate)
     .then(prepare)
 };

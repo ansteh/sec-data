@@ -72,10 +72,16 @@ const appendValuationsTo = (paths, pipeline) => {
           }
         ]
       },
-      ROE: `$summary.${paths.roe}.value`,
-      ROA: `$summary.${paths.roa}.value`,
     }
   };
+
+  if(paths.roe) {
+    projection.$project.ROE = `$summary.${paths.roe}.value`;
+  }
+
+  if(paths.roa) {
+    projection.$project.ROA = `$summary.${paths.roa}.value`;
+  }
 
   pipeline.push(projection);
 };

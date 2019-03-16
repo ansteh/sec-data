@@ -31,7 +31,7 @@ const aggregate = (clauses, params) => {
   const end = moment(date).startOf('day').add(1, 'days');
 
   const annualRange = {
-    start: moment(end).subtract(1, 'year').toDate(),
+    start: moment(end).subtract(2, 'year').toDate(),
     end: end.toDate(),
   };
   const summaries = clauses.map((clause) => {
@@ -56,7 +56,7 @@ const aggregate = (clauses, params) => {
   if(filters.length > 0) {
     aggregation.pipeline.push(_.merge({}, ...filters));
   }
-  
+
   // console.log(JSON.stringify(aggregation, null, 2));
 
   return aggregation;
