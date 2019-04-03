@@ -6,10 +6,6 @@ import { map } from 'rxjs/operators';
 
 import { environment } from '../../environments/environment';
 
-import * as _ from 'lodash';
-import { Trends } from './tools/trends';
-import { Interior } from './tools/maxima';
-
 @Component({
   selector: 'sec-portfolio',
   templateUrl: './portfolio.component.html',
@@ -29,7 +25,6 @@ export class PortfolioComponent implements OnInit {
     return this.http.get(`${environment.apiUrl}/portfolio/audit`)
       .subscribe((series: any[]) => {
         this.series = series;
-        // console.log('peaks', Interior.findAllPeaks(_.map(this.series, 'rate')));
       });
   }
 

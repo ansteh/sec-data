@@ -2,6 +2,8 @@ import { Component, Input, OnChanges, OnInit, ViewChild, ElementRef } from '@ang
 
 import Chart from 'chart.js';
 import * as _ from 'lodash';
+import { Trends } from '../tools/trends';
+import { Interior } from '../tools/maxima';
 
 @Component({
   selector: 'sec-portfolio-audit',
@@ -44,6 +46,13 @@ export class PortfolioAuditComponent implements OnInit, OnChanges {
 				}]
 			},
 			options: {
+        legend: {
+          labels: {
+            filter: function(item, chart) {
+              return item.text;
+            }
+          }
+        },
 				scales: {
 					xAxes: [{
 						type: 'time',
@@ -83,6 +92,13 @@ export class PortfolioAuditComponent implements OnInit, OnChanges {
       };
     });
 
+    const direction = [
+      _.first(_.filter(this.closes, point => point.y)),
+      _.last(_.filter(this.closes, point => point.y)),
+    ];
+
+    const trends = this.getTrendDatasets();
+
     this.chart.data = _.cloneDeep({
       labels: this.labels,
       datasets: [{
@@ -95,10 +111,43 @@ export class PortfolioAuditComponent implements OnInit, OnChanges {
         borderWidth: 2,
         backgroundColor: '#4285f4',
         borderColor: '#4285f4',
-      }]
+      }, {
+        label: 'General',
+        data: direction,
+        type: 'line'
+      }, ...trends]
     });
 
     this.chart.update();
+  }
+
+  private getTrendDatasets() {
+    const down = {
+      type: 'line',
+      pointRadius: 0,
+      fill: false,
+      lineTension: 0,
+      borderWidth: 2,
+      backgroundColor: '#9b0000',
+      borderColor: '#9b0000',
+    };
+
+    const upper = {
+      type: 'line',
+      pointRadius: 0,
+      fill: false,
+      lineTension: 0,
+      borderWidth: 2,
+      backgroundColor: '#48a999',
+      borderColor: '#48a999',
+    };
+
+    const trends = Trends((point) => { return point.y; }, this.closes);
+
+    return [
+      ...trends.down.map((data) => { return _.assign({}, down, { data }); }),
+      ...trends.upper.map((data) => { return _.assign({}, upper, { data }); }),
+    ];
   }
 
 }
