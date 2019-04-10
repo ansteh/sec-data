@@ -57,6 +57,8 @@ const setNetValueByClose = ({ shareCompositionByDate, historicals, commitment })
       historical.netValue += quote.netValue;
 
       quote.commitment = (currentCommitment[ticker] || 0) + ((commitmentByDate[ticker] || 0) * quote.close);
+      quote.rate = _.round(quote.netValue / quote.commitment, 4);
+
       historical.commitment += quote.commitment;
       currentCommitment[ticker] = quote.commitment;
     });

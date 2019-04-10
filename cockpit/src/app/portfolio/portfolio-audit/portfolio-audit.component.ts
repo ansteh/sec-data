@@ -98,6 +98,7 @@ export class PortfolioAuditComponent implements OnInit, OnChanges {
     ];
 
     const trends = this.getTrendDatasets();
+    const stocks = this.getStockDatasets();
 
     this.chart.data = _.cloneDeep({
       labels: this.labels,
@@ -115,7 +116,7 @@ export class PortfolioAuditComponent implements OnInit, OnChanges {
         label: 'General',
         data: direction,
         type: 'line'
-      }, ...trends]
+      }, ...trends, ...stocks]
     });
 
     this.chart.update();
@@ -149,5 +150,33 @@ export class PortfolioAuditComponent implements OnInit, OnChanges {
       ...trends.upper.map((data) => { return _.assign({}, upper, { data }); }),
     ];
   }
+
+  private getStockDatasets = () => {
+    const tickers = _
+    .chain(this.data)
+    .first()
+    .get('entries')
+    .keys()
+    .value();
+
+    return _.map(tickers, (ticker) => {
+      return {
+        label: ticker,
+        type: 'line',
+        pointRadius: 0,
+        fill: false,
+        lineTension: 0,
+        borderWidth: 2,
+        // backgroundColor: '#9b0000',
+        // borderColor: '#9b0000',
+        data: _.map(this.data, (point) => {
+          return {
+            x: new Date(_.get(point, `entries.${ticker}.date`)),
+            y: _.get(point, `entries.${ticker}.rate`)
+          };
+        })
+      };
+    });
+  };
 
 }
