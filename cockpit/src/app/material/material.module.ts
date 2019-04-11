@@ -4,7 +4,9 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import {
   MatButtonModule,
+  MatButtonToggleModule,
   MatCheckboxModule,
+  MatIconModule,
   MatInputModule,
   MatFormFieldModule,
   MatTableModule,
@@ -12,29 +14,27 @@ import {
   MatSelectModule,
 } from '@angular/material';
 
+const modules = [
+  MatButtonModule,
+  MatButtonToggleModule,
+  MatCheckboxModule,
+  MatIconModule,
+  MatInputModule,
+  MatFormFieldModule,
+  MatTableModule,
+  MatOptionModule,
+  MatSelectModule,
+];
+
 @NgModule({
   declarations: [],
   imports: [
     BrowserAnimationsModule,
-
-    MatButtonModule,
-    MatCheckboxModule,
-    MatInputModule,
-    MatFormFieldModule,
-    MatTableModule,
-    MatOptionModule,
-    MatSelectModule,
+    ...modules,
   ],
   exports: [
     BrowserAnimationsModule,
-
-    MatButtonModule,
-    MatCheckboxModule,
-    MatInputModule,
-    MatFormFieldModule,
-    MatTableModule,
-    MatOptionModule,
-    MatSelectModule,
+    ...modules,
   ]
 })
 export class MaterialModule { }

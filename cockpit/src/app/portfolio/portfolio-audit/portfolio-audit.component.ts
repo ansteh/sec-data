@@ -161,7 +161,7 @@ export class PortfolioAuditComponent implements OnInit, OnChanges {
 
     return _.map(tickers, (ticker) => {
       return {
-        label: ticker,
+        // label: ticker,
         type: 'line',
         pointRadius: 0,
         fill: false,

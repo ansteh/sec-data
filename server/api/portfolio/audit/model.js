@@ -4,7 +4,14 @@ const moment = require('moment');
 const Stocks = require('../../../stocks.js');
 const Securities = require('../../securities/identification/index.js');
 
-const getValuation = () => {
+const QUOTE_VIEWS = {
+  rate: ['date', 'rate'],
+  portfolio: ['date', 'commitment', 'netValue', 'rate'],
+};
+
+const getValuation = (view) => {
+  const properties = _.get(QUOTE_VIEWS, view);
+
   return getTransaction()
     .then((transactions) => {
       return Promise.all([
@@ -18,7 +25,7 @@ const getValuation = () => {
     })
     .then(setNetValueByClose)
     .then(setValuations)
-    .then(pickCoreInsights)
+    .then(pickInsightsBy(properties))
     // .then(series => _.slice(series, series.length - 100))
 };
 
@@ -31,13 +38,13 @@ const setValuations = (series) => {
     .value();
 };
 
-const pickCoreInsights = (series) => {
-  return _
-    .chain(series)
-    // .map(quote => _.pick(quote, ['date', 'commitment', 'netValue', 'rate']))
-    .map(quote => _.pick(quote, ['date', 'rate']))
-    .value();
-};
+const pickInsightsBy = _.curry((properties, series) => {
+  if(!properties) {
+    return series;
+  }
+
+  return _.map(series, quote => _.pick(quote, properties));
+});
 
 const setNetValueByClose = ({ shareCompositionByDate, historicals, commitment }) => {
   let previousSharedComposition;

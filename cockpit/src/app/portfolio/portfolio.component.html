@@ -1,1 +1,17 @@
-<sec-portfolio-audit [data]="series"></sec-portfolio-audit>
+<div style="max-width: 900px; margin: auto;">
+  <div style="width: inherit;">
+    <mat-button-toggle-group #viewGroup="matButtonToggleGroup"
+      [(value)]="view"
+      [disabled]="loading"
+      style="float: right; margin-right: 27px;">
+      <mat-button-toggle value="rate" (change)="getValuation()">
+        RATE
+      </mat-button-toggle>
+      <mat-button-toggle value="composition" (change)="getValuation()">
+        COMPOSITION
+      </mat-button-toggle>
+    </mat-button-toggle-group>
+  </div>
+
+  <sec-portfolio-audit [data]="series"></sec-portfolio-audit>
+</div>

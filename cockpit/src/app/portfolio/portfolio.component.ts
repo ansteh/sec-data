@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { finalize, map } from 'rxjs/operators';
 
 import { environment } from '../../environments/environment';
 
@@ -13,6 +13,8 @@ import { environment } from '../../environments/environment';
 })
 export class PortfolioComponent implements OnInit {
 
+  public view: string = 'composition';
+  public loading: boolean = false;
   public series: any[];
 
   constructor(private http: HttpClient) { }
@@ -22,7 +24,10 @@ export class PortfolioComponent implements OnInit {
   }
 
   getValuation() {
-    return this.http.get(`${environment.apiUrl}/portfolio/audit`)
+    this.loading = true;
+
+    return this.http.get(`${environment.apiUrl}/portfolio/audit?view=${this.view}`)
+      .pipe(finalize(() => { this.loading = false; }))
       .subscribe((series: any[]) => {
         this.series = series;
       });
