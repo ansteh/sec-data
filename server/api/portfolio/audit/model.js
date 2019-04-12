@@ -70,6 +70,10 @@ const setNetValueByClose = ({ shareCompositionByDate, historicals, commitment })
       currentCommitment[ticker] = quote.commitment;
     });
 
+    // _.forOwn(historical.entries, (quote, ticker) => {
+    //   quote.weight = _.round(quote.netValue / historical.netValue, 4);
+    // });
+
     previousSharedComposition = _.cloneDeep(shares);
 
     return historical;
@@ -269,5 +273,6 @@ const createSeries = ({ start, end, historicals }) => {
 };
 
 module.exports = {
+  getTransaction,
   getValuation,
 };
