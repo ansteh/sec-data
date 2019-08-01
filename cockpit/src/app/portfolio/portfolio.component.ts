@@ -6,6 +6,8 @@ import { finalize, map } from 'rxjs/operators';
 
 import { environment } from '../../environments/environment';
 
+import { simulate } from './tools/simulate';
+
 @Component({
   selector: 'sec-portfolio',
   templateUrl: './portfolio.component.html',
@@ -31,6 +33,8 @@ export class PortfolioComponent implements OnInit {
       .subscribe((series: any[]) => {
         this.series = series;
       });
+
+    // this.series = simulate();
   }
 
 }

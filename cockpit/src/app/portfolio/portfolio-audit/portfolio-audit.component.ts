@@ -79,7 +79,7 @@ export class PortfolioAuditComponent implements OnInit, OnChanges {
   }
 
   private update() {
-    if(!this.data) return;
+    if(!this.chart) return;
 
     this.labels = _.map(this.data, (point) => {
       return new Date(point.date);
