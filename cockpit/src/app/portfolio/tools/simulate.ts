@@ -4,13 +4,18 @@ export const simulate = (count = 365) => {
   const series = [];
   let step = 0;
   let date = new Date();
+  let previous;
 
   while (step < count) {
-    series.push({
+    const rate = previous
+      ? previous.rate + ((_.random(1, true) >= 0.5 ? -1 : 1) * (0.07 * _.random(1, true)))
+      : 1;
+
+    previous = {
       date,
       commitment: 0,
       netValue: 0,
-      rate: _.random(1, true),
+      rate: _.max([0, rate]),
       entries: {
         AAPL: {
           // amount: 0,
@@ -22,7 +27,9 @@ export const simulate = (count = 365) => {
           // volume: 19918871,
         }
       }
-    });
+    };
+
+    series.push(previous);
 
     date = addDays(date, 1);
     step += 1;

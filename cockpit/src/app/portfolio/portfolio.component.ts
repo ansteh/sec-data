@@ -26,15 +26,15 @@ export class PortfolioComponent implements OnInit {
   }
 
   getValuation() {
-    this.loading = true;
+    // this.loading = true;
+    //
+    // return this.http.get(`${environment.apiUrl}/portfolio/audit?view=${this.view}`)
+    //   .pipe(finalize(() => { this.loading = false; }))
+    //   .subscribe((series: any[]) => {
+    //     this.series = series;
+    //   });
 
-    return this.http.get(`${environment.apiUrl}/portfolio/audit?view=${this.view}`)
-      .pipe(finalize(() => { this.loading = false; }))
-      .subscribe((series: any[]) => {
-        this.series = series;
-      });
-
-    // this.series = simulate();
+    this.series = simulate();
   }
 
 }
