@@ -35,6 +35,7 @@ export class PortfolioComponent implements OnInit {
     //   });
 
     this.series = simulate();
+    // console.log(this.series);
   }
 
 }
