@@ -1,7 +1,10 @@
 import * as _ from 'lodash';
 
-const RATE = 0.07;
 const SEED = 1000;
+const YEARS = 30;
+const RANGE = { min: 0.04, max: 0.72 };
+const INCREASE_WEIGHT = 0.2;
+const ENTRIES_COUNT = 20;
 
 const DEFAULT_ENTRY_SEED = { commitment: SEED, netValue: SEED, rate: 1 };
 
@@ -11,14 +14,14 @@ const DEFAULT_ENTRY_SEED = { commitment: SEED, netValue: SEED, rate: 1 };
 // ], 'name');
 
 const ENTRIES = _
-  .chain(_.times(10, _.constant(0)))
+  .chain(_.times(ENTRIES_COUNT, _.constant(0)))
   .map((x, index) => {
     return _.assign({ name: index }, DEFAULT_ENTRY_SEED);
   })
   .keyBy('name')
   .value();
 
-export const simulate = (entries = ENTRIES, count = 365) => {
+export const simulate = (entries = ENTRIES, count = YEARS) => {
   const series = [];
   let step = 0;
   let date = new Date();
@@ -65,11 +68,11 @@ export const simulateEntries = (date, previous) => {
 };
 
 export const createEntry = ({ name, date, previous }) => {
-  const RATE = 0.07;
-  const SEED = 1000;
+  const seed = 1000;
+  const range = RANGE;
 
-  const commitment = previous ? previous.commitment : SEED;
-  const netValue = previous ? _.max([0, change(previous.netValue, RATE)]) : commitment;
+  const commitment = previous ? previous.commitment : seed;
+  const netValue = previous ? _.max([0, change(previous.netValue, _.random(range.min, range.max))]) : commitment;
   const rate = commitment > 0 ? netValue/commitment : 0;
 
   return {
@@ -89,6 +92,6 @@ const addDays = (date, days) => {
 };
 
 const change = (value, rate) => {
-  const lead = Math.random() >= 0.5 ? -1 : 1;
+  const lead = Math.random() >= INCREASE_WEIGHT ? 1 : -1;
   return value + (lead * rate * value * Math.random());
 };
