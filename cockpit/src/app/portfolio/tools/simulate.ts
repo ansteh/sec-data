@@ -15,7 +15,7 @@ const DEFAULT_ENTRY_SEED = { commitment: SEED, netValue: SEED, rate: 1 };
 
 const ENTRIES = _
   .chain(_.times(ENTRIES_COUNT, _.constant(0)))
-  .map((x, index) => {
+  .map((x, index) => {
     return _.assign({ name: index }, DEFAULT_ENTRY_SEED);
   })
   .keyBy('name')
