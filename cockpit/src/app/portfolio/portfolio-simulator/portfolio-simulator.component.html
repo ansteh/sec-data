@@ -1,0 +1,31 @@
+<!-- <mat-slider min="0" max="10" step="0.01" tickInterval="0.01" [(ngModel)]="config.range.min" thumbLabel></mat-slider>
+<mat-slider min="0" max="10" step="0.01" tickInterval="0.01" [(ngModel)]="config.range.max" thumbLabel></mat-slider> -->
+
+<form class="simulator-configuration" #form="ngForm" style="max-width: 900px; margin: auto;">
+  <mat-form-field appearance="outline">
+    <mat-label>Duration (Years)</mat-label>
+    <input type="number" name="years" matInput placeholder="Duration" [(ngModel)]="config.years">
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Positions</mat-label>
+    <input type="number" name="positions" matInput placeholder="Positions" [(ngModel)]="config.positions">
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>MIN range</mat-label>
+    <input type="number" name="rangeMin" matInput placeholder="MIN range" [(ngModel)]="config.range.min">
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>MAX range</mat-label>
+    <input type="number" name="rangeMax" matInput placeholder="MAX range" [(ngModel)]="config.range.max">
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Accurancy</mat-label>
+    <input type="number" name="accurancy" matInput placeholder="0 - 1" [(ngModel)]="config.accurancy">
+  </mat-form-field>
+</form>
+
+<sec-portfolio [simulation]="config"></sec-portfolio>

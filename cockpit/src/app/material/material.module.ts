@@ -9,6 +9,7 @@ import {
   MatIconModule,
   MatInputModule,
   MatFormFieldModule,
+  MatSliderModule,
   MatTableModule,
   MatOptionModule,
   MatSelectModule,
@@ -22,6 +23,7 @@ const modules = [
   MatInputModule,
   MatFormFieldModule,
   MatTableModule,
+  MatSliderModule,
   MatOptionModule,
   MatSelectModule,
 ];

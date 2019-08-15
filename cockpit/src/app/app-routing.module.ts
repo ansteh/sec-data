@@ -7,6 +7,7 @@ import { AppComponent } from './app.component';
 import { CandidatesComponent } from './candidates/candidates.component';
 import { LoginComponent } from './auth/login/login.component';
 import { PortfolioComponent } from './portfolio/portfolio.component';
+import { PortfolioSimulatorComponent } from './portfolio/portfolio-simulator/portfolio-simulator.component';
 import { StocksComponent } from './stocks/stocks.component';
 import { StockComponent } from './stock/stock.component';
 import { CreateStockComponent } from './stocks/create-stock/create-stock.component';
@@ -23,6 +24,10 @@ const routes: Routes = [
   {
     path: 'portfolio',
     component: PortfolioComponent
+  },
+  {
+    path: 'portfolio-simulator',
+    component: PortfolioSimulatorComponent
   },
   {
     path: 'stock/:ticker',

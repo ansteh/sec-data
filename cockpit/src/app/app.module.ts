@@ -11,6 +11,7 @@ import { AppComponent } from './app.component';
 import { CandidatesComponent } from './candidates/candidates.component';
 import { PortfolioComponent } from './portfolio/portfolio.component';
 import { PortfolioAuditComponent } from './portfolio/portfolio-audit/portfolio-audit.component';
+import { PortfolioSimulatorComponent } from './portfolio/portfolio-simulator/portfolio-simulator.component';
 
 import { StocksComponent } from './stocks/stocks.component';
 import { StockComponent } from './stock/stock.component';
@@ -38,6 +39,7 @@ import { TransactionsComponent } from './imports/transactions/transactions.compo
     StockMarketComponent,
     StockOpportunitiesComponent,
     CreateStockComponent,
+    PortfolioSimulatorComponent,
   ],
   imports: [
     BrowserModule,
