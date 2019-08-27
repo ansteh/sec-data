@@ -3,7 +3,7 @@ import * as _ from 'lodash';
 const SEED = 1000;
 const YEARS = 30;
 const RANGE = { min: 0.04, max: 0.72 };
-const INCREASE_WEIGHT = 0.2;
+const INCREASE_WEIGHT = 0.5;
 const ENTRIES_COUNT = 20;
 
 const DEFAULT_ENTRY_SEED = { commitment: SEED, netValue: SEED, rate: 1 };
@@ -33,29 +33,29 @@ const ENTRIES = _
   .keyBy('name')
   .value();
 
-const createEntries = (environment) => {
-  return _
-    .chain(environment)
-    .map(({ count, range, weight }) => {
-      return _
-        .chain(_.times(count, _.constant(0)))
-        .map((x, index) => {
-          const [min, max] = getRange(range.min, range.max);
-
-          const next = (value) => {
-            return change(value, _.random(min, max), weight);
-          };
-
-          const generator = { range: { min, max }, next, };
-
-          return _.assign({ name: index, generator }, DEFAULT_ENTRY_SEED);
-        })
-        .value();
-    })
-    .flatten()
-    .keyBy('name')
-    .value();
-};
+// const createEntries = (environment) => {
+//   return _
+//     .chain(environment)
+//     .map(({ count, range, weight }) => {
+//       return _
+//         .chain(_.times(count, _.constant(0)))
+//         .map((x, index) => {
+//           const [min, max] = getRange(range.min, range.max);
+//
+//           const next = (value) => {
+//             return change(value, _.random(min, max), weight);
+//           };
+//
+//           const generator = { range: { min, max }, next, };
+//
+//           return _.assign({ name: index, generator }, DEFAULT_ENTRY_SEED);
+//         })
+//         .value();
+//     })
+//     .flatten()
+//     .keyBy('name')
+//     .value();
+// };
 
 // const ENTRIES = createEntries([
 //   { count: 85, range: { min: 0.02, max: 0.08 }, weight: 0.4 },
@@ -63,7 +63,7 @@ const createEntries = (environment) => {
 // ]);
 
 export const simulate = (features = ENTRIES, count = YEARS) => {
-  console.log('features', features);
+  // console.log('features', features);
 
   const series = [];
   let step = 0;
