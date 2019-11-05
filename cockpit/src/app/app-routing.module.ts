@@ -15,6 +15,7 @@ import { StockMarketComponent } from './stock-market/stock-market.component';
 import { StockOpportunitiesComponent } from './stock-market/stock-opportunities/stock-opportunities.component';
 
 import { TransactionsComponent } from './imports/transactions/transactions.component';
+import { FilingsComponent } from './filings/filings.component';
 
 const routes: Routes = [
   {
@@ -36,6 +37,10 @@ const routes: Routes = [
   {
     path: 'stock/create',
     component: CreateStockComponent
+  },
+  {
+    path: 'stock/filings/:ticker',
+    component: FilingsComponent
   },
   {
     path: 'stocks',

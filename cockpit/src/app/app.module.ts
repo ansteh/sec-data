@@ -23,6 +23,7 @@ import { StockMarketComponent } from './stock-market/stock-market.component';
 import { StockOpportunitiesComponent } from './stock-market/stock-opportunities/stock-opportunities.component';
 
 import { TransactionsComponent } from './imports/transactions/transactions.component';
+import { FilingsComponent } from './filings/filings.component';
 
 @NgModule({
   declarations: [
@@ -40,6 +41,7 @@ import { TransactionsComponent } from './imports/transactions/transactions.compo
     StockOpportunitiesComponent,
     CreateStockComponent,
     PortfolioSimulatorComponent,
+    FilingsComponent,
   ],
   imports: [
     BrowserModule,
