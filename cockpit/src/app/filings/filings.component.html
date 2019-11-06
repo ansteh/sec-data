@@ -1,1 +1,5 @@
-<pre>{{ filings | json }}</pre>
+<sec-financial-statement [summary]="summary" [view]="view" [statement]="'incomeStatement'"></sec-financial-statement>
+<sec-financial-statement [summary]="summary" [view]="view" [statement]="'balanceSheet'"></sec-financial-statement>
+<sec-financial-statement [summary]="summary" [view]="view" [statement]="'cashflowStatement'"></sec-financial-statement>
+
+<pre>{{ summary | json }}</pre>

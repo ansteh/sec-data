@@ -5,6 +5,29 @@ import { Subscription } from 'rxjs';
 
 import { FilingsService } from './filings.service';
 
+import * as _ from 'lodash';
+
+const getFilingView = (context: any) => {
+  const dates = getDates(context);
+
+  if(dates.length > 0) {
+    const filing = context.filings[dates[0].date];
+
+    return {
+      dates,
+      incomeStatement: _.keys(filing.incomeStatement),
+      balanceSheet: _.keys(filing.balanceSheet),
+      cashflowStatement: _.keys(filing.cashflowStatement),
+    };
+  }
+};
+
+const getDates = (context: any) => {
+  return _.map(context.filings, (filing, date) => {
+    return { date, LTM: _.get(filing, 'LTM') };
+  });
+};
+
 @Component({
   selector: 'sec-filings',
   templateUrl: './filings.component.html',
@@ -12,7 +35,9 @@ import { FilingsService } from './filings.service';
 })
 export class FilingsComponent implements OnInit {
 
-  public filings: any;
+  public summary: any;
+  public view: any;
+
   private routeParamsSub: Subscription;
 
   constructor(private route: ActivatedRoute, private filingsService: FilingsService) { }
@@ -22,7 +47,10 @@ export class FilingsComponent implements OnInit {
       console.log(params);
       if(params.ticker){
         this.filingsService.getBy(params.ticker)
-          .subscribe((filings) => { this.filings = filings; });
+          .subscribe((summary) => {
+            this.summary = summary;
+            this.view = getFilingView(summary);
+          });
       }
     });
   }
