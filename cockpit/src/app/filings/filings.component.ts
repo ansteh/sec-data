@@ -7,6 +7,8 @@ import { FilingsService } from './filings.service';
 
 import * as _ from 'lodash';
 
+import * as Discount from './formulas/discount-model';
+
 const getFilingView = (context: any) => {
   const dates = getDates(context);
 
@@ -50,6 +52,20 @@ export class FilingsComponent implements OnInit {
           .subscribe((summary) => {
             this.summary = summary;
             this.view = getFilingView(summary);
+
+            const discountedFreeChasFlow = Discount.getIntrinsicValue({
+              value: 30,
+              growthRate: 0.07,
+              discountRate: 0.11,
+              terminalRate: 0.03,
+              years: 5,
+            });
+
+            console.log('discountedFreeChasFlow', discountedFreeChasFlow);
+            console.log('view', this.view);
+
+            console.log('free cash flow', Discount.getFreeCashFlow(this.view.dates, summary.filings));
+            console.log('free cash flow per share', Discount.getFreeCashFlowPerShare(this.view.dates, summary.filings));
           });
       }
     });
