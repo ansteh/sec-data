@@ -14,6 +14,20 @@ export const growthRate = (collection) => {
   }, []);
 };
 
+const normalize = (collection) => {
+  if(!collection || collection.length < 2) {
+    return collection;
+  }
+
+  const minimum = _.min(collection);
+
+  if(minimum < 0) {
+    return collection.map(value => value - minimum + 1);
+  }
+
+  return collection;
+};
+
 export const getMeanGrowthRate = (values) => {
   if(!values || values.length < 2) {
     return 0;
@@ -38,12 +52,21 @@ export const getGrowthRateMomentums = (values, growthRates) => {
   }, []);
 };
 
+// const getNormalizedGrowthRates = (values) => {
+//   console.log('normalized values', normalize(values));
+//   return growthRate(normalize(values));
+// };
+//
 // const series = [-5, 0.1, 10, 1, 2.3, 0.5, 0.1, 5, 6];
 // const growthRates = growthRate(series);
+// const normalized = getNormalizedGrowthRates(series);
 // const momentums = getGrowthRateMomentums(series, growthRates);
 //
+// console.log('series', series);
 // console.log('growthRates', growthRates);
-// console.log('momentums', momentums);
+// console.log('normalized rates', normalized);
+//
+// // console.log('momentums', momentums);
 //
 // const predit = (value, growthRates) => {
 //   return growthRates.reduce((value, rate) => {
@@ -51,5 +74,12 @@ export const getGrowthRateMomentums = (values, growthRates) => {
 //   }, value);
 // };
 //
-// console.log('rates:', predit(_.first(series), growthRates));
-// console.log('momentums:', predit(_.first(series), momentums));
+// console.log('prediction:', predit(_.first(series), growthRates));
+// console.log('normalized prediction:', predit(_.first(series), normalized));
+// // console.log('momentums:', predit(_.first(series), momentums));
+
+
+// const [previous, current] = series;
+// const rate = current/previous - 1;
+// console.log('rate', rate);
+// console.log('invoked', predit(previous, [rate]));

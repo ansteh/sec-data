@@ -11,26 +11,7 @@ import * as Cashflow from './formulas/cashflow';
 import * as Discount from './formulas/discount-model';
 import * as Earnings from './formulas/earnings';
 
-const getFilingView = (context: any) => {
-  const dates = getDates(context);
-
-  if(dates.length > 0) {
-    const filing = context.filings[dates[0].date];
-
-    return {
-      dates,
-      incomeStatement: _.keys(filing.incomeStatement),
-      balanceSheet: _.keys(filing.balanceSheet),
-      cashflowStatement: _.keys(filing.cashflowStatement),
-    };
-  }
-};
-
-const getDates = (context: any) => {
-  return _.map(context.filings, (filing, date) => {
-    return { date, LTM: _.get(filing, 'LTM') };
-  });
-};
+import { getFilingView, flatten } from './filings';
 
 @Component({
   selector: 'sec-filings',
@@ -55,12 +36,21 @@ export class FilingsComponent implements OnInit {
             this.summary = summary;
             this.view = getFilingView(summary);
 
+            console.log(flatten(summary));
+            // const discountedFreeChasFlow = Discount.getIntrinsicValue({
+            //   value: 30,
+            //   growthRate: 0.07,
+            //   discountRate: 0.11,
+            //   terminalRate: 0.03,
+            //   years: 5,
+            // });
+
             const discountedFreeChasFlow = Discount.getIntrinsicValue({
-              value: 30,
-              growthRate: 0.07,
-              discountRate: 0.11,
-              terminalRate: 0.03,
-              years: 5,
+              value: 11.85,
+              growthRate: 0.2,
+              discountRate: 0.12,
+              terminalRate: 0.04,
+              years: 10,
             });
 
             console.log('discountedFreeChasFlow', discountedFreeChasFlow);
