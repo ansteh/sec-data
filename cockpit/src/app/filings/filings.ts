@@ -1,4 +1,5 @@
 import * as _ from 'lodash';
+import { getIncomeMargins } from './metrics';
 
 export const getFilingView = (context: any) => {
   const dates = getDates(context);
@@ -53,6 +54,6 @@ export const flatten = (stock) => {
     });
   });
 
-  return statements.incomeStatement;
-  // return { dates, statements, margins: getIncomeMargins(statements) };
+  // return statements.incomeStatement;
+  return { dates, statements, margins: getIncomeMargins(statements) };
 };

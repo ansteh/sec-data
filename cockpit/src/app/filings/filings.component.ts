@@ -45,29 +45,29 @@ export class FilingsComponent implements OnInit {
             //   years: 5,
             // });
 
-            const discountedFreeChasFlow = Discount.getIntrinsicValue({
-              value: 11.85,
-              growthRate: 0.2,
-              discountRate: 0.12,
-              terminalRate: 0.04,
-              years: 10,
-            });
-
-            console.log('discountedFreeChasFlow', discountedFreeChasFlow);
-            console.log('view', this.view);
-
-            console.log('free cash flow', Cashflow.getFreeCashFlow(this.view.dates, summary.filings));
-            console.log('free cash flow per share', Cashflow.getFreeCashFlowPerShare(this.view.dates, summary.filings));
-
-            console.log('free cash flow discount', Cashflow.getDiscounts({
-              dates: this.view.dates,
-              filings: summary.filings,
-            }));
-
-            console.log('earning discounts', Earnings.getDiscounts({
-              dates: this.view.dates,
-              filings: summary.filings,
-            }));
+            // const discountedFreeChasFlow = Discount.getIntrinsicValue({
+            //   value: 11.85,
+            //   growthRate: 0.2,
+            //   discountRate: 0.12,
+            //   terminalRate: 0.04,
+            //   years: 10,
+            // });
+            //
+            // console.log('discountedFreeChasFlow', discountedFreeChasFlow);
+            // console.log('view', this.view);
+            //
+            // console.log('free cash flow', Cashflow.getFreeCashFlow(this.view.dates, summary.filings));
+            // console.log('free cash flow per share', Cashflow.getFreeCashFlowPerShare(this.view.dates, summary.filings));
+            //
+            // console.log('free cash flow discount', Cashflow.getDiscounts({
+            //   dates: this.view.dates,
+            //   filings: summary.filings,
+            // }));
+            //
+            // console.log('earning discounts', Earnings.getDiscounts({
+            //   dates: this.view.dates,
+            //   filings: summary.filings,
+            // }));
           });
       }
     });
