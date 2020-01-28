@@ -25,6 +25,7 @@ import { StockOpportunitiesComponent } from './stock-market/stock-opportunities/
 import { TransactionsComponent } from './imports/transactions/transactions.component';
 import { FilingsComponent } from './filings/filings.component';
 import { FinancialStatementComponent } from './filings/financial-statement/financial-statement.component';
+import { StatementEntryProgressComponent } from './filings/statement-entry-progress/statement-entry-progress.component';
 
 @NgModule({
   declarations: [
@@ -44,6 +45,7 @@ import { FinancialStatementComponent } from './filings/financial-statement/finan
     PortfolioSimulatorComponent,
     FilingsComponent,
     FinancialStatementComponent,
+    StatementEntryProgressComponent,
   ],
   imports: [
     BrowserModule,

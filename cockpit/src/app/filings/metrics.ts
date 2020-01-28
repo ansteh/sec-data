@@ -20,7 +20,30 @@ const map = (pool, calculate) => {
   });
 };
 
+const getAllEntries = (data) => {
+  const paths = {
+    incomeStatement: _.keys(data.incomeStatement),
+    balanceSheet: _.keys(data.balanceSheet),
+    cashflowStatement: _.keys(data.cashflowStatement),
+  };
+
+  const entries = {};
+
+  _.forOwn(paths, (statements, report) => {
+    // console.log(statements.length);
+    _.forEach(statements, (statement) => {
+      if(entries[statement]) console.log(`${statement} already exists!`);
+      entries[statement] = getValues(`${report}.${statement}`, data);
+    });
+  });
+
+  // console.log(_.keys(entries).length);
+
+  return entries;
+};
+
 export const getIncomeMargins = (data) => {
+  console.log('data', data, getAllEntries(data));
   const revenue = getValues('incomeStatement.revenue', data);
   const grossProfit = getValues('incomeStatement.grossProfit', data);
   const researchAndDevelopment = getValues('incomeStatement.researchAndDevelopment', data);
@@ -31,11 +54,18 @@ export const getIncomeMargins = (data) => {
   const netIncome = getValues('incomeStatement.netIncome', data);
 
   const totalCurrentAssets = getValues('balanceSheet.totalCurrentAssets', data);
+  const plantPropertyAndEquipmentNet = getValues('balanceSheet.plantPropertyAndEquipmentNet', data);
+  const goodwill = getValues('balanceSheet.goodwill', data);
+
+  const shortTermBorrowings = getValues('balanceSheet.shortTermBorrowings', data);
+  const longTermDebtDue = getValues('balanceSheet.longTermDebtDue', data);
   const totalCurrentLiabilities = getValues('balanceSheet.totalCurrentLiabilities', data);
 
   const totalEquity = getValues('balanceSheet.totalEquity', data);
   const longTermDebt = getValues('balanceSheet.longTermDebt', data);
   const totalLiabilities = getValues('balanceSheet.totalLiabilities', data);
+
+  const totalDebt = map([shortTermBorrowings, longTermDebtDue, longTermDebt], ([a, b, c]) => { return a+b+c; });
 
   return {
     incomeStatement: {
@@ -81,10 +111,24 @@ export const getIncomeMargins = (data) => {
         label: 'Current Ratio',
         values: map([totalCurrentAssets, totalCurrentLiabilities], ([a, b]) => { return a/b; }),
       },
+      totalDebt: {
+        label: 'Total Debt',
+        values: totalDebt,
+      },
       totalDebtToEquity: {
         label: 'Total Debt to Equity Ratio',
-        values: map([longTermDebt, totalEquity], ([a, b]) => { return a/b; }),
+        values: map([totalDebt, totalEquity], ([a, b]) => { return a/b; }),
       },
     },
+    other: {
+      operatingIncomeToPlantPropertyAndEquipmentNet: {
+        label: 'Operating Income to Plant Property and Equipment',
+        values: map([operatingIncome, plantPropertyAndEquipmentNet], ([a, b]) => { return a/b; }),
+      },
+      totalDebtToPlantPropertyAndEquipmentNet: {
+        label: 'Operating Income to Plant Property and Equipment',
+        values: map([totalDebt, plantPropertyAndEquipmentNet], ([a, b]) => { return a/b; }),
+      },
+    }
   };
 };

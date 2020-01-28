@@ -1,13 +1,13 @@
 <table *ngIf="view">
   <thead>
-    <th></th>
+    <th style="width: 290px;"></th>
     <th *ngFor="let filing of view.dates">{{ filing.date }}</th>
   </thead>
 
   <tbody>
     <tr *ngFor="let property of view[statement]">
       <td>{{ property }}</td>
-      <td *ngFor="let filing of view.dates">{{ summary.filings[filing.date][statement][property] }}</td>
+      <td *ngFor="let filing of view.dates" style="text-align: right;">{{ summary.filings[filing.date][statement][property] }}</td>
     </tr>
   </tbody>
 </table>

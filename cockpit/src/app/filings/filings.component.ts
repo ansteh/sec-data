@@ -12,6 +12,27 @@ import * as Discount from './formulas/discount-model';
 import * as Earnings from './formulas/earnings';
 
 import { getFilingView, flatten } from './filings';
+import { growthRate } from './formulas/growth';
+
+const createEntry = (statement) => {
+  const rates = growthRate(statement.values);
+  const values = statement.values.slice(0);
+
+  const series = _.reduceRight(statement.dates, (series, date) => {
+    series.unshift({
+      date,
+      change: rates.pop(),
+      value: values.pop(),
+    });
+
+    return series;
+  }, []);
+
+  return {
+    label: statement.label,
+    values: series,
+  };
+};
 
 @Component({
   selector: 'sec-filings',
@@ -22,6 +43,7 @@ export class FilingsComponent implements OnInit {
 
   public summary: any;
   public view: any;
+  public entryExample: any;
 
   private routeParamsSub: Subscription;
 
@@ -36,7 +58,14 @@ export class FilingsComponent implements OnInit {
             this.summary = summary;
             this.view = getFilingView(summary);
 
-            console.log(flatten(summary));
+            const horizontals = flatten(summary);
+            console.log('horizontals', horizontals);
+
+            const { dates, statements } = horizontals;
+            this.entryExample = createEntry(_.assign({ dates }, statements.incomeStatement.operatingIncome));
+
+            console.log('entry', this.entryExample);
+
             // const discountedFreeChasFlow = Discount.getIntrinsicValue({
             //   value: 30,
             //   growthRate: 0.07,
