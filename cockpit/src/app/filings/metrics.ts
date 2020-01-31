@@ -42,8 +42,27 @@ const getAllEntries = (data) => {
   return entries;
 };
 
+const devide = ([a, b]) => {
+  return !b ? 0 : a/b;
+};
+
+const getYearsToPayoffLongTermDebt = (netIncome, longTermDebt) => {
+  if(longTermDebt === 0) return 0;
+
+  if(longTermDebt > 0) {
+    if(netIncome > 0) {
+      return longTermDebt/netIncome;
+    }
+
+    return null;
+  }
+
+  return null;
+};
+
 export const getIncomeMargins = (data) => {
-  console.log('data', data, getAllEntries(data));
+  // console.log('data', data, getAllEntries(data));
+
   const revenue = getValues('incomeStatement.revenue', data);
   const grossProfit = getValues('incomeStatement.grossProfit', data);
   const researchAndDevelopment = getValues('incomeStatement.researchAndDevelopment', data);
@@ -64,8 +83,10 @@ export const getIncomeMargins = (data) => {
   const totalEquity = getValues('balanceSheet.totalEquity', data);
   const longTermDebt = getValues('balanceSheet.longTermDebt', data);
   const totalLiabilities = getValues('balanceSheet.totalLiabilities', data);
+  const totalAssets = getValues('balanceSheet.totalAssets', data);
 
-  const totalDebt = map([shortTermBorrowings, longTermDebtDue, longTermDebt], ([a, b, c]) => { return a+b+c; });
+  const totalShortTermDebt = map([shortTermBorrowings, longTermDebtDue], ([a, b]) => { return a+b; });
+  const totalDebt = map([totalShortTermDebt, longTermDebt], ([a, b]) => { return a+b; });
 
   return {
     incomeStatement: {
@@ -109,7 +130,23 @@ export const getIncomeMargins = (data) => {
     balanceSheet: {
       currentRatio: {
         label: 'Current Ratio',
-        values: map([totalCurrentAssets, totalCurrentLiabilities], ([a, b]) => { return a/b; }),
+        values: map([totalCurrentAssets, totalCurrentLiabilities], devide),
+      },
+      shortToLongDebtRatio: {
+        label: 'Short Term Debt to Long Term Debt Ratio',
+        values: map([shortTermBorrowings, longTermDebt], devide),
+      },
+      totalShortToLongDebtRatio: {
+        label: 'Total Short Term Debt to Long Term Debt Ratio',
+        values: map([totalShortTermDebt, longTermDebt], devide),
+      },
+      yearsToPayoffLongTermDebt: {
+        label: 'Years to payoff Long Term Debt',
+        values: map([netIncome, longTermDebt], ([a, b]) => getYearsToPayoffLongTermDebt(a, b)),
+      },
+      returnOnAssetRatio: {
+        label: 'Return on Asset Ratio',
+        values: map([netIncome, totalAssets], devide),
       },
       totalDebt: {
         label: 'Total Debt',
@@ -117,17 +154,17 @@ export const getIncomeMargins = (data) => {
       },
       totalDebtToEquity: {
         label: 'Total Debt to Equity Ratio',
-        values: map([totalDebt, totalEquity], ([a, b]) => { return a/b; }),
+        values: map([totalDebt, totalEquity], devide),
       },
     },
     other: {
       operatingIncomeToPlantPropertyAndEquipmentNet: {
         label: 'Operating Income to Plant Property and Equipment',
-        values: map([operatingIncome, plantPropertyAndEquipmentNet], ([a, b]) => { return a/b; }),
+        values: map([operatingIncome, plantPropertyAndEquipmentNet], devide),
       },
       totalDebtToPlantPropertyAndEquipmentNet: {
         label: 'Operating Income to Plant Property and Equipment',
-        values: map([totalDebt, plantPropertyAndEquipmentNet], ([a, b]) => { return a/b; }),
+        values: map([totalDebt, plantPropertyAndEquipmentNet], devide),
       },
     }
   };
