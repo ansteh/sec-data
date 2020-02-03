@@ -85,8 +85,11 @@ export const getIncomeMargins = (data) => {
   const totalLiabilities = getValues('balanceSheet.totalLiabilities', data);
   const totalAssets = getValues('balanceSheet.totalAssets', data);
 
+  const repurchaseOfCommonStock = getValues('cashflowStatement.repurchaseOfCommonStock', data);
+
   const totalShortTermDebt = map([shortTermBorrowings, longTermDebtDue], ([a, b]) => { return a+b; });
   const totalDebt = map([totalShortTermDebt, longTermDebt], ([a, b]) => { return a+b; });
+  const treasuryShareAdjustedTotalEquity = map([totalEquity, repurchaseOfCommonStock], ([a, b]) => { return a-b; });
 
   return {
     incomeStatement: {
@@ -154,7 +157,11 @@ export const getIncomeMargins = (data) => {
       },
       totalDebtToEquity: {
         label: 'Total Debt to Equity Ratio',
-        values: map([totalDebt, totalEquity], devide),
+        values: map([totalLiabilities, totalEquity], devide),
+      },
+      treasuryShareAdjustedDebtToEquity: {
+        label: 'Treasury share-adjusted Total Debt to Equity Ratio',
+        values: map([totalLiabilities, treasuryShareAdjustedTotalEquity], devide),
       },
     },
     other: {
