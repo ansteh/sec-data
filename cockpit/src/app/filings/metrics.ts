@@ -16,7 +16,7 @@ const map = (pool, calculate) => {
   const values = _.first(pool);
 
   return _.map(values, (value, index) => {
-    return calculate(_.map(pool, series => _.get(series, index)));
+    return calculate(_.map(pool, series => _.get(series, index)), index);
   });
 };
 
@@ -60,6 +60,70 @@ const getYearsToPayoffLongTermDebt = (netIncome, longTermDebt) => {
   return null;
 };
 
+const inspectRetainedEarnings = (data) => {
+  const netIncome = getValues('incomeStatement.netIncome', data);
+  const retainedEarnings = getValues('balanceSheet.retainedEarnings', data);
+  const commonDividendsPaid = getValues('cashflowStatement.commonDividendsPaid', data);
+  const repurchaseOfCommonStock = getValues('cashflowStatement.repurchaseOfCommonStock', data);
+
+  const treasuryStock	 = getValues('balanceSheet.treasuryStock', data);
+  const treasuryStockAndOther	 = getValues('balanceSheet.treasuryStockAndOther', data);
+  const totalTreasuryStock = map([treasuryStock, treasuryStockAndOther], ([a, b]) => { return a+b; });
+
+  const input = [
+    netIncome,
+    repurchaseOfCommonStock,
+    retainedEarnings,
+    commonDividendsPaid,
+    totalTreasuryStock,
+  ];
+
+  const calculatedRetainedEarnings = map(input, (values, index) => {
+    if(index === 0) return;
+
+    const [
+      netIncome,
+      repurchaseOfCommonStock,
+      currentRetainedEarnings,
+      commonDividendsPaid,
+      currentTotalTreasuryStock,
+    ] = values;
+
+    const previousRetainedEarnings = retainedEarnings[index-1];
+    // const treasuryChange = currentTotalTreasuryStock - totalTreasuryStock[index-1];
+    // console.log('treasuryChange', treasuryChange);
+
+    const value = previousRetainedEarnings + netIncome + repurchaseOfCommonStock + commonDividendsPaid;
+
+    const stats: any = {
+      value,
+      should: currentRetainedEarnings,
+    };
+
+    stats.rate = _.round((stats.value/stats.should - 1) * 100, 2);
+    stats.difference = stats.value-stats.should;
+
+    return stats;
+  });
+
+  console.log('calculatedRetainedEarnings', JSON.stringify(_.tail(calculatedRetainedEarnings), null, 2));
+};
+
+const getAccumulatedEarnings = (netIncome) => {
+  netIncome = netIncome || [];
+
+  let sum = 0;
+  const values = netIncome.map((earnings, index) => {
+    sum += earnings || 0;
+    return sum;
+  }, []);
+
+  return {
+    label: 'Accumulated Net Income or Loss',
+    values,
+  };
+};
+
 export const getIncomeMargins = (data) => {
   // console.log('data', data, getAllEntries(data));
 
@@ -80,16 +144,22 @@ export const getIncomeMargins = (data) => {
   const longTermDebtDue = getValues('balanceSheet.longTermDebtDue', data);
   const totalCurrentLiabilities = getValues('balanceSheet.totalCurrentLiabilities', data);
 
+  const retainedEarnings = getValues('balanceSheet.retainedEarnings', data);
+
   const totalEquity = getValues('balanceSheet.totalEquity', data);
   const longTermDebt = getValues('balanceSheet.longTermDebt', data);
   const totalLiabilities = getValues('balanceSheet.totalLiabilities', data);
   const totalAssets = getValues('balanceSheet.totalAssets', data);
 
+  const commonDividendsPaid = getValues('cashflowStatement.commonDividendsPaid', data);
   const repurchaseOfCommonStock = getValues('cashflowStatement.repurchaseOfCommonStock', data);
 
   const totalShortTermDebt = map([shortTermBorrowings, longTermDebtDue], ([a, b]) => { return a+b; });
   const totalDebt = map([totalShortTermDebt, longTermDebt], ([a, b]) => { return a+b; });
   const treasuryShareAdjustedTotalEquity = map([totalEquity, repurchaseOfCommonStock], ([a, b]) => { return a-b; });
+
+  const accumulatedEarnings = getAccumulatedEarnings(netIncome);
+  // inspectRetainedEarnings(data);
 
   return {
     incomeStatement: {
@@ -131,6 +201,11 @@ export const getIncomeMargins = (data) => {
       },
     },
     balanceSheet: {
+      accumulatedEarnings,
+      // accumulatedEarningsGrowthRate: {
+      //   label: 'Accumulated Net Income or Loss (% Rate)',
+      //   values: growthRate(_.get(accumulatedEarnings, 'values') || []),
+      // },
       currentRatio: {
         label: 'Current Ratio',
         values: map([totalCurrentAssets, totalCurrentLiabilities], devide),
@@ -162,6 +237,14 @@ export const getIncomeMargins = (data) => {
       treasuryShareAdjustedDebtToEquity: {
         label: 'Treasury share-adjusted Total Debt to Equity Ratio',
         values: map([totalLiabilities, treasuryShareAdjustedTotalEquity], devide),
+      },
+      returnOnEquity: {
+        label: 'Return on Equity (ROE)',
+        values: map([netIncome, totalEquity], devide),
+      },
+      treasuryShareAdjustedReturnOnEquity: {
+        label: 'Treasury share-adjusted Return on Equity (ROE)',
+        values: map([netIncome, treasuryShareAdjustedTotalEquity], devide),
       },
     },
     other: {
