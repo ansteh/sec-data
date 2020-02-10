@@ -124,6 +124,33 @@ const getAccumulatedEarnings = (netIncome) => {
   };
 };
 
+const getCapitalExpendituresToEarningsOver10Years = (capex, earnings) => {
+  earnings = earnings || [];
+
+  let total = {
+    capex: -_.sum(capex),
+    earnings: _.sum(earnings),
+  };
+
+  return total.earnings ? total.capex/total.earnings : 0;
+};
+
+/* PRICING */
+
+const getBondEquityYield = (prices, earnings) => {
+  return map([prices, earnings], devide);
+};
+
+const simulateAvgPrices = (earnings, pe) => {
+  return _.map(earnings, value => value * pe);
+};
+
+const simulateLongTermRate = (earnings, rate) => {
+  return _.map(earnings, value => rate);
+};
+
+/* END PRICING */
+
 export const getIncomeMargins = (data) => {
   // console.log('data', data, getAllEntries(data));
 
@@ -160,6 +187,26 @@ export const getIncomeMargins = (data) => {
 
   const accumulatedEarnings = getAccumulatedEarnings(netIncome);
   // inspectRetainedEarnings(data);
+
+  const weightedAverageDilutedSharesOutstanding = getValues('incomeStatement.weightedAverageDilutedSharesOutstanding', data);
+  const capitalExpenditures = getValues('cashflowStatement.capitalExpenditures', data);
+  const capitalExpendituresPerShare = map([capitalExpenditures, weightedAverageDilutedSharesOutstanding], ([a, b]) => {
+    return !b ? 0 : (-a)/b;
+  });
+  // TODO: metrify leverage by debt (49)
+
+  /* valuations: */
+  const dilutedEPS = getValues('incomeStatement.dilutedEPS', data);
+  const preTaxIncome = getValues('incomeStatement.preTaxIncome', data);
+  const dilutedEPSPreTax = map([preTaxIncome, weightedAverageDilutedSharesOutstanding], devide);
+
+  const avgPrices = simulateAvgPrices(dilutedEPS, 15);
+  const longTermRate = simulateLongTermRate(dilutedEPS, 0.07);
+  // console.log('dilutedEPSPreTax', dilutedEPSPreTax);
+  // console.log('avgPrices', avgPrices);
+  // console.log('longTermRate', longTermRate);
+
+  /* end valuations */
 
   return {
     incomeStatement: {
@@ -247,6 +294,20 @@ export const getIncomeMargins = (data) => {
         values: map([netIncome, treasuryShareAdjustedTotalEquity], devide),
       },
     },
+    cashflowStatement: {
+      capitalExpendituresPerShare: {
+        label: 'Capital Expenditures Per Share',
+        values: capitalExpendituresPerShare,
+      },
+      capitalExpendituresToEarnings: {
+        label: 'Capital Expenditures to Earnings Ration',
+        values: map([capitalExpenditures, netIncome], ([a, b]) => { return !b ? 0 : (-a)/b; }),
+      },
+      capitalExpendituresToEarningsOver10Years: { // durable competitive advantage: good place to look (>= 50%) more than likely (>= 25%)
+        label: 'Capital Expenditures to Earnings Over 10 Years',
+        values: getCapitalExpendituresToEarningsOver10Years(capitalExpenditures, netIncome),
+      },
+    },
     other: {
       operatingIncomeToPlantPropertyAndEquipmentNet: {
         label: 'Operating Income to Plant Property and Equipment',
@@ -256,6 +317,24 @@ export const getIncomeMargins = (data) => {
         label: 'Operating Income to Plant Property and Equipment',
         values: map([totalDebt, plantPropertyAndEquipmentNet], devide),
       },
-    }
+    },
+    valuations: {
+      preTaxAverageBondEquityYield: {
+        label: 'Pre Tax Average Bond Equity Yield',
+        values: map([dilutedEPSPreTax, avgPrices], devide),
+      },
+      netAverageBondEquityYield: {
+        label: 'Net Average Bond Equity Yield',
+        values: map([dilutedEPS, avgPrices], devide),
+      },
+      preTaxBondEquityByLongTermRate: {
+        label: 'Pre tax bond equity capitalized by long-term interest rate',
+        values: map([dilutedEPSPreTax, longTermRate], devide),
+      },
+      netBondEquityByLongTermRate: {
+        label: 'Net bond equity capitalized by long-term interest rate',
+        values: map([dilutedEPS, longTermRate], devide),
+      },
+    },
   };
 };
