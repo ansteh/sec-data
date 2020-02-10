@@ -1,50 +1,8 @@
 import * as _ from 'lodash';
 
 import { growthRate } from './formulas/growth';
-
-const getValues = (path, data) => {
-  const fullPath = getNormedPath(path);
-  return _.get(data, fullPath);
-};
-
-const getNormedPath = (path) => {
-  const [report, statement] = _.split(path, '.');
-  return _.join([path, 'values'], '.');
-};
-
-const map = (pool, calculate) => {
-  const values = _.first(pool);
-
-  return _.map(values, (value, index) => {
-    return calculate(_.map(pool, series => _.get(series, index)), index);
-  });
-};
-
-const getAllEntries = (data) => {
-  const paths = {
-    incomeStatement: _.keys(data.incomeStatement),
-    balanceSheet: _.keys(data.balanceSheet),
-    cashflowStatement: _.keys(data.cashflowStatement),
-  };
-
-  const entries = {};
-
-  _.forOwn(paths, (statements, report) => {
-    // console.log(statements.length);
-    _.forEach(statements, (statement) => {
-      if(entries[statement]) console.log(`${statement} already exists!`);
-      entries[statement] = getValues(`${report}.${statement}`, data);
-    });
-  });
-
-  // console.log(_.keys(entries).length);
-
-  return entries;
-};
-
-const devide = ([a, b]) => {
-  return !b ? 0 : a/b;
-};
+import { devide, getAllEntries, getValues, map } from './metrics.util';
+import { getValuations } from './pricing';
 
 const getYearsToPayoffLongTermDebt = (netIncome, longTermDebt) => {
   if(longTermDebt === 0) return 0;
@@ -135,22 +93,6 @@ const getCapitalExpendituresToEarningsOver10Years = (capex, earnings) => {
   return total.earnings ? total.capex/total.earnings : 0;
 };
 
-/* PRICING */
-
-const getBondEquityYield = (prices, earnings) => {
-  return map([prices, earnings], devide);
-};
-
-const simulateAvgPrices = (earnings, pe) => {
-  return _.map(earnings, value => value * pe);
-};
-
-const simulateLongTermRate = (earnings, rate) => {
-  return _.map(earnings, value => rate);
-};
-
-/* END PRICING */
-
 export const getIncomeMargins = (data) => {
   // console.log('data', data, getAllEntries(data));
 
@@ -195,18 +137,7 @@ export const getIncomeMargins = (data) => {
   });
   // TODO: metrify leverage by debt (49)
 
-  /* valuations: */
-  const dilutedEPS = getValues('incomeStatement.dilutedEPS', data);
-  const preTaxIncome = getValues('incomeStatement.preTaxIncome', data);
-  const dilutedEPSPreTax = map([preTaxIncome, weightedAverageDilutedSharesOutstanding], devide);
-
-  const avgPrices = simulateAvgPrices(dilutedEPS, 15);
-  const longTermRate = simulateLongTermRate(dilutedEPS, 0.07);
-  // console.log('dilutedEPSPreTax', dilutedEPSPreTax);
-  // console.log('avgPrices', avgPrices);
-  // console.log('longTermRate', longTermRate);
-
-  /* end valuations */
+  const valuations = getValuations(data);
 
   return {
     incomeStatement: {
@@ -318,23 +249,6 @@ export const getIncomeMargins = (data) => {
         values: map([totalDebt, plantPropertyAndEquipmentNet], devide),
       },
     },
-    valuations: {
-      preTaxAverageBondEquityYield: {
-        label: 'Pre Tax Average Bond Equity Yield',
-        values: map([dilutedEPSPreTax, avgPrices], devide),
-      },
-      netAverageBondEquityYield: {
-        label: 'Net Average Bond Equity Yield',
-        values: map([dilutedEPS, avgPrices], devide),
-      },
-      preTaxBondEquityByLongTermRate: {
-        label: 'Pre tax bond equity capitalized by long-term interest rate',
-        values: map([dilutedEPSPreTax, longTermRate], devide),
-      },
-      netBondEquityByLongTermRate: {
-        label: 'Net bond equity capitalized by long-term interest rate',
-        values: map([dilutedEPS, longTermRate], devide),
-      },
-    },
+    valuations,
   };
 };
