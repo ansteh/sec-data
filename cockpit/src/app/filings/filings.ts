@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-import { getIncomeMargins } from './metrics';
+import { getIncomeMargins } from './metrics/statements';
 
 export const getFilingView = (context: any) => {
   const dates = getDates(context);

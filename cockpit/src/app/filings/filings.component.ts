@@ -61,10 +61,18 @@ export class FilingsComponent implements OnInit {
             const horizontals = flatten(summary);
             console.log('horizontals', horizontals);
 
-            const { dates, statements } = horizontals;
-            this.entryExample = createEntry(_.assign({ dates }, statements.incomeStatement.operatingIncome));
+            // const { dates, statements } = horizontals;
+            // this.entryExample = createEntry(_.assign({ dates }, statements.incomeStatement.operatingIncome));
+            //
+            // console.log('entry', this.entryExample);
 
-            console.log('entry', this.entryExample);
+            // const discountedFreeChasFlow = Discount.getIntrinsicValue({
+            //   value: 0.7,
+            //   growthRate: 0.1,
+            //   discountRate: 0.07,
+            //   terminalRate: 0,
+            //   years: 20,
+            // });
 
             // const discountedFreeChasFlow = Discount.getIntrinsicValue({
             //   value: 30,

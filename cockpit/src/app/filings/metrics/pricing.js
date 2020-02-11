@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 
-import { devide, getAllEntries, getValues, map } from './metrics.util';
+import { devide, getAllEntries, getValues, map } from './util';
 
 const getBondEquityYield = (prices, earnings) => {
   return map([prices, earnings], devide);
