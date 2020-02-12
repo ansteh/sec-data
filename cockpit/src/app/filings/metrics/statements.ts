@@ -2,6 +2,7 @@ import * as _ from 'lodash';
 
 import { growthRate } from '../formulas/growth';
 import { devide, getAllEntries, getValues, map } from './util';
+
 import { getValuations } from './pricing';
 
 const getYearsToPayoffLongTermDebt = (netIncome, longTermDebt) => {
