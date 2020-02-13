@@ -8,18 +8,117 @@ const SCALES = {
           label: 'Gross Profit',
         },
         clauses: [{
-          match: x => x >= 0.8,
+          match: x => x >= 0.4,
           description: {
-            label: 'durable',
+            label: 'tend to be durable',
           },
         }, {
           match: x => x >= 0.2,
           description: {
-            label: 'possibly durable',
+            label: 'highly competitive industry',
+            tag: ['durable exceptions'],
           },
         }, {
           description: {
-            label: 'highly competitive',
+            label: 'fiercly competitive industry',
+            tag: ['no sustainable competitive advantage'],
+          },
+        }],
+      },
+      sellingGeneralAndAdministrativeExpense: {
+        description: {
+          label: 'SGA (% Gross Profit)',
+        },
+        clauses: [{
+          match: x => x <= 0.3,
+          description: {
+            label: 'durable',
+          },
+        }, {
+          match: x => x <= 0.8,
+          description: {
+            label: 'durable exceptions',
+          },
+        }, {
+          description: {
+            label: 'fiercly competitive industry',
+            tag: ['no sustainable competitive advantage'],
+          },
+        }],
+      },
+      researchAndDevelopment: {
+        description: {
+          label: 'Research and Development (% Gross Profit)',
+        },
+        clauses: [{
+          match: x => x <= 0.15,
+          description: {
+            label: 'tend to be durable',
+          },
+        }, {
+          description: {
+            label: 'medicore',
+            tag: ['highly competitive capital-intensive business'],
+          },
+        }],
+      },
+      depreciationAndAmortization: {
+        description: {
+          label: 'Depreciation & Amortization (% Gross Profit)',
+        },
+        clauses: [{
+          match: x => x <= 0.1,
+          description: {
+            label: 'tend to be durable',
+          },
+        }, {
+          description: {
+            label: 'medicore',
+            tag: ['highly competitive capital-intensive business'],
+          },
+        }],
+      },
+      interestExpense: {
+        description: {
+          label: 'Interest Expense (% Operating Income)',
+        },
+        clauses: [{
+          match: x => x <= 0,
+          description: {
+            label: 'durable',
+            tag: ['earns interest'],
+          },
+        }, {
+          match: x => x <= 0.15,
+          description: {
+            label: 'tend to be durable',
+          },
+        }, {
+          description: {
+            label: 'medicore',
+            tag: ['highly competitive capital-intensive business', 'exceptions (bank)'],
+          },
+        }],
+      },
+      netIncome: {
+        description: {
+          label: 'Net Income (% Revenue)',
+        },
+        clauses: [{
+          match: x => x >= 0.2,
+          description: {
+            label: 'durable',
+          },
+        }, {
+          match: x => x >= 0.1,
+          description: {
+            label: 'tend to be durable',
+            tag: ['search nugggets'],
+          },
+        }, {
+          description: {
+            label: 'tend to be medicore',
+            tag: ['highly competitive industry'],
           },
         }],
       },
