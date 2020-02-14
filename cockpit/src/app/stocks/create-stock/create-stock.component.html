@@ -12,14 +12,14 @@
   </mat-form-field>
 
   <mat-form-field class="stock-field">
-    <mat-select placeholder="annual" [(ngModel)]="stock.forms.annual" name="annual" required (change)="fitQuarterly()">
+    <mat-select placeholder="annual" [(ngModel)]="stock.forms.annual" name="annual" required (selectionChange)="fitQuarterly()">
       <mat-option value="10-K">10-K</mat-option>
       <mat-option value="20-F">20-F</mat-option>
     </mat-select>
   </mat-form-field>
 
   <mat-form-field class="stock-field">
-    <mat-select placeholder="quarterly" [(ngModel)]="stock.forms.quarterly" name="quarterly" required (change)="fitAnnual()">
+    <mat-select placeholder="quarterly" [(ngModel)]="stock.forms.quarterly" name="quarterly" required (selectionChange)="fitAnnual()">
       <mat-option value="10-Q">10-Q</mat-option>
       <mat-option value="6-K">6-K</mat-option>
     </mat-select>

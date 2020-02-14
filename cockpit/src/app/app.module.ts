@@ -27,6 +27,9 @@ import { FilingsComponent } from './filings/filings.component';
 import { FinancialStatementComponent } from './filings/financial-statement/financial-statement.component';
 import { StatementEntryProgressComponent } from './filings/statement-entry-progress/statement-entry-progress.component';
 
+import { ScaleEngineComponent } from './filings/scale-engine/scale-engine.component';
+import { ScaleClauseComponent } from './filings/scale-engine/scale-clause/scale-clause.component';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -46,6 +49,9 @@ import { StatementEntryProgressComponent } from './filings/statement-entry-progr
     FilingsComponent,
     FinancialStatementComponent,
     StatementEntryProgressComponent,
+
+    ScaleEngineComponent,
+    ScaleClauseComponent,
   ],
   imports: [
     BrowserModule,

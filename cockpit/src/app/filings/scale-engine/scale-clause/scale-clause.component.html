@@ -1,0 +1,32 @@
+<form #scaleForm="ngForm" class="clause-form">
+  <mat-form-field class="clause-field">
+    <input matInput [(ngModel)]="measure.description.label" name="scale" placeholder="scale" required autocomplete="off">
+  </mat-form-field>
+</form>
+
+<div *ngFor="let clause of measure.clauses">
+  <form #form="ngForm" class="clause-form">
+    <mat-form-field class="clause-field">
+      <input matInput [(ngModel)]="clause.description.label" name="label" placeholder="Label" required autocomplete="off">
+    </mat-form-field>
+
+    <mat-form-field class="clause-field">
+      <mat-select placeholder="operand" [(ngModel)]="clause.operand" name="operand" required (selectionChange)="selectOperand($event)">
+        <mat-option value="<"><</mat-option>
+        <mat-option value=">">></mat-option>
+        <mat-option value=">=">>=</mat-option>
+        <mat-option value="<="><=</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field class="clause-field">
+      <input matInput [(ngModel)]="clause.value" name="value" placeholder="value" type="number" required>
+    </mat-form-field>
+
+    <button class="clause-field" mat-raised-button (click)="remove(clause)">REMOVE</button>
+  </form>
+</div>
+
+<button class="clause-field" mat-raised-button color="primary" (click)="addClause()">+</button>
+
+<pre>{{ measure | json }}</pre>

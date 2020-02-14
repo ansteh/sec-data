@@ -35,7 +35,7 @@ const routes: Routes = [
     component: StockComponent
   },
   {
-    path: 'stock/create',
+    path: 'stock-editor',
     component: CreateStockComponent
   },
   {
