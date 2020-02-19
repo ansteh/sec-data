@@ -29,6 +29,7 @@ import { StatementEntryProgressComponent } from './filings/statement-entry-progr
 
 import { ScaleEngineComponent } from './filings/scale-engine/scale-engine.component';
 import { ScaleClauseComponent } from './filings/scale-engine/scale-clause/scale-clause.component';
+import { ScaleDataSelectComponent } from './filings/scale-engine/scale-data-select/scale-data-select.component';
 
 @NgModule({
   declarations: [
@@ -52,6 +53,7 @@ import { ScaleClauseComponent } from './filings/scale-engine/scale-clause/scale-
 
     ScaleEngineComponent,
     ScaleClauseComponent,
+    ScaleDataSelectComponent,
   ],
   imports: [
     BrowserModule,

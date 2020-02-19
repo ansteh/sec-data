@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 
 import * as _ from 'lodash';
 
@@ -8,6 +8,8 @@ import * as _ from 'lodash';
   styleUrls: ['./scale-clause.component.scss']
 })
 export class ScaleClauseComponent implements OnInit {
+
+  @Input() metrics: any[] = [];
 
   public measure: any = {
     description: {
@@ -41,6 +43,10 @@ export class ScaleClauseComponent implements OnInit {
 
   remove(clause) {
     _.pull(this.measure.clauses, clause);
+  }
+
+  selected(path: any[]) {
+    console.log('ready path', path);
   }
 
 }

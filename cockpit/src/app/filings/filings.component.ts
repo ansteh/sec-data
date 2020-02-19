@@ -45,6 +45,8 @@ export class FilingsComponent implements OnInit {
   public view: any;
   public entryExample: any;
 
+  public source: any;
+
   private routeParamsSub: Subscription;
 
   constructor(private route: ActivatedRoute, private filingsService: FilingsService) { }
@@ -61,6 +63,7 @@ export class FilingsComponent implements OnInit {
             const horizontals = flatten(summary);
             console.log('horizontals', horizontals);
             console.log('report', horizontals.report.margins.incomeStatement);
+            this.source = _.pick(horizontals, ['statements', 'margins']);
 
             // const { dates, statements } = horizontals;
             // this.entryExample = createEntry(_.assign({ dates }, statements.incomeStatement.operatingIncome));
