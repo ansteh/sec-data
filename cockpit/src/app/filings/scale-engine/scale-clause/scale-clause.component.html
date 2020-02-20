@@ -1,24 +1,23 @@
-<form #scaleForm="ngForm" class="clause-form">
+<form #form="ngForm" class="clause-form">
   <mat-form-field class="clause-field">
     <input matInput [(ngModel)]="measure.description.label" name="scale" placeholder="scale" required autocomplete="off">
   </mat-form-field>
-</form>
 
-<sec-scale-data-source
-  [breadcumbs]="measure.breadcumbs"
-  [metrics]="metrics"
-  (change)="selected($event)"
-  style="margin-left:8px;">
-</sec-scale-data-source>
+  <div>
+    <sec-scale-data-source
+      [breadcrumbs]="measure.breadcrumbs"
+      [metrics]="metrics"
+      style="margin-left:8px;">
+    </sec-scale-data-source>
+  </div>
 
-<div *ngFor="let clause of measure.clauses">
-  <form #form="ngForm" class="clause-form">
+  <div *ngFor="let clause of measure.clauses; let i = index">
     <mat-form-field class="clause-field">
-      <input matInput [(ngModel)]="clause.description.label" name="label" placeholder="Label" required autocomplete="off">
+      <input matInput [(ngModel)]="clause.description.label" name="label-{{i}}" placeholder="Label" required autocomplete="off">
     </mat-form-field>
 
     <mat-form-field class="clause-field">
-      <mat-select placeholder="operand" [(ngModel)]="clause.operand" name="operand" required (selectionChange)="selectOperand($event)">
+      <mat-select placeholder="operand" [(ngModel)]="clause.operand" name="operand-{{i}}" required (selectionChange)="selectOperand($event)">
         <mat-option value="<"><</mat-option>
         <mat-option value=">">></mat-option>
         <mat-option value=">=">>=</mat-option>
@@ -27,13 +26,22 @@
     </mat-form-field>
 
     <mat-form-field class="clause-field">
-      <input matInput [(ngModel)]="clause.value" name="value" placeholder="value" type="number" required>
+      <input matInput [(ngModel)]="clause.value" name="value-{{i}}" placeholder="value" type="number" required>
     </mat-form-field>
 
-    <button class="clause-field" mat-raised-button (click)="remove(clause)">REMOVE</button>
-  </form>
-</div>
+    <button class="clause-field" mat-icon-button (click)="remove(clause)">
+      <mat-icon>delete</mat-icon>
+    </button>
+  </div>
 
-<button class="clause-field" mat-raised-button color="primary" (click)="addClause()">+</button>
+  <!-- <pre>{{ measure | json }}</pre> -->
 
-<pre>{{ measure | json }}</pre>
+  <div style="margin-top: 8px;">
+    <button class="clause-field" mat-mini-fab color="primary" (click)="addClause();$event.preventDefault();">
+      <mat-icon>add</mat-icon>
+    </button>
+
+    <button class="clause-field" mat-raised-button color="primary" (click)="send()" [disabled]="form.invalid || validBreadcrumbs() === false" style="float: right;">{{ measure.index >= 0 ? 'UPDATE' : 'CREATE' }}</button>
+    <button class="clause-field" mat-raised-button color="primary" (click)="cancel()" style="float: right;">CANCEL</button>
+  </div>
+</form>

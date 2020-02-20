@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnInit, Input, OnChanges, SimpleChanges, Output, EventEmitter } from '@angular/core';
 
 import * as _ from 'lodash';
 
@@ -12,22 +12,24 @@ export class ScaleClauseComponent implements OnInit, OnChanges {
   @Input() metrics: any[] = [];
   @Input() measure: any;
 
+  @Output() message: any = new EventEmitter<any>();
+
   constructor() { }
 
   ngOnInit() {
-    console.log(this.measure);
+    // console.log(this.measure);
   }
 
   ngOnChanges(changes: SimpleChanges) {
     if(changes.measure) {
       if(this.measure) {
-        this.measure.breadcumbs = this.measure.breadcumbs || [];
+        this.measure.breadcrumbs = this.measure.breadcrumbs || [];
       }
     }
   }
 
   selectOperand(event) {
-    console.log(event);
+    // console.log(event);
   }
 
   addClause() {
@@ -42,8 +44,16 @@ export class ScaleClauseComponent implements OnInit, OnChanges {
     _.pull(this.measure.clauses, clause);
   }
 
-  selected(path: any[]) {
-    console.log('ready path', path);
+  send() {
+    this.message.emit(this.measure);
+  }
+
+  cancel() {
+    this.message.emit(null);
+  }
+
+  validBreadcrumbs(): boolean {
+    return _.has(_.get(this.metrics, this.measure.breadcrumbs), 'values');
   }
 
 }
