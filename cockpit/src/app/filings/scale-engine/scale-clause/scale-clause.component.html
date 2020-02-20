@@ -4,7 +4,12 @@
   </mat-form-field>
 </form>
 
-<sec-scale-data-select [node]="metrics" (change)="selected($event)" style="margin-left:8px;"></sec-scale-data-select>
+<sec-scale-data-source
+  [breadcumbs]="measure.breadcumbs"
+  [metrics]="metrics"
+  (change)="selected($event)"
+  style="margin-left:8px;">
+</sec-scale-data-source>
 
 <div *ngFor="let clause of measure.clauses">
   <form #form="ngForm" class="clause-form">

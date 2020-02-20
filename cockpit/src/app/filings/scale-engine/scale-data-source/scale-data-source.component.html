@@ -1,0 +1,5 @@
+<mat-form-field *ngFor="let node of nodes; let i = index" style="margin-left:8px;">
+  <mat-select placeholder="path" [(ngModel)]="node.path" name="path" (selectionChange)="select(node, i)">
+    <mat-option *ngFor="let option of node.options" value="{{ option }}">{{ option }}</mat-option>
+  </mat-select>
+</mat-form-field>

@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/core';
 
 import * as _ from 'lodash';
 
@@ -7,26 +7,23 @@ import * as _ from 'lodash';
   templateUrl: './scale-clause.component.html',
   styleUrls: ['./scale-clause.component.scss']
 })
-export class ScaleClauseComponent implements OnInit {
+export class ScaleClauseComponent implements OnInit, OnChanges {
 
   @Input() metrics: any[] = [];
-
-  public measure: any = {
-    description: {
-      label: null,
-    },
-    clauses: [
-      {
-        description: {
-          label: null,
-        }
-      }
-    ]
-  };
+  @Input() measure: any;
 
   constructor() { }
 
   ngOnInit() {
+    console.log(this.measure);
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if(changes.measure) {
+      if(this.measure) {
+        this.measure.breadcumbs = this.measure.breadcumbs || [];
+      }
+    }
   }
 
   selectOperand(event) {

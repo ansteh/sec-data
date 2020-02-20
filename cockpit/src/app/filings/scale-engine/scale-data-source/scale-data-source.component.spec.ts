@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ScaleDataSelectComponent } from './scale-data-select.component';
+import { ScaleDataSourceComponent } from './scale-data-source.component';
 
-describe('ScaleDataSelectComponent', () => {
-  let component: ScaleDataSelectComponent;
-  let fixture: ComponentFixture<ScaleDataSelectComponent>;
+describe('ScaleDataSourceComponent', () => {
+  let component: ScaleDataSourceComponent;
+  let fixture: ComponentFixture<ScaleDataSourceComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ScaleDataSelectComponent ]
+      declarations: [ ScaleDataSourceComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ScaleDataSelectComponent);
+    fixture = TestBed.createComponent(ScaleDataSourceComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
