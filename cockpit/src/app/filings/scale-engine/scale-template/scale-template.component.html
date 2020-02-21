@@ -1,0 +1,16 @@
+<div [style.display]="measure ? 'none' : 'block'">
+  <mat-action-list role="list">
+    <h3 mat-subheader>Folders</h3>
+    <mat-list-item role="listitem" *ngFor="let scale of measures; let i = index" (click)="editMeasure(scale, i)">
+      <h4 mat-line>{{ scale.description.label }}</h4>
+      <p mat-line>{{ scale.breadcrumbs.join('.') }}</p>
+    </mat-list-item>
+    <mat-divider></mat-divider>
+  </mat-action-list>
+
+  <button mat-button color="primary" (click)="addMeasure()">ADD MEASURE</button>
+</div>
+
+<div *ngIf="measure">
+  <sec-scale-clause [metrics]="metrics" [measure]="measure" (message)="updateMeasure($event)"></sec-scale-clause>
+</div>
