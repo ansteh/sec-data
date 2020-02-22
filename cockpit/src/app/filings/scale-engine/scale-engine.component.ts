@@ -1,5 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 
+import { ScaleEngineService } from './scale-engine.service';
+
 import * as _ from 'lodash';
 
 @Component({
@@ -11,8 +13,33 @@ export class ScaleEngineComponent implements OnInit {
 
   @Input() metrics: any[] = [];
 
-  constructor() { }
+  public templateName: string = 'buffet';
+  public template: any;
 
-  ngOnInit() { }
+  constructor(private engine: ScaleEngineService) { }
+
+  ngOnInit() {
+    this.getTemplate();
+  }
+
+  getTemplate(name?: string) {
+    name = name || this.templateName;
+
+    this.engine
+      .getTemplate(name)
+      .subscribe((template) => {
+        this.template = template;
+      });
+  }
+
+  saveTemplate(name?: string) {
+    name = name || this.templateName;
+
+    this.engine
+      .saveTemplate(name, this.template)
+      .subscribe((response) => {
+        console.log('response', response);
+      });
+  }
 
 }

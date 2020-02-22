@@ -1,1 +1,5 @@
-<sec-scale-template [metrics]="metrics"></sec-scale-template>
+<div *ngIf="template">
+  <button mat-raised-button color="primary" (click)="saveTemplate()">SAVE TEMPLATE</button>
+  <sec-scale-template [metrics]="metrics" [measures]="template"></sec-scale-template>
+</div>
+<!-- <pre>template: {{ template | json }}</pre> -->

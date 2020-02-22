@@ -10,18 +10,24 @@ import * as _ from 'lodash';
 export class ScaleTemplateComponent implements OnInit {
 
   @Input() metrics: any[] = [];
+  @Input() measures: any[] = [];
 
-  public measures: any[] = [];
   public measure: any;
 
   constructor() { }
 
   ngOnInit() {
-    this.addMeasure();
+    if(this.measures.length === 0) {
+      this.addMeasure();
+    }
   }
 
   addMeasure() {
     this.measure = this.createEmptyMeasure();
+  }
+
+  remove(measure: any) {
+    _.pull(this.measures, measure);
   }
 
   private createEmptyMeasure() {
