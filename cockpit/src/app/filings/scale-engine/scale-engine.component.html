@@ -1,5 +1,12 @@
+<!-- <mat-action-list role="list">
+  <h3 mat-subheader>Templates</h3>
+  <mat-list-item role="listitem" *ngFor="let name of filenames" (click)="select(name)">
+    <button mat-icon-button (click)="remove(name)"><mat-icon>delete</mat-icon></button>
+    <h4 mat-line>{{ name }}</h4>
+  </mat-list-item>
+</mat-action-list> -->
 <div *ngIf="template">
+  <h4>{{ filename }}</h4>
   <button mat-raised-button color="primary" (click)="saveTemplate()">SAVE TEMPLATE</button>
   <sec-scale-template [metrics]="metrics" [measures]="template"></sec-scale-template>
 </div>
-<!-- <pre>template: {{ template | json }}</pre> -->

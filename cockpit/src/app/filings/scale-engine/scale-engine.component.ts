@@ -13,17 +13,24 @@ export class ScaleEngineComponent implements OnInit {
 
   @Input() metrics: any[] = [];
 
-  public templateName: string = 'buffet';
+  public filenames: string[];
+  public filename: string;
   public template: any;
 
   constructor(private engine: ScaleEngineService) { }
 
   ngOnInit() {
+    this.getFiles();
+    this.select('buffet');
+  }
+
+  select(name) {
+    this.filename = name;
     this.getTemplate();
   }
 
   getTemplate(name?: string) {
-    name = name || this.templateName;
+    name = name || this.filename;
 
     this.engine
       .getTemplate(name)
@@ -33,12 +40,20 @@ export class ScaleEngineComponent implements OnInit {
   }
 
   saveTemplate(name?: string) {
-    name = name || this.templateName;
+    name = name || this.filename;
 
     this.engine
       .saveTemplate(name, this.template)
       .subscribe((response) => {
         console.log('response', response);
+      });
+  }
+
+  getFiles() {
+    this.engine
+      .getFiles()
+      .subscribe((filenames) => {
+        this.filenames = filenames;
       });
   }
 
