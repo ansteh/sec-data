@@ -12,16 +12,19 @@
   </div>
 
   <div *ngFor="let clause of measure.clauses; let i = index">
-    <mat-form-field class="clause-field">
+    <!-- <mat-form-field class="clause-field">
       <input matInput [(ngModel)]="clause.description.label" name="label-{{i}}" placeholder="Label" required autocomplete="off">
+    </mat-form-field> -->
+
+    <mat-form-field class="clause-field">
+      <mat-select [(ngModel)]="clause.description.label" name="label-{{i}}" required placeholder="Label" required autocomplete="off">
+        <mat-option *ngFor="let category of categories" [value]="category">{{category}}</mat-option>
+      </mat-select>
     </mat-form-field>
 
     <mat-form-field class="clause-field">
       <mat-select placeholder="operand" [(ngModel)]="clause.operand" name="operand-{{i}}" required (selectionChange)="selectOperand($event)">
-        <mat-option value="<"><</mat-option>
-        <mat-option value=">">></mat-option>
-        <mat-option value=">=">>=</mat-option>
-        <mat-option value="<="><=</mat-option>
+        <mat-option *ngFor="let operator of operators" [value]="operator">{{operator}}</mat-option>
       </mat-select>
     </mat-form-field>
 

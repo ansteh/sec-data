@@ -1,5 +1,7 @@
 import { Component, OnInit, Input, OnChanges, SimpleChanges, Output, EventEmitter } from '@angular/core';
 
+import { ScaleContextService } from '../scale-context.service';
+
 import * as _ from 'lodash';
 
 @Component({
@@ -14,10 +16,15 @@ export class ScaleClauseComponent implements OnInit, OnChanges {
 
   @Output() message: any = new EventEmitter<any>();
 
-  constructor() { }
+  public operators: string[];
+  public categories: string[];
+
+  constructor(private context: ScaleContextService) { }
 
   ngOnInit() {
     // console.log(this.measure);
+    this.operators = _.clone(this.context.scope.operators);
+    this.categories = _.clone(this.context.scope.categories);
   }
 
   ngOnChanges(changes: SimpleChanges) {
