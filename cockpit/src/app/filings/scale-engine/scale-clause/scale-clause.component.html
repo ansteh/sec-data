@@ -1,12 +1,13 @@
 <form #form="ngForm" class="clause-form">
-  <mat-form-field class="clause-field">
+  <mat-form-field class="clause-field" style="width: 100%;">
     <input matInput [(ngModel)]="measure.description.label" name="scale" placeholder="scale" required autocomplete="off">
   </mat-form-field>
 
   <div>
     <sec-scale-data-source
-      [breadcrumbs]="measure.breadcrumbs"
       [metrics]="metrics"
+      [breadcrumbs]="measure.breadcrumbs"
+      (metric)="selectMetric($event)"
       style="margin-left:8px;">
     </sec-scale-data-source>
   </div>
@@ -35,6 +36,21 @@
     <button class="clause-field" mat-icon-button (click)="remove(clause)">
       <mat-icon>delete</mat-icon>
     </button>
+
+    <div *ngIf="properties && clause.properties">
+      <span *ngFor="let property of clause.properties">
+        {{property}}
+        <button class="clause-field" mat-icon-button (click)="removeProperty(clause, property)">
+          <mat-icon style="font-size:18px;">delete</mat-icon>
+        </button>
+      </span>
+
+      <mat-form-field class="clause-field" *ngIf="clause.selectableProperties.length > 0">
+        <mat-select placeholder="add property" [(ngModel)]="clause.property" name="properties-{{i}}" (selectionChange)="selectProperty(clause, $event.value);">
+          <mat-option *ngFor="let property of clause.selectableProperties" [value]="property">{{property}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
   </div>
 
   <!-- <pre>{{ measure | json }}</pre> -->

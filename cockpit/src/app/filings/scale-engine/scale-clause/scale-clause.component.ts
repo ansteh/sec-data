@@ -18,20 +18,39 @@ export class ScaleClauseComponent implements OnInit, OnChanges {
 
   public operators: string[];
   public categories: string[];
+  public properties: string[];
 
-  constructor(private context: ScaleContextService) { }
+  public selectableProperties: string[];
+
+  constructor(private context: ScaleContextService) {
+    this.operators = _.clone(this.context.scope.operators);
+    this.categories = _.clone(this.context.scope.categories);
+    this.properties = _.clone(this.context.scope.properties).sort();
+  }
 
   ngOnInit() {
     // console.log(this.measure);
-    this.operators = _.clone(this.context.scope.operators);
-    this.categories = _.clone(this.context.scope.categories);
   }
 
   ngOnChanges(changes: SimpleChanges) {
     if(changes.measure) {
       if(this.measure) {
         this.measure.breadcrumbs = this.measure.breadcrumbs || [];
+
+        if(this.properties) {
+          this.measure.clauses.forEach(clause => this.setProperties(clause));
+        }
       }
+    }
+  }
+
+  private setProperties(clause: any) {
+    clause.properties = clause.properties || [];
+    clause.selectableProperties = _.clone(this.properties);
+
+    if(clause.properties.length > 0) {
+      _.pullAll(clause.selectableProperties, clause.properties);
+      clause.selectableProperties.sort();
     }
   }
 
@@ -39,12 +58,33 @@ export class ScaleClauseComponent implements OnInit, OnChanges {
     // console.log(event);
   }
 
+  selectProperty(clause, value) {
+    clause.properties.push(value);
+    clause.properties.sort();
+
+    _.pull(clause.selectableProperties, value);
+    clause.selectableProperties.sort();
+  }
+
+  removeProperty(clause, value) {
+    clause.property = null;
+
+    _.pull(clause.properties, value);
+    clause.properties.sort();
+
+    clause.selectableProperties.push(value);
+    clause.selectableProperties.sort();
+  }
+
   addClause() {
-    this.measure.clauses.push({
+    const clause = {
       description: {
         label: null,
       }
-    });
+    };
+
+    this.setProperties(clause);
+    this.measure.clauses.push(clause);
   }
 
   remove(clause) {
@@ -63,4 +103,10 @@ export class ScaleClauseComponent implements OnInit, OnChanges {
     return _.has(_.get(this.metrics, this.measure.breadcrumbs), 'values');
   }
 
+  selectMetric(data: any) {
+    console.log('data', data);
+    if(!this.measure.description.label) {
+      this.measure.description.label = data.label;
+    }
+  }
 }

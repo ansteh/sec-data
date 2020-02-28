@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, OnChanges, SimpleChanges} from '@angular/core';
+import { Component, OnInit, Input, OnChanges, SimpleChanges, Output, EventEmitter } from '@angular/core';
 
 import * as _ from 'lodash';
 
@@ -11,6 +11,8 @@ export class ScaleDataSourceComponent implements OnInit, OnChanges {
 
   @Input() breadcrumbs: any[] = [];
   @Input() metrics: any;
+
+  @Output() metric: any = new EventEmitter<any>();
 
   public nodes: any[];
 
@@ -64,12 +66,17 @@ export class ScaleDataSourceComponent implements OnInit, OnChanges {
     this.breadcrumbs.push(node.path);
 
     const source = _.get(node.source, node.path);
-    if(source && !source.values) {
-      this.nodes.push({
-        path: null,
-        options: _.keys(source),
-        source: source,
-      });
+    if(source) {
+      if(!source.values) {
+        this.nodes.push({
+          path: null,
+          options: _.keys(source),
+          source: source,
+        });
+      } else {
+        console.log('source', source);
+        this.metric.emit(source);
+      }
     }
   }
 
