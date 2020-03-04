@@ -17,6 +17,9 @@ const PROPERTIES = [
   "highly competitive capital-intensive business",
   "earns interest",
   "exceptions (bank)",
+
+  "highly competitive industry",
+  "fiercly competitive industry",
 ];
 
 const OPERATORS = [

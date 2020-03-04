@@ -105,6 +105,8 @@ export const getIncomeMargins = (data) => {
   const operatingIncome = getValues('incomeStatement.operatingIncome', data);
   const interestExpense = getValues('incomeStatement.interestExpense', data);
   const netIncome = getValues('incomeStatement.netIncome', data);
+  const preTaxIncome = getValues('incomeStatement.preTaxIncome', data);
+  const paidTax = map([preTaxIncome, netIncome], ([a, b]) => { return a-b; });
 
   const totalCurrentAssets = getValues('balanceSheet.totalCurrentAssets', data);
   const plantPropertyAndEquipmentNet = getValues('balanceSheet.plantPropertyAndEquipmentNet', data);
@@ -170,8 +172,16 @@ export const getIncomeMargins = (data) => {
         label: 'Net Income (% Revenue)',
         values: map([netIncome, revenue], ([a, b]) => { return a/b; }),
       },
+      paidTax: {
+        label: 'Paid Tax (Before Tax Income - Net Income)',
+        values: paidTax,
+      },
+      paidTaxRate: {
+        label: 'Taxed Income Rate (% Before Tax Income)',
+        values: map([paidTax, preTaxIncome], devide),
+      },
       operatingIncomeGrowthRate: {
-        label: 'Operating Income (% Rate)',
+        label: 'Operating Income (% Net Income)',
         values: growthRate(operatingIncome),
       },
       netIncomeGrowthRate: {

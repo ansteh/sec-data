@@ -14,6 +14,10 @@ import * as Earnings from './formulas/earnings';
 import { getFilingView, flatten } from './filings';
 import { growthRate } from './formulas/growth';
 
+// import { getStandardDeviation } from './formulas/statsmodel';
+// const testData = growthRate([727.7, 1086.5, 1091.0, 1361.3, 1490.5, 1956.1]);
+// console.log('getStandardDeviation', testData, _.mean(testData), getStandardDeviation(testData), (1956.1/727.7-1)/5);
+
 const createEntry = (statement) => {
   const rates = growthRate(statement.values);
   const values = statement.values.slice(0);
