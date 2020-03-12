@@ -12,8 +12,8 @@ export const Trends = _.curry(function(getValue, series) {
   var valleyIndices = Interior.findAllValleys(values);
   var valleyValues = _.map(valleyIndices, function(index) { return values[index]; });
 
-  var aggragetUpperTrends = function() {
-    var trend = [];
+  var aggragetUpperTrends = function(log = false) {
+    var trend = [], end = valleyIndices.length-1;
     return _.reduce(valleyIndices, function(trends, valleyIndex, index) {
       if(trend.length === 0) {
         trend.push(valleyIndex);
@@ -25,6 +25,13 @@ export const Trends = _.curry(function(getValue, series) {
           trend = [valleyIndex];
         }
       }
+
+      // if(log) console.log('trends', trends, trend, valleyIndex);
+
+      if(index === end) {
+        trends.push(trend);
+      }
+
       return trends;
     }, []);
   };
@@ -59,9 +66,31 @@ export const Trends = _.curry(function(getValue, series) {
       .value();
   };
 
+  // console.log(aggragetUpperTrends(true));
+
+  var maxima: any = {
+    peaks: {},
+    valleys: {}
+  };
+
+  if(peakValues.length > 0) {
+    maxima.peaks.max = series[peakIndices[_.indexOf(peakValues, _.max(peakValues))]];
+    maxima.peaks.min = series[peakIndices[_.indexOf(peakValues, _.min(peakValues))]];
+  }
+
+  if(valleyValues.length > 0) {
+    maxima.valleys.max = series[valleyIndices[_.indexOf(valleyValues, _.max(valleyValues))]];
+    maxima.valleys.min = series[valleyIndices[_.indexOf(valleyValues, _.min(valleyValues))]];
+  }
+
   return {
+    peaks: _.map(peakIndices, function(index) { return series[index]; }),
+    valleys: _.map(valleyIndices, function(index) { return series[index]; }),
+
     upper: filter(aggragetUpperTrends()),
-    down: filter(aggragetDownTrends())
+    down: filter(aggragetDownTrends()),
+
+    maxima: maxima,
   };
 
 });

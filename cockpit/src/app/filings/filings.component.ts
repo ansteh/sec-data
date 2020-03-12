@@ -14,6 +14,10 @@ import * as Earnings from './formulas/earnings';
 import { getFilingView, flatten } from './filings';
 import { growthRate } from './formulas/growth';
 
+// TODO:
+// chapter 19: net earnings durability
+// chapter 20: net earnings per share
+
 // import { getStandardDeviation } from './formulas/statsmodel';
 // const testData = growthRate([727.7, 1086.5, 1091.0, 1361.3, 1490.5, 1956.1]);
 // console.log('getStandardDeviation', testData, _.mean(testData), getStandardDeviation(testData), (1956.1/727.7-1)/5);
@@ -38,6 +42,25 @@ const createEntry = (statement) => {
   };
 };
 
+const createSeries = (data, path) => {
+  const { label, values } = _.get(data, path);
+  const duplicates = values.slice(0);
+
+  const series = _.reduceRight(data.dates, (series, date) => {
+    series.unshift({
+      date,
+      value: duplicates.pop(),
+    });
+
+    return series;
+  }, []);
+
+  return {
+    label,
+    values: series,
+  };
+};
+
 @Component({
   selector: 'sec-filings',
   templateUrl: './filings.component.html',
@@ -50,6 +73,7 @@ export class FilingsComponent implements OnInit {
   public entryExample: any;
 
   public source: any;
+  public statement: any;
 
   private routeParamsSub: Subscription;
 
@@ -68,6 +92,8 @@ export class FilingsComponent implements OnInit {
             console.log('horizontals', horizontals);
             console.log('report', horizontals.report.margins.incomeStatement);
             this.source = _.pick(horizontals, ['statements', 'margins']);
+
+            this.statement = createSeries(horizontals, 'statements.incomeStatement.dilutedEPS');
 
             // const { dates, statements } = horizontals;
             // this.entryExample = createEntry(_.assign({ dates }, statements.incomeStatement.operatingIncome));
