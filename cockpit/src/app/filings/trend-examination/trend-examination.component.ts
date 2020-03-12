@@ -4,6 +4,27 @@ import Chart from 'chart.js';
 import * as _ from 'lodash';
 import { Trends } from '../../portfolio/tools/trends';
 
+// import { getStandardDeviation } from '../formulas/statsmodel';
+// const testData = [727.7, 1086.5, 1091.0, 1361.3, 1490.5, 1956.1];
+// console.log('getStandardDeviation', testData, _.mean(testData), getStandardDeviation(testData), (1956.1/727.7-1)/5);
+
+const categorize = (series, getValues = x => x) => {
+  if(series.length < 5) return 'not enough data';
+
+  const trends = Trends(getValues, series);
+  console.log('trends', trends);
+
+  if(trends.down.length === 0) {
+    return 'consistently bullish';
+  }
+
+  if(trends.upper.length === 0) {
+    return 'consistently bearish';
+  }
+
+  return 'roller coaster';
+};
+
 @Component({
   selector: 'sec-trend-examination',
   templateUrl: './trend-examination.component.html',
@@ -18,6 +39,7 @@ export class TrendExaminationComponent implements OnInit {
   public data: any;
   public labels: any[] = [];
   public closes: any[] = [];
+  public trend: string;
 
   private chart: Chart;
   private lineChartData: Array<any> = [
@@ -65,12 +87,12 @@ export class TrendExaminationComponent implements OnInit {
 							source: 'auto'
 						}
 					}],
-					yAxes: [{
-						scaleLabel: {
-							display: true,
-							labelString: 'Rate'
-						}
-					}]
+					// yAxes: [{
+					// 	scaleLabel: {
+					// 		display: true,
+					// 		labelString: 'Rate'
+					// 	}
+					// }]
 				}
 			}
 		});
@@ -114,7 +136,7 @@ export class TrendExaminationComponent implements OnInit {
         pointRadius: 0,
         fill: false,
         lineTension: 0,
-        borderWidth: 2,
+        borderWidth: 1,
         backgroundColor: '#4285f4',
         borderColor: '#4285f4',
       }, /*{
@@ -149,6 +171,7 @@ export class TrendExaminationComponent implements OnInit {
     };
 
     const trends = Trends((point) => { return point.y; }, this.closes);
+    this.trend = categorize(this.closes, (point) => { return point.y; });
 
     return [
       ...trends.down.map((data) => { return _.assign({}, down, { data }); }),

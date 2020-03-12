@@ -25,12 +25,13 @@ import { StockOpportunitiesComponent } from './stock-market/stock-opportunities/
 import { TransactionsComponent } from './imports/transactions/transactions.component';
 import { FilingsComponent } from './filings/filings.component';
 import { FinancialStatementComponent } from './filings/financial-statement/financial-statement.component';
+import { TrendExaminationComponent } from './filings/trend-examination/trend-examination.component';
+import { TrendExaminationPreviewsComponent } from './filings/trend-examination-previews/trend-examination-previews.component';
 
 import { ScaleEngineComponent } from './filings/scale-engine/scale-engine.component';
 import { ScaleClauseComponent } from './filings/scale-engine/scale-clause/scale-clause.component';
 import { ScaleDataSourceComponent } from './filings/scale-engine/scale-data-source/scale-data-source.component';
 import { ScaleTemplateComponent } from './filings/scale-engine/scale-template/scale-template.component';
-import { TrendExaminationComponent } from './filings/trend-examination/trend-examination.component';
 
 @NgModule({
   declarations: [
@@ -50,12 +51,13 @@ import { TrendExaminationComponent } from './filings/trend-examination/trend-exa
     PortfolioSimulatorComponent,
     FilingsComponent,
     FinancialStatementComponent,
+    TrendExaminationComponent,
+    TrendExaminationPreviewsComponent,
 
     ScaleEngineComponent,
     ScaleClauseComponent,
     ScaleDataSourceComponent,
     ScaleTemplateComponent,
-    TrendExaminationComponent,
   ],
   imports: [
     BrowserModule,

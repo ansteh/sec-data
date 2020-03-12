@@ -1,0 +1,8 @@
+<sec-scale-data-source
+  [metrics]="metrics"
+  [breadcrumbs]="breadcrumbs"
+  (metric)="setStatement($event)"
+  style="margin-left:8px;">
+</sec-scale-data-source>
+
+<sec-trend-examination *ngIf="statement" [statement]="statement"></sec-trend-examination>

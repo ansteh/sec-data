@@ -12,7 +12,7 @@ export const Trends = _.curry(function(getValue, series) {
   var valleyIndices = Interior.findAllValleys(values);
   var valleyValues = _.map(valleyIndices, function(index) { return values[index]; });
 
-  var aggragetUpperTrends = function(log = false) {
+  var aggragetUpperTrends = function() {
     var trend = [], end = valleyIndices.length-1;
     return _.reduce(valleyIndices, function(trends, valleyIndex, index) {
       if(trend.length === 0) {
@@ -26,8 +26,6 @@ export const Trends = _.curry(function(getValue, series) {
         }
       }
 
-      // if(log) console.log('trends', trends, trend, valleyIndex);
-
       if(index === end) {
         trends.push(trend);
       }
@@ -37,7 +35,7 @@ export const Trends = _.curry(function(getValue, series) {
   };
 
   var aggragetDownTrends = function() {
-    var trend = [];
+    var trend = [], end = peakIndices.length-1;
     return _.reduce(peakIndices, function(trends, peakIndex, index) {
       if(trend.length === 0) {
         trend.push(peakIndex);
@@ -49,6 +47,11 @@ export const Trends = _.curry(function(getValue, series) {
           trend = [peakIndex];
         }
       }
+
+      if(index === end) {
+        trends.push(trend);
+      }
+
       return trends;
     }, []);
   };
@@ -65,8 +68,6 @@ export const Trends = _.curry(function(getValue, series) {
       })
       .value();
   };
-
-  // console.log(aggragetUpperTrends(true));
 
   var maxima: any = {
     peaks: {},

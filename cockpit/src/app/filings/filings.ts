@@ -65,3 +65,22 @@ export const flatten = (stock) => {
 
   return context;
 };
+
+export const createSeries = (data, path) => {
+  const { label, values } = _.get(data, path);
+  const duplicates = values.slice(0);
+
+  const series = _.reduceRight(data.dates, (series, date) => {
+    series.unshift({
+      date,
+      value: duplicates.pop(),
+    });
+
+    return series;
+  }, []);
+
+  return {
+    label,
+    values: series,
+  };
+};
