@@ -8,7 +8,11 @@ import { AppRoutingModule } from './app-routing.module';
 import { MaterialModule } from './material/material.module';
 
 import { AppComponent } from './app.component';
+
 import { CandidatesComponent } from './candidates/candidates.component';
+import { CsvImportComponent } from './imports/csv-import/csv-import.component';
+import { InterpreterComponent } from './imports/interpreter/interpreter.component';
+
 import { PortfolioComponent } from './portfolio/portfolio.component';
 import { PortfolioAuditComponent } from './portfolio/portfolio-audit/portfolio-audit.component';
 import { PortfolioSimulatorComponent } from './portfolio/portfolio-simulator/portfolio-simulator.component';
@@ -58,6 +62,9 @@ import { ScaleTemplateComponent } from './filings/scale-engine/scale-template/sc
     ScaleClauseComponent,
     ScaleDataSourceComponent,
     ScaleTemplateComponent,
+
+    CsvImportComponent,
+    InterpreterComponent,
   ],
   imports: [
     BrowserModule,

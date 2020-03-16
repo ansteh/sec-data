@@ -1,0 +1,5 @@
+<input #fileInput style="display: none;" type="file" (change)="handleFiles($event?.target?.files)"/>
+
+<button mat-raised-button (click)="fileInput.click()">
+  import
+</button>

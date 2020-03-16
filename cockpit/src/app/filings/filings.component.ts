@@ -11,7 +11,7 @@ import * as Cashflow from './formulas/cashflow';
 import * as Discount from './formulas/discount-model';
 import * as Earnings from './formulas/earnings';
 
-import { createSeries, getFilingView, flatten } from './filings';
+import { createSeries, fakeSeries, getFilingView, flatten } from './filings';
 import { growthRate } from './formulas/growth';
 
 // TODO:
@@ -70,7 +70,10 @@ export class FilingsComponent implements OnInit {
             console.log('report', this.entities.report.margins.incomeStatement);
             this.source = _.pick(this.entities, ['statements', 'margins']);
 
-            this.statement = createSeries(this.entities, 'statements.incomeStatement.dilutedEPS');
+            // this.statement = createSeries(this.entities, 'statements.incomeStatement.dilutedEPS');
+            // this.statement = fakeSeries([1, 3, 9, 8, 4, -2], 'faker');
+            // this.statement = fakeSeries([1,2,1,2,1,2,1,2,1,2], 'faker');
+            this.statement = fakeSeries(_.shuffle([1,2,3,4,5,6,7,8,9,10]), 'faker');
 
             // const { dates, statements } = this.entities;
             // this.entryExample = createEntry(_.assign({ dates }, statements.incomeStatement.operatingIncome));

@@ -2,17 +2,20 @@ import { Component, OnInit, Input, ViewChild, ElementRef } from '@angular/core';
 
 import Chart from 'chart.js';
 import * as _ from 'lodash';
-import { Trends } from '../../portfolio/tools/trends';
+import { Paths, Trends } from '../../portfolio/tools/trends';
 
 // import { getStandardDeviation } from '../formulas/statsmodel';
 // const testData = [727.7, 1086.5, 1091.0, 1361.3, 1490.5, 1956.1];
 // console.log('getStandardDeviation', testData, _.mean(testData), getStandardDeviation(testData), (1956.1/727.7-1)/5);
 
-const categorize = (series, getValues = x => x) => {
+const categorize = (series, getValue = x => x) => {
   if(series.length < 5) return 'not enough data';
 
-  const trends = Trends(getValues, series);
-  console.log('trends', trends);
+  const trends = Trends(getValue, series);
+  // console.log('trends', trends);
+
+  // console.log('series', _.map(series, 'y'));
+  console.log('paths', Paths(series, getValue));
 
   if(trends.down.length === 0) {
     return 'consistently bullish';
@@ -170,7 +173,8 @@ export class TrendExaminationComponent implements OnInit {
       borderColor: '#48a999',
     };
 
-    const trends = Trends((point) => { return point.y; }, this.closes);
+    // const trends = Trends((point) => { return point.y; }, this.closes);
+    const trends = Paths(this.closes, (point) => { return point.y; });
     this.trend = categorize(this.closes, (point) => { return point.y; });
 
     return [

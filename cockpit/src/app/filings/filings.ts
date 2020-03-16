@@ -84,3 +84,19 @@ export const createSeries = (data, path) => {
     values: series,
   };
 };
+
+export const fakeSeries = (data, label) => {
+  const series = _.map(data, (value, index) => {
+    return{
+      date: new Date(`${2020+index}-01-01`),
+      value,
+    };
+
+    return series;
+  }, []);
+
+  return {
+    label,
+    values: series,
+  };
+};
