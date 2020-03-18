@@ -27,6 +27,8 @@ export class InterpreterComponent implements OnInit {
     { property: 'debtToEquity', label: "Debt / Equity" },
     { property: 'currentRatio', label: "Current Ratio" },
     { property: 'quickRatio', label: "Quick Ratio" },
+    { property: 'freeCashFlow', label: "Levered Free Cash Flow" },
+    { property: 'shares', label: "Weighted Average Diluted Shares Out." },
   ];
 
   constructor() { }
@@ -38,36 +40,13 @@ export class InterpreterComponent implements OnInit {
     // console.log('rows', rows);
     this.header = rows[0].map(value => _.trim(value, '"'));
     this.rows = this.prepareRows(rows);
-    this.data = this.prepareData(rows);
+    this.data = this.prepareData(this.rows);
   }
 
-  private prepareRows(rows: any[]) {
-    const header = _.first(rows);
-
+  private prepareRows(data: any[]) {
+    const rows = data.slice(0);
     rows.shift();
-
-    return _
-      .chain(rows)
-      .map((row) => {
-        return _.map(row, (value) => {
-          return this.extractNumber(value);
-        }, {});
-      })
-      .value();
-  }
-
-  private extractNumber(value) {
-    if(_.isString(value) === false) return value;
-
-    if(value.indexOf('.')) {
-      const candidate = parseFloat(value.trim());
-      if(candidate.toString() === value) return candidate;
-    }
-
-    const integer = parseInt(value.trim());
-    if(integer.toString() === value) return integer;
-
-    return _.trim(value, '"');
+    return rows;
   }
 
   private prepareData(rows) {
@@ -86,6 +65,8 @@ export class InterpreterComponent implements OnInit {
         item.marginOfSafety = 1 - item.price/item.fairValue;
       })
       .filter(item => item.marginOfSafety > 0)
+      .filter(item => item.currentRatio > 0.7)
+      .filter(item => item.quickRatio > 0.7)
       .orderBy(['marginOfSafety'], ['desc'])
       .value();
   }
