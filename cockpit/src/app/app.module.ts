@@ -3,6 +3,8 @@ import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 
+import { DecimalPipe } from '@angular/common';
+
 import { AuthModule } from './auth/auth.module';
 import { AppRoutingModule } from './app-routing.module';
 import { MaterialModule } from './material/material.module';
@@ -37,6 +39,9 @@ import { ScaleClauseComponent } from './filings/scale-engine/scale-clause/scale-
 import { ScaleDataSourceComponent } from './filings/scale-engine/scale-data-source/scale-data-source.component';
 import { ScaleTemplateComponent } from './filings/scale-engine/scale-template/scale-template.component';
 
+import { DiaryComponent } from './diary/diary.component';
+import { DataTableComponent } from './diary/data-table/data-table.component';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -65,6 +70,8 @@ import { ScaleTemplateComponent } from './filings/scale-engine/scale-template/sc
 
     CsvImportComponent,
     InterpreterComponent,
+    DiaryComponent,
+    DataTableComponent,
   ],
   imports: [
     BrowserModule,
@@ -75,7 +82,7 @@ import { ScaleTemplateComponent } from './filings/scale-engine/scale-template/sc
     AppRoutingModule,
     AuthModule,
   ],
-  providers: [],
+  providers: [DecimalPipe],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

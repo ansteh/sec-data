@@ -1,0 +1,16 @@
+<mat-form-field>
+  <mat-select placeholder="day" [(ngModel)]="day" name="day" (selectionChange)="getSummary(day)">
+    <mat-option *ngFor="let option of days" value="{{ option }}">{{ option }}</mat-option>
+  </mat-select>
+</mat-form-field>
+
+<div style="width: 500px;">
+  <sec-data-table *ngIf="summary?.portfolio" [columns]="columns.portfolio" [dataSource]="summary.portfolio"></sec-data-table>
+</div>
+
+<div style="width: 100%;">
+  <sec-data-table *ngIf="candidates" [columns]="columns.stocks" [dataSource]="candidates"></sec-data-table>
+</div>
+
+<!-- <pre>{{ summary | json }}</pre> -->
+<!-- <pre>{{ candidates | json }}</pre> -->

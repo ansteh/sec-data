@@ -6,6 +6,7 @@ import { AuthGuard } from './auth/auth-guard.service';
 import { AppComponent } from './app.component';
 import { CandidatesComponent } from './candidates/candidates.component';
 import { InterpreterComponent } from './imports/interpreter/interpreter.component';
+import { DiaryComponent } from './diary/diary.component';
 import { LoginComponent } from './auth/login/login.component';
 import { PortfolioComponent } from './portfolio/portfolio.component';
 import { PortfolioSimulatorComponent } from './portfolio/portfolio-simulator/portfolio-simulator.component';
@@ -26,6 +27,10 @@ const routes: Routes = [
   {
     path: 'interpreter',
     component: InterpreterComponent
+  },
+  {
+    path: 'diary',
+    component: DiaryComponent
   },
   {
     path: 'portfolio',
