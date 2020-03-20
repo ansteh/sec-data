@@ -4,6 +4,34 @@ import { DiaryService } from './diary.service';
 
 import * as _ from 'lodash';
 
+const profile = (stock) => {
+  let health = 0;
+  if(stock.debtToEquity <= 1) health += 1;
+  if(stock.currentRatio >= 0.7) health += 1;
+  if(stock.currentRatio >= 0.7) health += 1;
+  stock.health = health === 3 ? 'durable' : 'medicore';
+  stock.health = health < 2 ? 'danger' : stock.health;
+
+  let growth = 0;
+  if(stock.revenue_cagr_5 >= 0.07) growth += 1;
+  // if(stock.cashPerShare > 0) stock.growth += 1;
+  stock.growth = growth > 0 ? 'durable' : 'medicore';
+
+  // let upside = 0;
+  // if(stock.peg < 1.5) stock.upside += 1;
+  // if(stock.adjustedPE < 20) stock.upside += 1;
+  // stock.upside = upside === 2 ? 'durable' : 'medicore';
+};
+
+const getEstimatedValue = (stock) => {
+  return _
+    .chain([stock.fairValue, stock.analystValue])
+    .filter()
+    .filter(_.isNumber)
+    .mean()
+    .value();
+};
+
 @Component({
   selector: 'sec-diary',
   templateUrl: './diary.component.html',
@@ -25,13 +53,18 @@ export class DiaryComponent implements OnInit {
       { property: 'count', label: 'Count', type: 'integer' },
       { property: 'value', label: 'Value', type: 'number' },
       { property: 'marginOfSafety', label: "Margin %", type: 'number' },
-      // { label: 'Margin', property: 'value', type: 'number' },
+
+      { property: 'health', label: "Health", type: 'right' },
+      { property: 'growth', label: "Growth", type: 'right' },
+      // { property: 'upside', label: "Upside", type: 'right' },
+      { property: 'suggestion', label: "Suggestion", type: 'right' },
     ],
     stocks: [
       { property: 'name', label: "Name" },
       { property: 'ticker', label: "Full Ticker" },
       { property: 'marginOfSafety', label: "Margin %", type: 'number' },
       { property: 'price', label: "Price", type: 'number' }, // Stock Price (Current)
+      // { property: 'cashPerShare', label: "Cash per Share", type: 'number' }, // Stock Price (Current)
       { property: 'fairValue', label: "Fair Value (Finbox)", type: 'number' },
       { property: 'uncertainty', label: "Fair Value Uncertainty", type: 'align-right' }, // Fair Value Uncertainty (Finbox Fair Value)
       { property: 'analystValue', label: "Analyst Target", type: 'integer' }, // Fair Value (Analyst Target)
@@ -62,7 +95,10 @@ export class DiaryComponent implements OnInit {
       this.summary = summary;
 
       this.summary.stocks.forEach((item) => {
-        item.marginOfSafety = 1 - item.price/item.fairValue;
+        item.cashPerShare = item.freeCashFlow/item.shares;
+        item.estimatedValue = getEstimatedValue(item);
+        item.marginOfSafety = 1 - item.price/item.estimatedValue;
+        profile(item);
       });
 
       this.summary.portfolio.forEach((item) => {
@@ -72,10 +108,25 @@ export class DiaryComponent implements OnInit {
 
         if(item.stock) {
           item.marginOfSafety = item.stock.marginOfSafety;
+          item.health = item.stock.health;
+          item.growth = item.stock.growth;
+          item.upside = item.stock.upside;
+
+          if(item.health === 'durable' && item.growth === 'durable') {
+            item.suggestion = 'HOLD';
+          } else if(item.health === 'medicore' && item.growth === 'medicore') {
+            item.suggestion = 'SELL';
+          } else {
+            item.suggestion = 'EXAMINE';
+          }
         }
       });
 
-      console.log(this.summary.portfolio);
+      // this.summary.portfolio = _
+      //   .chain(this.summary.portfolio)
+      //   .filter(item => _.get(item, 'stock.health') === 'durable')
+      //   .filter(item => _.get(item, 'stock.growth') === 'durable')
+      //   .value();
 
       this.candidates = this.getCandidates(this.summary.stocks);
     });
@@ -88,7 +139,10 @@ export class DiaryComponent implements OnInit {
       .filter(item => item.marginOfSafety > 0)
       .filter(item => item.currentRatio > 0.7)
       .filter(item => item.quickRatio > 0.7)
+      .filter(item => item.health === 'durable')
+      .filter(item => item.growth === 'durable')
       .orderBy(['marginOfSafety'], ['desc'])
+      // .take(20)
       .value();
   }
 
