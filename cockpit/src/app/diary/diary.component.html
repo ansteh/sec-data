@@ -4,8 +4,20 @@
   </mat-select>
 </mat-form-field>
 
-<div style="width: 500px;">
-  <sec-data-table *ngIf="summary?.portfolio" [columns]="columns.portfolio" [dataSource]="summary.portfolio"></sec-data-table>
+<div style="width: 500px;" *ngIf="summary?.portfolio">
+  <div>value: {{ portfolio.value }}</div>
+  <div>cash: {{ portfolio.cash }}</div>
+  <sec-data-table [columns]="columns.portfolio" [dataSource]="summary.portfolio"></sec-data-table>
+</div>
+
+<div *ngIf="summary?.portfolio">
+  <div style="width:500px;float:left;">
+    <sec-data-table [columns]="columns.portfolio" [dataSource]="portfolio.sells"></sec-data-table>
+  </div>
+
+  <div style="width:500px;float:left;margin-left: 10px;">
+    <sec-data-table [columns]="columns.portfolio" [dataSource]="portfolio.buys"></sec-data-table>
+  </div>
 </div>
 
 <div style="width: 100%;">

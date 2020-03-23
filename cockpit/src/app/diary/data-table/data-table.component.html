@@ -1,7 +1,7 @@
 <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
 
   <ng-container *ngFor="let column of columns" matColumnDef="{{ column.property }}">
-    <th mat-header-cell *matHeaderCellDef [ngClass]="{'mat-cell-number': column.type}">
+    <th mat-header-cell *matHeaderCellDef [ngClass]="{'mat-cell-number': column.type}" style="padding-left:10px;">
       {{ column.label }}
     </th>
     <td mat-cell *matCellDef="let element" [ngClass]="{'mat-cell-number': column.type}">

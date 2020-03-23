@@ -122,13 +122,8 @@ export class DiaryComponent implements OnInit {
         }
       });
 
-      // this.summary.portfolio = _
-      //   .chain(this.summary.portfolio)
-      //   .filter(item => _.get(item, 'stock.health') === 'durable')
-      //   .filter(item => _.get(item, 'stock.growth') === 'durable')
-      //   .value();
-
       this.candidates = this.getCandidates(this.summary.stocks);
+      this.evaluatePortfolio();
     });
   }
 
@@ -139,10 +134,41 @@ export class DiaryComponent implements OnInit {
       .filter(item => item.marginOfSafety > 0)
       .filter(item => item.currentRatio > 0.7)
       .filter(item => item.quickRatio > 0.7)
-      .filter(item => item.health === 'durable')
-      .filter(item => item.growth === 'durable')
+      // .filter(item => item.health === 'durable')
+      // .filter(item => item.growth === 'durable')
       .orderBy(['marginOfSafety'], ['desc'])
       // .take(20)
+      .value();
+  }
+
+  private evaluatePortfolio() {
+    // console.log(this.summary.portfolio);
+
+    const stats = _.reduce(this.summary.portfolio, (stats, item) => {
+      if(item.suggestion) stats[_.toLower(item.suggestion)] += 1;
+      return stats;
+    }, { hold: 0, sell: 0, examine: 0});
+    // console.log('stats', stats);
+
+    const stocks = _.filter(this.summary.portfolio, stock => stock.count);
+
+    this.portfolio = { stats };
+    this.portfolio.value = _.round(_.sumBy(stocks, 'value'), 2);
+    this.portfolio.cash = _.round(_.sumBy(this.summary.portfolio, 'value') - this.portfolio.value, 2);
+
+    this.portfolio.sells = _
+      .chain(stocks)
+      .filter(item => item.suggestion === 'SELL')
+      .sortBy('stock.marginOfSafety')
+      .value();
+
+    this.portfolio.buys = _
+      .chain(this.candidates)
+      .filter(item => item.health === 'durable')
+      .filter(item => item.growth === 'durable')
+      .forEach(item => item.suggestion = 'BUY')
+      .orderBy(['marginOfSafety'], ['desc'])
+      .take(this.portfolio.sells.length)
       .value();
   }
 
