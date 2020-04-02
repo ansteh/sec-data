@@ -13,7 +13,7 @@ const profile = (stock) => {
   stock.health = health < 2 ? 'danger' : stock.health;
 
   let growth = 0;
-  if(stock.revenue_cagr_5 >= 0.07) growth += 1;
+  if(stock.revenue_cagr_5 >= 0.05) growth += 1;
   // if(stock.cashPerShare > 0) stock.growth += 1;
   stock.growth = growth > 0 ? 'durable' : 'medicore';
 
@@ -24,12 +24,42 @@ const profile = (stock) => {
 };
 
 const getEstimatedValue = (stock) => {
+  // return stock.fairValue || 0;
+  // return stock.analystValue || 0;
   return _
     .chain([stock.fairValue, stock.analystValue])
     .filter()
     .filter(_.isNumber)
     .mean()
     .value();
+};
+
+const getNominalValue = ({ count, stock }) => {
+  return count * stock.price;
+};
+
+const analyse = (portfolio) => {
+  const assets = _.filter(portfolio, stock => stock.count);
+  const [stocks, unmatches] = _.partition(assets, item => item.stock);
+  if(unmatches.length > 0) console.log('unmatches', unmatches);
+
+  let totalValue = _.sumBy(stocks, getNominalValue),
+    marginOfSafety = 0;
+
+  _.forEach(stocks, (stock) => {
+    const value = getNominalValue(stock);
+    stock.weight = value/totalValue;
+    stock.marginOfSafety = stock.marginOfSafety || stock.stock.marginOfSafety
+    if(stock.marginOfSafety) marginOfSafety += stock.weight * stock.marginOfSafety;
+  });
+
+  console.log('stocks', _.map(stocks, 'stock'));
+
+  return {
+    value: totalValue,
+    marginOfSafety,
+    misfits: _.filter(stocks, stock => !stock.marginOfSafety)
+  };
 };
 
 @Component({
@@ -124,6 +154,19 @@ export class DiaryComponent implements OnInit {
 
       this.candidates = this.getCandidates(this.summary.stocks);
       this.evaluatePortfolio();
+
+      // analysis
+      console.log('portfolio', analyse(this.summary.portfolio));
+
+      const candidates = _
+        .chain(this.candidates)
+        .filter(item => item.health === 'durable')
+        .filter(item => item.growth === 'durable')
+        .filter(item => _.includes(['VERY HIGH', 'HIGH'], item.uncertainty) === false)
+        .take(20)
+        .map((stock) => { return { count: 1, stock }; })
+        .value();
+      console.log('candidates', analyse(candidates));
     });
   }
 
