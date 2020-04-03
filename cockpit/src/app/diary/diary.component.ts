@@ -38,25 +38,42 @@ const getNominalValue = ({ count, stock }) => {
   return count * stock.price;
 };
 
-const analyse = (portfolio) => {
+const analyse = (portfolio, benchmarks) => {
   const assets = _.filter(portfolio, stock => stock.count);
   const [stocks, unmatches] = _.partition(assets, item => item.stock);
-  if(unmatches.length > 0) console.log('unmatches', unmatches);
+  // if(unmatches.length > 0) console.log('unmatches', unmatches);
 
   let totalValue = _.sumBy(stocks, getNominalValue),
-    marginOfSafety = 0;
+    marginOfSafety = 0,
+    downside = 0,
+    upside = 0;
 
   _.forEach(stocks, (stock) => {
     const value = getNominalValue(stock);
     stock.weight = value/totalValue;
-    stock.marginOfSafety = stock.marginOfSafety || stock.stock.marginOfSafety
-    if(stock.marginOfSafety) marginOfSafety += stock.weight * stock.marginOfSafety;
+    stock.marginOfSafety = stock.marginOfSafety || stock.stock.marginOfSafety;
+
+    if(stock.marginOfSafety) {
+      marginOfSafety += stock.weight * stock.marginOfSafety;
+      downside += benchmarks.health[stock.stock.health] * value * (1 + stock.marginOfSafety);
+      upside += value * (1 + stock.marginOfSafety);
+    }
   });
 
-  console.log('stocks', _.map(stocks, 'stock'));
+  totalValue = _.round(totalValue, 2);
+  downside = _.round(downside, 2);
+  upside = _.round(upside, 2);
+
+  // console.log('stocks', _.map(stocks, 'stock'));
 
   return {
     value: totalValue,
+    downside: downside/totalValue-1,
+    upside: upside/totalValue-1,
+    range: {
+      downside,
+      upside,
+    },
     marginOfSafety,
     misfits: _.filter(stocks, stock => !stock.marginOfSafety)
   };
@@ -144,7 +161,7 @@ export class DiaryComponent implements OnInit {
 
           if(item.health === 'durable' && item.growth === 'durable') {
             item.suggestion = 'HOLD';
-          } else if(item.health === 'medicore' && item.growth === 'medicore') {
+          } else if(item.health === 'danger' || item.growth === 'danger') {
             item.suggestion = 'SELL';
           } else {
             item.suggestion = 'EXAMINE';
@@ -156,17 +173,83 @@ export class DiaryComponent implements OnInit {
       this.evaluatePortfolio();
 
       // analysis
-      console.log('portfolio', analyse(this.summary.portfolio));
+
+      const benchmarks = {
+        worst: {
+          health: {
+            danger: 0,
+            medicore: 0.4,
+            durable: 0.8,
+          },
+        },
+        medicore: {
+          health: {
+            danger: 0.2,
+            medicore: 0.6,
+            durable: 0.9,
+          },
+        },
+        durable: {
+          health: {
+            danger: 0.4,
+            medicore: 0.7,
+            durable: 1,
+          },
+        }
+      };
+
+      const portfolioAnalysis = analyse(this.summary.portfolio, benchmarks.worst);
+      console.log('portfolio');
+      console.log('worst', portfolioAnalysis);
+      console.log('medicore', analyse(this.summary.portfolio, benchmarks.medicore));
+      console.log('durable', analyse(this.summary.portfolio, benchmarks.durable));
+
+      let budget = portfolioAnalysis.value,
+        count = 20,
+        budgetPerStock = budget/count;
+
+      // console.log('starting budget', budget);
+      // console.log('budgetPerStock', budgetPerStock);
 
       const candidates = _
         .chain(this.candidates)
         .filter(item => item.health === 'durable')
         .filter(item => item.growth === 'durable')
         .filter(item => _.includes(['VERY HIGH', 'HIGH'], item.uncertainty) === false)
-        .take(20)
-        .map((stock) => { return { count: 1, stock }; })
+        .take(count)
+        .orderBy(['price'], ['desc'])
+        .map((stock, index) => {
+          let amount = _.floor(Math.min(budget, budgetPerStock)/stock.price);
+          if(amount === 0 && budget > stock.price) amount = 1;
+          budget -= amount * stock.price;
+
+          return { count: amount, stock };
+        })
+        .orderBy(['marginOfSafety'], ['desc'])
         .value();
-      console.log('candidates', analyse(candidates));
+
+      if(budget > 0) {
+        do {
+          const stock = _.find(candidates, item => budget > item.stock.price);
+
+          if(stock) {
+            const amount = _.floor(Math.min(budget, budgetPerStock)/stock.stock.price);
+            console.log('add to ', stock, amount);
+            stock.count += amount;
+            budget -= amount * stock.stock.price;
+          } else {
+            break;
+          }
+
+        } while(budget > 0);
+      }
+
+      // console.log('remaining budget', budget);
+      // console.log('candidates', candidates);
+      console.log('portfolio after audit');
+      console.log('worst', analyse(candidates, benchmarks.worst));
+      console.log('medicore', analyse(candidates, benchmarks.medicore));
+      console.log('durable', analyse(candidates, benchmarks.durable));
     });
   }
 
