@@ -256,7 +256,7 @@ export const getIncomeMargins = (data) => {
         values: map([operatingIncome, plantPropertyAndEquipmentNet], devide),
       },
       totalDebtToPlantPropertyAndEquipmentNet: {
-        label: 'Operating Income to Plant Property and Equipment',
+        label: 'Total Debt to Plant Property and Equipment',
         values: map([totalDebt, plantPropertyAndEquipmentNet], devide),
       },
     },

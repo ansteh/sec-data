@@ -45,5 +45,5 @@ export const getDiscounts = ({ dates, filings }, model = {}) => {
     getValues: getEarningsPerShareDiluted,
   };
 
-  return Discount.getDiscountAsMovingAverages(options, { dates, filings }, model)
+  return Discount.getDiscountAsMovingAverages(options, { dates, filings }, model);
 };

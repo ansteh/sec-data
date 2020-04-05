@@ -1,4 +1,5 @@
 import * as _ from 'lodash';
+import * as Discount from './../formulas/discount-model';
 
 import { devide, getAllEntries, getValues, map } from './util';
 
@@ -14,6 +15,52 @@ const simulateLongTermRate = (earnings, rate) => {
   return _.map(earnings, value => rate);
 };
 
+const getCompoundAnnualGrowthRate = (start, end, numberOfYears) => {
+  return Math.pow(end/start, 1/numberOfYears) - 1;
+};
+
+// assumption years interval
+const getCAGR = (series) => {
+  if(!series || series.length < 2) return null;
+  return getCompoundAnnualGrowthRate(_.first(series), _.last(series), series.length);
+};
+
+// console.log('getCompoundAnnualGrowthRate', getCompoundAnnualGrowthRate(100000, 126000, 5));
+// console.log('getCompoundAnnualGrowthRate', getCompoundAnnualGrowthRate(44000, 126000, 3));
+
+const getCAGRs = (series, intervals = [10, 5, 3]) => {
+  const cagrs = {};
+  cagrs[series.length] = getCAGR(series)
+
+  intervals.forEach((years) => {
+    const n = Math.max(0, series.length-years);
+    cagrs[years] = getCAGR(series.slice(n));
+  });
+
+  return cagrs;
+};
+
+const analyseDiscounts = (series, label) => {
+  console.log(label, series);
+  const cargs = getCAGRs(series);
+  const discounts = [];
+  const value = _.last(series);
+
+  _.forOwn(cargs, (rate, years) => {
+    const discountedFreeChasFlow = Discount.getIntrinsicValue({
+      value,
+      growthRate: rate,
+      discountRate: 0.12,
+      terminalRate: 0.04,
+      years: 10,
+    });
+    discounts.push(discountedFreeChasFlow);
+
+    console.log(`${label} CAGR ${_.padStart(years, 2, ' ')} years`, rate, discountedFreeChasFlow);
+  });
+  console.log('average price by CAGRs', _.mean(_.values(discounts)));
+};
+
 export const getValuations = (data) => {
   const weightedAverageDilutedSharesOutstanding = getValues('incomeStatement.weightedAverageDilutedSharesOutstanding', data);
 
@@ -26,6 +73,7 @@ export const getValuations = (data) => {
   // console.log('dilutedEPSPreTax', dilutedEPSPreTax);
   // console.log('avgPrices', avgPrices);
   // console.log('longTermRate', longTermRate);
+  // analyseDiscounts(dilutedEPS, 'dilutedEPS');
 
   return {
     preTaxAverageBondEquityYield: {
