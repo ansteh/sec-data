@@ -14,18 +14,41 @@ export const growthRate = (collection) => {
   }, []);
 };
 
-const normalize = (collection) => {
-  if(!collection || collection.length < 2) {
-    return collection;
-  }
+export const getCompoundAnnualGrowthRate = (start, end, numberOfYears) => {
+  return Math.pow(end/start, 1/numberOfYears) - 1;
+};
 
-  const minimum = _.min(collection);
+// assumption years interval
+export const getCAGR = (series) => {
+  if(!series || series.length < 2) return null;
+  return getCompoundAnnualGrowthRate(_.first(series), _.last(series), series.length);
+};
 
-  if(minimum < 0) {
-    return collection.map(value => value - minimum + 1);
-  }
+// console.log('getCompoundAnnualGrowthRate', getCompoundAnnualGrowthRate(100000, 126000, 5));
+// console.log('getCompoundAnnualGrowthRate', getCompoundAnnualGrowthRate(44000, 126000, 3));
 
-  return collection;
+export const getCAGRs = (series, intervals = [10, 5, 3]) => {
+  const cagrs = {};
+  cagrs[series.length] = getCAGR(series)
+
+  intervals.forEach((years) => {
+    const n = Math.max(0, series.length-years);
+    cagrs[years] = getCAGR(series.slice(n));
+  });
+
+  return cagrs;
+};
+
+export const getUps = (series) => {
+  const rates = growthRate(series);
+  const directions = _.sumBy(rates, rate => rate > 0 ? 1 : 0);
+  return directions/rates.length;
+};
+
+export const getDowns = (series) => {
+  const rates = growthRate(series);
+  const directions = _.sumBy(rates, rate => rate < 0 ? 1 : 0);
+  return directions/rates.length;
 };
 
 export const getMeanGrowthRate = (values) => {
@@ -51,35 +74,3 @@ export const getGrowthRateMomentums = (values, growthRates) => {
     return momentums;
   }, []);
 };
-
-// const getNormalizedGrowthRates = (values) => {
-//   console.log('normalized values', normalize(values));
-//   return growthRate(normalize(values));
-// };
-//
-// const series = [-5, 0.1, 10, 1, 2.3, 0.5, 0.1, 5, 6];
-// const growthRates = growthRate(series);
-// const normalized = getNormalizedGrowthRates(series);
-// const momentums = getGrowthRateMomentums(series, growthRates);
-//
-// console.log('series', series);
-// console.log('growthRates', growthRates);
-// console.log('normalized rates', normalized);
-//
-// // console.log('momentums', momentums);
-//
-// const predit = (value, growthRates) => {
-//   return growthRates.reduce((value, rate) => {
-//     return (1+rate)*value;
-//   }, value);
-// };
-//
-// console.log('prediction:', predit(_.first(series), growthRates));
-// console.log('normalized prediction:', predit(_.first(series), normalized));
-// // console.log('momentums:', predit(_.first(series), momentums));
-
-
-// const [previous, current] = series;
-// const rate = current/previous - 1;
-// console.log('rate', rate);
-// console.log('invoked', predit(previous, [rate]));

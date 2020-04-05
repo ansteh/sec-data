@@ -12,6 +12,13 @@
     </sec-scale-data-source>
   </div>
 
+  <mat-form-field class="clause-field">
+    <mat-select placeholder="prepare" [(ngModel)]="measure.prepare" name="prepare">
+      <mat-option>NONE</mat-option>
+      <mat-option *ngFor="let prepare of functions; let i = index" value="{{ prepare }}">{{ prepare }}</mat-option>
+    </mat-select>
+  </mat-form-field>
+
   <div *ngFor="let clause of measure.clauses; let i = index">
     <!-- <mat-form-field class="clause-field">
       <input matInput [(ngModel)]="clause.description.label" name="label-{{i}}" placeholder="Label" required autocomplete="off">

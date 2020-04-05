@@ -1,5 +1,6 @@
 import * as _ from 'lodash';
 import * as Discount from './../formulas/discount-model';
+import { getCAGRs } from './../formulas/growth';
 
 import { devide, getAllEntries, getValues, map } from './util';
 
@@ -13,31 +14,6 @@ const simulateAvgPrices = (earnings, pe) => {
 
 const simulateLongTermRate = (earnings, rate) => {
   return _.map(earnings, value => rate);
-};
-
-const getCompoundAnnualGrowthRate = (start, end, numberOfYears) => {
-  return Math.pow(end/start, 1/numberOfYears) - 1;
-};
-
-// assumption years interval
-const getCAGR = (series) => {
-  if(!series || series.length < 2) return null;
-  return getCompoundAnnualGrowthRate(_.first(series), _.last(series), series.length);
-};
-
-// console.log('getCompoundAnnualGrowthRate', getCompoundAnnualGrowthRate(100000, 126000, 5));
-// console.log('getCompoundAnnualGrowthRate', getCompoundAnnualGrowthRate(44000, 126000, 3));
-
-const getCAGRs = (series, intervals = [10, 5, 3]) => {
-  const cagrs = {};
-  cagrs[series.length] = getCAGR(series)
-
-  intervals.forEach((years) => {
-    const n = Math.max(0, series.length-years);
-    cagrs[years] = getCAGR(series.slice(n));
-  });
-
-  return cagrs;
 };
 
 const analyseDiscounts = (series, label) => {

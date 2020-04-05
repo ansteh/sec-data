@@ -29,6 +29,12 @@ const OPERATORS = [
   ">=",
 ];
 
+const FUNCTIONS = [
+  "CAGR",
+  "CAGR (max. 20%)",
+  "Upper Trend",
+];
+
 @Injectable({
   providedIn: 'root'
 })
@@ -38,6 +44,7 @@ export class ScaleContextService {
     categories: CATEGORIES,
     properties: PROPERTIES,
     operators: OPERATORS,
+    functions: FUNCTIONS,
   };
 
   constructor() { }

@@ -17,6 +17,7 @@ export class ScaleClauseComponent implements OnInit, OnChanges {
   @Output() message: any = new EventEmitter<any>();
 
   public operators: string[];
+  public functions: string[];
   public categories: string[];
   public properties: string[];
 
@@ -24,6 +25,7 @@ export class ScaleClauseComponent implements OnInit, OnChanges {
 
   constructor(private context: ScaleContextService) {
     this.operators = _.clone(this.context.scope.operators);
+    this.functions = _.clone(this.context.scope.functions);
     this.categories = _.clone(this.context.scope.categories);
     this.properties = _.clone(this.context.scope.properties).sort();
   }

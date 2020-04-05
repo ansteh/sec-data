@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 
-import { growthRate } from '../formulas/growth';
+import { getCAGR, getUps, growthRate } from '../formulas/growth';
 import { devide, getAllEntries, getValues, map } from './util';
 
 import { getValuations } from './pricing';
@@ -107,6 +107,7 @@ export const getIncomeMargins = (data) => {
   const netIncome = getValues('incomeStatement.netIncome', data);
   const preTaxIncome = getValues('incomeStatement.preTaxIncome', data);
   const paidTax = map([preTaxIncome, netIncome], ([a, b]) => { return a-b; });
+  const dilutedEPS = getValues('incomeStatement.dilutedEPS', data);
 
   const totalCurrentAssets = getValues('balanceSheet.totalCurrentAssets', data);
   const plantPropertyAndEquipmentNet = getValues('balanceSheet.plantPropertyAndEquipmentNet', data);
@@ -188,6 +189,14 @@ export const getIncomeMargins = (data) => {
         label: 'Net Income (% Rate)',
         values: growthRate(netIncome),
       },
+      // CAGRByDilutedEPS: {
+      //   label: 'CAGR by Diluted EPS (max. 20%)',
+      //   values: [Math.min(getCAGR(dilutedEPS), 0.2)],
+      // },
+      // upperTrendByDilutedEPS: {
+      //   label: 'Diluted EPS Upper Trend',
+      //   values: [getUps(dilutedEPS)],
+      // },
     },
     balanceSheet: {
       accumulatedEarnings,
