@@ -16,16 +16,20 @@ export class ScaleClauseComponent implements OnInit, OnChanges {
 
   @Output() message: any = new EventEmitter<any>();
 
-  public operators: string[];
   public functions: string[];
+  public operators: string[];
+  public trends: string[];
+
   public categories: string[];
   public properties: string[];
 
   public selectableProperties: string[];
+  public selections: any = {};
 
   constructor(private context: ScaleContextService) {
-    this.operators = _.clone(this.context.scope.operators);
     this.functions = _.clone(this.context.scope.functions);
+    this.operators = _.clone(this.context.scope.operators);
+    this.trends = _.clone(this.context.scope.trends);
     this.categories = _.clone(this.context.scope.categories);
     this.properties = _.clone(this.context.scope.properties).sort();
   }
@@ -38,6 +42,7 @@ export class ScaleClauseComponent implements OnInit, OnChanges {
     if(changes.measure) {
       if(this.measure) {
         this.measure.breadcrumbs = this.measure.breadcrumbs || [];
+        this.updateSelectionState();
 
         if(this.properties) {
           this.measure.clauses.forEach(clause => this.setProperties(clause));
@@ -111,4 +116,37 @@ export class ScaleClauseComponent implements OnInit, OnChanges {
       this.measure.description.label = data.label;
     }
   }
+
+  private updateSelectionState() {
+    this.selections = {};
+    this.selections.prepare = this.getLabel('prepare');
+    this.selections.trend = this.getLabel('trend');
+    console.log(this.selections);
+  }
+
+  private getLabel(property: string): string {
+    const source = {
+      prepare: this.functions,
+      trend: this.trends,
+    }[property];
+
+    return _.get(_.find(source, { key: this.measure[property] }), 'label') || '';
+  }
+
+  updateLabel(property: string) {
+    if(property) {
+      const label = this.getLabel(property);
+      let description = _.trim(this.measure.description.label);
+
+      if(this.selections[property]) {
+        description = description.replace(this.selections[property], label);
+      } else {
+        description = `${this.measure.description.label} ${label}`;
+      }
+
+      this.selections[property] = label;
+      this.measure.description.label = _.trim(description);
+    }
+  }
+
 }

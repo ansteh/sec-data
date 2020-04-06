@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import * as _ from 'lodash';
 
 const CATEGORIES = [
   "durable",
@@ -29,11 +30,29 @@ const OPERATORS = [
   ">=",
 ];
 
-const FUNCTIONS = [
-  "CAGR",
-  "CAGR (max. 20%)",
-  "Upper Trend",
-];
+const FUNCTIONS = {
+  "CAGR": {
+    label: "CAGR",
+    prepare: null,
+  },
+  "CAGR_MAX_20": {
+    label: "CAGR (max. 20%)",
+    prepare: null,
+  }, //:"CAGR (max. 20%)"
+};
+
+const TRENDS = {
+  "TREND_UP": {
+    label: "Upward Trend",
+    prepare: null,
+  },
+};
+
+const align = (mapping) => {
+  return _.map(mapping, (item, key) => {
+    return Object.assign({ key }, item);
+  });
+};
 
 @Injectable({
   providedIn: 'root'
@@ -44,7 +63,8 @@ export class ScaleContextService {
     categories: CATEGORIES,
     properties: PROPERTIES,
     operators: OPERATORS,
-    functions: FUNCTIONS,
+    functions: align(FUNCTIONS),
+    trends: align(TRENDS),
   };
 
   constructor() { }

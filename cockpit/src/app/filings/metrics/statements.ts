@@ -189,14 +189,6 @@ export const getIncomeMargins = (data) => {
         label: 'Net Income (% Rate)',
         values: growthRate(netIncome),
       },
-      // CAGRByDilutedEPS: {
-      //   label: 'CAGR by Diluted EPS (max. 20%)',
-      //   values: [Math.min(getCAGR(dilutedEPS), 0.2)],
-      // },
-      // upperTrendByDilutedEPS: {
-      //   label: 'Diluted EPS Upper Trend',
-      //   values: [getUps(dilutedEPS)],
-      // },
     },
     balanceSheet: {
       accumulatedEarnings,

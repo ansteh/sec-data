@@ -12,12 +12,21 @@
     </sec-scale-data-source>
   </div>
 
-  <mat-form-field class="clause-field">
-    <mat-select placeholder="prepare" [(ngModel)]="measure.prepare" name="prepare">
-      <mat-option>NONE</mat-option>
-      <mat-option *ngFor="let prepare of functions; let i = index" value="{{ prepare }}">{{ prepare }}</mat-option>
-    </mat-select>
-  </mat-form-field>
+  <div>
+    <mat-form-field class="clause-field">
+      <mat-select placeholder="prepare" [(value)]="measure.prepare" name="prepare" (selectionChange)="updateLabel('prepare')">
+        <mat-option>-- None --</mat-option>
+        <mat-option *ngFor="let option of functions" [value]="option.key">{{ option.label }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field class="clause-field">
+      <mat-select placeholder="trend" [(value)]="measure.trend" name="trend" (selectionChange)="updateLabel('trend')">
+        <mat-option>-- None --</mat-option>
+        <mat-option *ngFor="let option of trends" [value]="option.key">{{ option.label }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
 
   <div *ngFor="let clause of measure.clauses; let i = index">
     <!-- <mat-form-field class="clause-field">
