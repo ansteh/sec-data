@@ -16,6 +16,7 @@ export class ScaleEngineComponent implements OnInit {
   public filenames: string[];
   public filename: string;
   public template: any;
+  public report: any;
 
   constructor(private engine: ScaleEngineService) { }
 
@@ -36,6 +37,9 @@ export class ScaleEngineComponent implements OnInit {
       .getTemplate(name)
       .subscribe((template) => {
         this.template = template;
+
+        this.report = this.engine.createReport(this.metrics, template);
+        console.log('report', this.report);
       });
   }
 

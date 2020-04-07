@@ -67,7 +67,6 @@ export class FilingsComponent implements OnInit {
 
             this.entities = flatten(summary);
             console.log('this.entities', this.entities);
-            console.log('report', this.entities.report.margins.incomeStatement);
             this.source = _.pick(this.entities, ['statements', 'margins']);
 
             // this.statement = createSeries(this.entities, 'statements.incomeStatement.dilutedEPS');

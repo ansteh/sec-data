@@ -139,6 +139,7 @@ export const getIncomeMargins = (data) => {
   const capitalExpendituresPerShare = map([capitalExpenditures, weightedAverageDilutedSharesOutstanding], ([a, b]) => {
     return !b ? 0 : (-a)/b;
   });
+  // TODO: metrify leverage by debt (31) - intangables
   // TODO: metrify leverage by debt (49)
 
   const valuations = getValuations(data);

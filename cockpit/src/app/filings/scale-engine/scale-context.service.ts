@@ -23,28 +23,28 @@ const PROPERTIES = [
   "fiercly competitive industry",
 ];
 
-const OPERATORS = [
-  "<",
-  "<=",
-  ">",
-  ">=",
-];
+const OPERATORS = {
+  "<" : (value, threshold) => { return value <  threshold; },
+  "<=": (value, threshold) => { return value <= threshold; },
+  ">" : (value, threshold) => { return value >  threshold; },
+  ">=": (value, threshold) => { return value >= threshold; }
+};
 
 const FUNCTIONS = {
   "CAGR": {
     label: "CAGR",
-    prepare: null,
+    formula: null,
   },
   "CAGR_MAX_20": {
     label: "CAGR (max. 20%)",
-    prepare: null,
+    formula: null,
   }, //:"CAGR (max. 20%)"
 };
 
 const TRENDS = {
   "TREND_UP": {
     label: "Upward Trend",
-    prepare: null,
+    formula: null,
   },
 };
 
@@ -52,6 +52,34 @@ const align = (mapping) => {
   return _.map(mapping, (item, key) => {
     return Object.assign({ key }, item);
   });
+};
+
+const assignMatch = (clause) => {
+  const match = OPERATORS[clause.operand];
+
+  if(match) {
+    clause.match = value => match(value, clause.value);
+  }
+};
+
+const applyFormula = (property, scale, values) => {
+  if(!scale.property || !values) return values;
+
+  const source = { prepare: FUNCTIONS, trend: TRENDS }[property];
+  const formula = _.get(source, [scale.property, 'formula']);
+
+  if(formula) return formula(values);
+};
+
+export const CONTEXT = {
+  categories: CATEGORIES,
+  properties: PROPERTIES,
+  operators: OPERATORS,
+  functions: FUNCTIONS,
+  trends: TRENDS,
+
+  applyFormula,
+  assignMatch,
 };
 
 @Injectable({
@@ -62,7 +90,7 @@ export class ScaleContextService {
   public scope: any = {
     categories: CATEGORIES,
     properties: PROPERTIES,
-    operators: OPERATORS,
+    operators: _.keys(OPERATORS),
     functions: align(FUNCTIONS),
     trends: align(TRENDS),
   };
