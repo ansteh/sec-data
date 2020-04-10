@@ -29,12 +29,5 @@ export class ScaleEngineService {
 
   createReport(stock: any, template: any): any {
     return Scale.report(CONTEXT, stock, template);
-
-    // const scales = Scale.report(CONTEXT, stock, template);
-    //
-    // return {
-    //   scales,
-    //   summary: Scale.summarize(scales)
-    // };
   }
 }

@@ -4,16 +4,16 @@ import * as _ from 'lodash';
 
 import { getCAGR, getUps, growthRate } from '../formulas/growth';
 
-const CATEGORIES = [
-  "durable",
-  "tend to be durable",
-  "durable exceptions",
+const CATEGORIES = {
+  "durable": 2,
+  "tend to be durable": 1,
+  "durable exceptions": 0,
 
-  "tend to be medicore",
-  "medicore",
-  "highly competitive industry",
-  "fiercly competitive industry",
-];
+  "tend to be medicore": -1,
+  "medicore": -2,
+  "highly competitive industry": -2,
+  "fiercly competitive industry": -2,
+};
 
 const PROPERTIES = [
   "durable exceptions",
@@ -75,6 +75,17 @@ const applyFormula = (property, scale, values) => {
   if(formula) return formula(values);
 };
 
+const worstScore = _.min(_.values(CATEGORIES));
+
+const getScore = (category) => {
+  // return CATEGORIES[category];
+  return category ? CATEGORIES[category] : worstScore;
+};
+
+const getScores = () => {
+  return CATEGORIES;
+};
+
 export const CONTEXT = {
   categories: CATEGORIES,
   properties: PROPERTIES,
@@ -82,8 +93,12 @@ export const CONTEXT = {
   functions: FUNCTIONS,
   trends: TRENDS,
 
+  worstScore,
+
   applyFormula,
   assignMatch,
+  getScore,
+  getScores,
 };
 
 @Injectable({
@@ -92,7 +107,7 @@ export const CONTEXT = {
 export class ScaleContextService {
 
   public scope: any = {
-    categories: CATEGORIES,
+    categories: _.keys(CATEGORIES),
     properties: PROPERTIES,
     operators: _.keys(OPERATORS),
     functions: align(FUNCTIONS),

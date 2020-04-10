@@ -14,7 +14,7 @@ const classify = (clauses, values) => {
   })
 };
 
-const evaluate = (scale) => {
+const assignStats = (context, scale) => {
   scale.stats = _
     .chain(scale.values)
     .filter()
@@ -42,12 +42,22 @@ const evaluate = (scale) => {
   }, null);
 
   scale.category = _.get(category, 'label') || null;
+  scale.score = context.getScore(scale.category);
+
+  if(_.keys(scale.stats).length > 0) {
+    scale.avgScore = 0;
+    _.forOwn(scale.stats, (value, category) => {
+      scale.avgScore += value * context.getScore(category);
+    });
+  } else {
+    scale.avgScore = context.worstScore;
+  }
 };
 
 export const report = (context, data, template) => {
   console.log({ context, data, template });
 
-  return _.map(template, (scale) => {
+  const scales = _.map(template, (scale) => {
     scale = _.cloneDeep(scale);
 
     const statement = _.get(data, scale.breadcrumbs);
@@ -61,10 +71,12 @@ export const report = (context, data, template) => {
       scale.values = classify(scale.clauses, values);
     }
 
-    evaluate(scale);
+    assignStats(context, scale);
 
     return scale;
   });
+
+  return Object.assign({ scales }, evaluate(context, scales));
 };
 
 export const summarize = (report) => {
@@ -74,4 +86,65 @@ export const summarize = (report) => {
       label: scale.description.label,
     };
   });
+};
+
+export const evaluate = (context, scales) => {
+  const score = _
+    .chain(scales)
+    .map('score')
+    .filter()
+    .sum()
+    .value();
+
+  const scores = context.getScores();
+  const minScore = scales.length * context.worstScore; //getTotalScoreBy('min', scores, scales);
+  const maxScore = getTotalScoreBy('max', scores, scales);
+  const avgScore = _.sumBy(scales, 'avgScore');
+
+  return {
+    original: {
+      avg: avgScore,
+      min: minScore,
+      value: score,
+      max: maxScore,
+    },
+    score: normalize({
+      avg: avgScore,
+      min: minScore,
+      value: score,
+      max: maxScore,
+    }),
+  };
+};
+
+const normalize = (score, factor = 100) => {
+  const shift = -score.min || 0;
+  const value = (score.value + shift) / (score.max + shift);
+  const avg = (score.avg + shift) / (score.max + shift);
+
+  return {
+    avg: avg * factor,
+    min: 0,
+    value: value * factor,
+    max: factor,
+  };
+};
+
+const getTotalScoreBy = (func, scores, scales) => {
+  return _
+    .chain(scales)
+    .map('clauses')
+    .map(clauses => getScoreBy(func, scores, clauses))
+    .sum()
+    .value();
+};
+
+const getScoreBy = (func, scores, clauses) => {
+  return _
+    .chain(clauses)
+    .map('description.label')
+    .map(category => scores[category])
+    .filter()
+    [func]()
+    .value() || 0;
 };

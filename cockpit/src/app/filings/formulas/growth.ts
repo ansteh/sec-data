@@ -21,7 +21,12 @@ export const getCompoundAnnualGrowthRate = (start, end, numberOfYears) => {
 // assumption years interval
 export const getCAGR = (series) => {
   if(!series || series.length < 2) return null;
-  return getCompoundAnnualGrowthRate(_.first(series), _.last(series), series.length);
+
+  const start = _.find(series, value => value > 0);
+  const end = _.findLast(series, value => value > 0);
+  if(!start || !end) return null;
+
+  return getCompoundAnnualGrowthRate(start, end, series.length);
 };
 
 // console.log('getCompoundAnnualGrowthRate', getCompoundAnnualGrowthRate(100000, 126000, 5));

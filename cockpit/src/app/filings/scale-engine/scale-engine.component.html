@@ -1,5 +1,6 @@
-<!-- <div *ngIf="report">
-  <table mat-table [dataSource]="report" class="mat-elevation-z8">
+<div *ngIf="report">
+  <div>SCORE: {{ report.score.value | number : '1.0-0'}} | HISTORICAL: {{ report.score.avg | number : '1.0-0'}}</div>
+  <table mat-table [dataSource]="report.scales" class="mat-elevation-z8">
     <ng-container matColumnDef="description">
       <th mat-header-cell *matHeaderCellDef style="padding-left:10px;"> Description </th>
       <td mat-cell *matCellDef="let element"> {{ element.description.label }} </td>
@@ -13,8 +14,9 @@
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
     <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
   </table>
-</div> -->
+</div>
 
+<!-- manage templates -->
 <!-- <mat-action-list role="list">
   <h3 mat-subheader>Templates</h3>
   <mat-list-item role="listitem" *ngFor="let name of filenames" (click)="select(name)">
@@ -23,8 +25,8 @@
   </mat-list-item>
 </mat-action-list> -->
 
-<div *ngIf="template">
+<!-- <div *ngIf="template">
   <h4>{{ filename }}</h4>
   <button mat-raised-button color="primary" (click)="saveTemplate()">SAVE TEMPLATE</button>
   <sec-scale-template [metrics]="metrics" [measures]="template"></sec-scale-template>
-</div>
+</div> -->
