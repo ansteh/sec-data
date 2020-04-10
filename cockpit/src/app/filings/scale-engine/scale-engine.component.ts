@@ -16,7 +16,10 @@ export class ScaleEngineComponent implements OnInit {
   public filenames: string[];
   public filename: string;
   public template: any;
+
+  // TMP
   public report: any;
+  public displayedColumns = ['description', 'category'];
 
   constructor(private engine: ScaleEngineService) { }
 

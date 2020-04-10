@@ -1,5 +1,8 @@
 import { Injectable } from '@angular/core';
+
 import * as _ from 'lodash';
+
+import { getCAGR, getUps, growthRate } from '../formulas/growth';
 
 const CATEGORIES = [
   "durable",
@@ -33,18 +36,18 @@ const OPERATORS = {
 const FUNCTIONS = {
   "CAGR": {
     label: "CAGR",
-    formula: null,
+    formula: values => [getCAGR(values)],
   },
   "CAGR_MAX_20": {
     label: "CAGR (max. 20%)",
-    formula: null,
-  }, //:"CAGR (max. 20%)"
+    formula: values => [getCAGR(values)],
+  },
 };
 
 const TRENDS = {
   "TREND_UP": {
     label: "Upward Trend",
-    formula: null,
+    formula: values => [getUps(values)],
   },
 };
 
@@ -63,10 +66,11 @@ const assignMatch = (clause) => {
 };
 
 const applyFormula = (property, scale, values) => {
-  if(!scale.property || !values) return values;
+  const key = scale[property];
+  if(!key || !values) return values;
 
   const source = { prepare: FUNCTIONS, trend: TRENDS }[property];
-  const formula = _.get(source, [scale.property, 'formula']);
+  const formula = _.get(source, [key, 'formula']);
 
   if(formula) return formula(values);
 };
