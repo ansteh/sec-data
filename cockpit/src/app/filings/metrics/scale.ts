@@ -55,7 +55,7 @@ const assignStats = (context, scale) => {
 };
 
 export const report = (context, data, template) => {
-  console.log({ context, data, template });
+  // console.log({ context, data, template });
 
   const scales = _.map(template, (scale) => {
     scale = _.cloneDeep(scale);
