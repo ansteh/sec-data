@@ -97,7 +97,7 @@ export const evaluate = (context, scales) => {
     .value();
 
   const scores = context.getScores();
-  const minScore = scales.length * context.worstScore; //getTotalScoreBy('min', scores, scales);
+  const minScore = getTotalScoreBy('min', scores, scales); // scales.length * context.worstScore;
   const maxScore = getTotalScoreBy('max', scores, scales);
   const avgScore = _.sumBy(scales, 'avgScore');
 
@@ -144,7 +144,7 @@ const getScoreBy = (func, scores, clauses) => {
     .chain(clauses)
     .map('description.label')
     .map(category => scores[category])
-    .filter()
+    .filter(_.isNumber)
     [func]()
     .value() || 0;
 };

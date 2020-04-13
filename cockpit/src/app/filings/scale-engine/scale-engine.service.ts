@@ -32,7 +32,10 @@ export class ScaleEngineService {
   }
 
   createReport(stock: any, template: any): any {
-    // this.createReports(template);
+    // this.createReports(template)
+    //   .pipe(map(content => JSON.stringify(content, null, 2)))
+    //   .subscribe(console.log);
+
     return Scale.report(CONTEXT, stock, template);
   }
 
@@ -50,27 +53,30 @@ export class ScaleEngineService {
 
     const getReports = tickers => forkJoin(...tickers.map(getReport));
 
-    this.getTickers().pipe(mergeMap(getReports))
-      .subscribe((stocks: any[]) => {
-        // console.log('stocks', stocks);
+    const createScores = (stocks: any[]) => {
+      // console.log('stocks', stocks);
 
-        const summary = _
-          .chain(stocks)
-          .map(({ ticker, report }) => {
-            return {
-              ticker,
-              score: report.score.value,
-              avg: report.score.avg,
-            };
-          })
-          .orderBy(['score'], ['desc'])
-          .value();
+      return _
+        .chain(stocks)
+        .map(({ ticker, report }) => {
+          return {
+            ticker,
+            score: report.score.value,
+            avg: report.score.avg,
+          };
+        })
+        .orderBy(['score'], ['desc'])
+        .value();
+    };
 
-        console.log('summary', summary);
-      });
+    return this.getTickers().pipe(mergeMap(getReports), map(createScores));
   }
 
   private getTickers(): Observable<any> {
     return this.http.get(`${apiUrl}/scale-engine/filings`);
+  }
+
+  getScoresBy(name: string): Observable<any> {
+    return this.getTemplate(name).pipe(mergeMap(this.createReports));
   }
 }

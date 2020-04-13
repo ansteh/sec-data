@@ -79,6 +79,20 @@ const analyse = (portfolio, benchmarks) => {
   };
 };
 
+const getValuation = (positions) => {
+  return _
+    .chain(positions)
+    .sumBy((position) => {
+      if(_.has(position, 'stock.valuation.score')) {
+        return position.weight * _.get(position, 'stock.valuation.score') || 0;
+      } else {
+        console.log(`No score defined for:`, position);
+        return 0;
+      }
+    })
+    .value();
+};
+
 @Component({
   selector: 'sec-diary',
   templateUrl: './diary.component.html',
@@ -203,6 +217,7 @@ export class DiaryComponent implements OnInit {
       console.log('worst', portfolioAnalysis);
       console.log('medicore', analyse(this.summary.portfolio, benchmarks.medicore));
       console.log('durable', analyse(this.summary.portfolio, benchmarks.durable));
+      console.log('portfolio company score:', getValuation(this.summary.portfolio));
 
       let budget = portfolioAnalysis.value,
         count = 20,
@@ -250,6 +265,7 @@ export class DiaryComponent implements OnInit {
       console.log('worst', analyse(candidates, benchmarks.worst));
       console.log('medicore', analyse(candidates, benchmarks.medicore));
       console.log('durable', analyse(candidates, benchmarks.durable));
+      console.log('portfolio company score:', getValuation(candidates));
     });
   }
 
