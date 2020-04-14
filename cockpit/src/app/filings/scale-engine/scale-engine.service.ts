@@ -5,6 +5,7 @@ import { Observable, forkJoin } from 'rxjs';
 import { map, mergeMap } from 'rxjs/operators';
 
 import { flatten } from './../filings';
+import * as Pricing from './../metrics/pricing';
 import * as Scale from './../metrics/scale';
 import { CONTEXT } from './scale-context.service';
 
@@ -32,9 +33,9 @@ export class ScaleEngineService {
   }
 
   createReport(stock: any, template: any): any {
-    // this.createReports(template)
-    //   .pipe(map(content => JSON.stringify(content, null, 2)))
-    //   .subscribe(console.log);
+    this.createReports(template)
+      // .pipe(map(content => JSON.stringify(content, null, 2)))
+      .subscribe(console.log);
 
     return Scale.report(CONTEXT, stock, template);
   }
@@ -45,7 +46,8 @@ export class ScaleEngineService {
         .pipe(map((stock) => {
           const entities = flatten(stock);
           const source = _.pick(entities, ['statements', 'margins']);
-          const report = Scale.report(CONTEXT, source, template);
+          const report: any = Scale.report(CONTEXT, source, template);
+          report.dcfs = Pricing.getDCFs(entities.statements);
 
           return { ticker, stock, report };
         }));
@@ -63,6 +65,7 @@ export class ScaleEngineService {
             ticker,
             score: report.score.value,
             avg: report.score.avg,
+            dcfs: report.dcfs,
           };
         })
         .orderBy(['score'], ['desc'])
