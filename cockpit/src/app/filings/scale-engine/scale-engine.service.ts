@@ -33,9 +33,9 @@ export class ScaleEngineService {
   }
 
   createReport(stock: any, template: any): any {
-    this.createReports(template)
-      // .pipe(map(content => JSON.stringify(content, null, 2)))
-      .subscribe(console.log);
+    // this.createReports(template)
+    //   .pipe(map(content => JSON.stringify(content, null, 2)))
+    //   .subscribe(console.log);
 
     return Scale.report(CONTEXT, stock, template);
   }
