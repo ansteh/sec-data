@@ -160,7 +160,36 @@ export class DiaryComponent implements OnInit {
         item.estimatedValue = getEstimatedValue(item);
         item.marginOfSafety = 1 - item.price/item.estimatedValue;
         profile(item);
+
+        if(item.valuation) {
+          const { dcfs } = item.valuation;
+          if(dcfs.dilutedEPS > 0) item.deps_mos = 1 - item.price/dcfs.dilutedEPS;
+          if(dcfs.operatingEPS > 0) item.oeps_mos = 1 - item.price/dcfs.operatingEPS;
+          if(dcfs.freeCashFlow > 0) item.fcf_mos = 1 - item.price/dcfs.freeCashFlow;
+        }
       });
+
+      const findByScores = (property = 'fcf_mos') => {
+        return _
+          .chain(this.summary.stocks)
+          .filter(stock => _.get(stock, 'valuation.score') > 50)
+          .filter(property)
+          .filter(stock => stock[property] > 0)
+          // .filter(stock => stock['deps_mos'] > 0)
+          // .filter(stock => stock['oeps_mos'] > 0)
+          // .filter(stock => stock['fcf_mos'] > 0)
+          .orderBy(['valuation.score', property], ['desc', 'asc'])
+          .map((stock) => {
+            return _.assign(
+              {},
+              stock.valuation,
+              _.pick(stock, ['deps_mos', 'oeps_mos', 'fcf_mos']),
+            );
+          })
+          .value();
+      };
+
+      console.log(findByScores());
 
       this.summary.portfolio.forEach((item) => {
         item.stock = _.find(this.summary.stocks, (stock) => {

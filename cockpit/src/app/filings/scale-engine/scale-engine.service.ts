@@ -40,7 +40,7 @@ export class ScaleEngineService {
     return Scale.report(CONTEXT, stock, template);
   }
 
-  createReports(template: any) {
+  createReports(template: any): Observable<any> {
     const getReport = (ticker) => {
       return this.http.get(`${apiUrl}/filings/${ticker}`)
         .pipe(map((stock) => {
@@ -80,6 +80,6 @@ export class ScaleEngineService {
   }
 
   getScoresBy(name: string): Observable<any> {
-    return this.getTemplate(name).pipe(mergeMap(this.createReports));
+    return this.getTemplate(name).pipe(mergeMap(template => this.createReports(template)));
   }
 }

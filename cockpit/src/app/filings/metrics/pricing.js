@@ -82,10 +82,12 @@ export const getIntrinsicValues = (series) => {
 
   return Discount.getIntrinsicValue({
     value,
-    growthRate: Math.max(0.05, rate),
-    discountRate: 0.12,
+    // growthRate: Math.min(0.2, Math.max(0.05, rate)),
+    growthRate: Math.min(0.2, rate),
+    // growthRate: rate,
+    discountRate: 0.01,
     terminalRate: 0.04,
-    years: 10,
+    years: 5,
   });
 };
 
@@ -102,7 +104,7 @@ export const getValuations = (data) => {
   // console.log('avgPrices', avgPrices);
   // console.log('longTermRate', longTermRate);
   // analyseDiscounts(dilutedEPS, 'dilutedEPS');
-  // console.log(getDCFs(data));
+  console.log(getDCFs(data));
 
   return {
     preTaxAverageBondEquityYield: {
