@@ -43,3 +43,11 @@ export const getAllEntries = (data) => {
 export const devide = ([a, b]) => {
   return !b ? 0 : a/b;
 };
+
+export const add = (statment, other) => {
+  return map([statment, other], ([a, b]) => { return a+b; });
+};
+
+export const subtract = (statment, other) => {
+  return map([statment, other], ([a, b]) => { return a-b; });
+};

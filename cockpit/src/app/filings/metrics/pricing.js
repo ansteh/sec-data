@@ -1,12 +1,15 @@
 import * as _ from 'lodash';
+
 import * as Cashflow from './../formulas/cashflow';
+import * as Dictionary from './dictionary';
 import * as Discount from './../formulas/discount-model';
+
 import { getCAGR, getCAGRs } from './../formulas/growth';
 
-import { devide, getAllEntries, getDates, getValues, map } from './util';
+import { devide, getAllEntries, getValues, map } from './util';
 
 const getBondEquityYield = (prices, earnings) => {
-  return map([prices, earnings], devide);
+  return map([earnings, prices], devide);
 };
 
 const simulateAvgPrices = (earnings, pe) => {
@@ -38,56 +41,40 @@ const analyseDiscounts = (series, label) => {
   console.log('average price by CAGRs', _.mean(_.values(discounts)));
 };
 
-const getOperatingIncomePerShare = (data) => {
-  const operatingIncome = getValues('incomeStatement.operatingIncome', data);
-  const weightedAverageDilutedSharesOutstanding = getValues('incomeStatement.weightedAverageDilutedSharesOutstanding', data);
-
-  return map([operatingIncome, weightedAverageDilutedSharesOutstanding], devide);
-};
-
-export const getFreeCashFlow = (data) => {
-  const cashFromOperations = getValues('cashflowStatement.cashFromOperations', data);
-  const capitalExpenditures = getValues('cashflowStatement.capitalExpenditures', data);
-
-  return map([cashFromOperations, capitalExpenditures], ([a, b]) => { return (a || 0) + (b || 0); });
-};
-
-export const getFreeCashFlowPerShare = (data) => {
-  const freeCashFlow = getFreeCashFlow(data);
-  const totalShares = getValues('incomeStatement.weightedAverageDilutedSharesOutstanding', data);
-
-  return map([freeCashFlow, totalShares], devide);
-};
-
-
 export const getDCFs = (data) => {
   const dilutedEPS = getValues('incomeStatement.dilutedEPS', data);
-  const operatingEPS = getOperatingIncomePerShare(data);
-  const freeCashFlow = getFreeCashFlowPerShare(data);
+  const operatingEPS = Dictionary.getOperatingIncomePerShare(data);
+  const freeCashFlow = Dictionary.getFreeCashFlowPerShare(data);
 
   // console.log('operatingEPS', operatingEPS);
   // console.log('dilutedEPS', dilutedEPS);
   // console.log('freeCashFlow', freeCashFlow);
 
+  // console.log('real rate', getIntrinsicValue(freeCashFlow, { discountRate: 0.01 }));
+  // console.log('average rate', getIntrinsicValue(freeCashFlow, { discountRate: 0.07 }));
+  // console.log('stock rate', getIntrinsicValue(freeCashFlow, { discountRate: 0.12 }));
+
   return {
-    dilutedEPS: getIntrinsicValues(dilutedEPS),
-    operatingEPS: getIntrinsicValues(operatingEPS),
-    freeCashFlow: getIntrinsicValues(freeCashFlow),
+    dilutedEPS: getIntrinsicValue(dilutedEPS),
+    operatingEPS: getIntrinsicValue(operatingEPS),
+    freeCashFlow: getIntrinsicValue(freeCashFlow),
   };
 };
 
-export const getIntrinsicValues = (series) => {
+export const getIntrinsicValue = (series, options) => {
   const rate = getCAGR(series);
   const value = _.last(series);
+
+  const { maxGrowthRate } = options || {};
 
   return Discount.getIntrinsicValue({
     value,
     // growthRate: Math.min(0.2, Math.max(0.05, rate)),
-    growthRate: Math.min(0.2, rate),
+    growthRate: maxGrowthRate ? Math.min(maxGrowthRate, rate) : rate,
     // growthRate: rate,
-    discountRate: 0.01,
+    discountRate: _.get(options, 'discountRate', 0.12),
     terminalRate: 0.04,
-    years: 5,
+    years: _.get(options, 'years', 10),
   });
 };
 
@@ -104,7 +91,7 @@ export const getValuations = (data) => {
   // console.log('avgPrices', avgPrices);
   // console.log('longTermRate', longTermRate);
   // analyseDiscounts(dilutedEPS, 'dilutedEPS');
-  console.log(getDCFs(data));
+  // console.log(getDCFs(data));
 
   return {
     preTaxAverageBondEquityYield: {

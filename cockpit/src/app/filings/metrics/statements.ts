@@ -1,47 +1,10 @@
+import * as Dictionary from './dictionary';
 import * as _ from 'lodash';
 
 import { getCAGR, getUps, growthRate } from '../formulas/growth';
 import { devide, getAllEntries, getValues, map } from './util';
 
 import { getValuations } from './pricing';
-
-const add = (statment, other) => {
-  return map([statment, other], ([a, b]) => { return a+b; });
-};
-
-const subtract = (statment, other) => {
-  return map([statment, other], ([a, b]) => { return a-b; });
-};
-
-const getQuickRatio = (data) => {
-  const totalCurrentAssets = getValues('balanceSheet.totalCurrentAssets', data);
-  const totalCurrentLiabilities = getValues('balanceSheet.totalCurrentLiabilities', data);
-  const inventory = getValues('balanceSheet.inventory', data);
-  const prepaidExpenses = getValues('balanceSheet.prepaidExpenses', data);
-
-  let quickRatio = subtract(totalCurrentAssets, inventory);
-  quickRatio = subtract(quickRatio, prepaidExpenses);
-  quickRatio = map([quickRatio, totalCurrentLiabilities], devide);
-
-  // https://www.investopedia.com/terms/q/quickratio.asp
-  // to get marketable securities value
-
-  return quickRatio;
-};
-
-const getYearsToPayoffLongTermDebt = (netIncome, longTermDebt) => {
-  if(longTermDebt === 0) return 0;
-
-  if(longTermDebt > 0) {
-    if(netIncome > 0) {
-      return longTermDebt/netIncome;
-    }
-
-    return null;
-  }
-
-  return null;
-};
 
 const inspectRetainedEarnings = (data) => {
   const netIncome = getValues('incomeStatement.netIncome', data);
@@ -92,33 +55,6 @@ const inspectRetainedEarnings = (data) => {
   console.log('calculatedRetainedEarnings', JSON.stringify(_.tail(calculatedRetainedEarnings), null, 2));
 };
 
-// TODO: calculate real accumulatedEarnings (netIncome - buybacks - dividends paid out)
-const getAccumulatedEarnings = (netIncome) => {
-  netIncome = netIncome || [];
-
-  let sum = 0;
-  const values = netIncome.map((earnings, index) => {
-    sum += earnings || 0;
-    return sum;
-  }, []);
-
-  return {
-    label: 'Accumulated Net Income or Loss',
-    values,
-  };
-};
-
-const getCapitalExpendituresToEarningsOver10Years = (capex, earnings) => {
-  earnings = earnings || [];
-
-  let total = {
-    capex: -_.sum(capex),
-    earnings: _.sum(earnings),
-  };
-
-  return total.earnings ? total.capex/total.earnings : 0;
-};
-
 export const getIncomeMargins = (data) => {
   // console.log('data', data, getAllEntries(data));
 
@@ -141,7 +77,7 @@ export const getIncomeMargins = (data) => {
   const shortTermBorrowings = getValues('balanceSheet.shortTermBorrowings', data);
   const longTermDebtDue = getValues('balanceSheet.longTermDebtDue', data);
   const totalCurrentLiabilities = getValues('balanceSheet.totalCurrentLiabilities', data);
-  const quickRatio = getQuickRatio(data);
+  const quickRatio = Dictionary.getQuickRatio(data);
 
   const retainedEarnings = getValues('balanceSheet.retainedEarnings', data);
 
@@ -158,7 +94,6 @@ export const getIncomeMargins = (data) => {
   const totalDebt = map([totalShortTermDebt, longTermDebt], ([a, b]) => { return a+b; });
   const treasuryShareAdjustedTotalEquity = map([totalEquity, repurchaseOfCommonStock], ([a, b]) => { return a-b; });
 
-  const accumulatedEarnings = getAccumulatedEarnings(netIncome);
   // inspectRetainedEarnings(data);
 
   const weightedAverageDilutedSharesOutstanding = getValues('incomeStatement.weightedAverageDilutedSharesOutstanding', data);
@@ -228,11 +163,6 @@ export const getIncomeMargins = (data) => {
       },
     },
     balanceSheet: {
-      // accumulatedEarnings,
-      // accumulatedEarningsGrowthRate: {
-      //   label: 'Accumulated Net Income or Loss (% Rate)',
-      //   values: growthRate(_.get(accumulatedEarnings, 'values') || []),
-      // },
       currentRatio: {
         label: 'Current Ratio',
         values: map([totalCurrentAssets, totalCurrentLiabilities], devide),
@@ -251,7 +181,7 @@ export const getIncomeMargins = (data) => {
       },
       yearsToPayoffLongTermDebt: {
         label: 'Years to payoff Long Term Debt',
-        values: map([netIncome, longTermDebt], ([a, b]) => getYearsToPayoffLongTermDebt(a, b)),
+        values: map([netIncome, longTermDebt], ([a, b]) => Dictionary.getYearsToPayoffLongTermDebt(a, b)),
       },
       returnOnAssetRatio: {
         label: 'Return on Asset Ratio',
@@ -293,12 +223,20 @@ export const getIncomeMargins = (data) => {
       },
       capitalExpendituresToEarningsOver10Years: { // durable competitive advantage: good place to look (>= 50%) more than likely (>= 25%)
         label: 'Capital Expenditures to Earnings Over 10 Years',
-        values: [getCapitalExpendituresToEarningsOver10Years(capitalExpenditures, netIncome)],
+        values: [Dictionary.getCapitalExpendituresToEarningsOver10Years(data)],
       },
       repurchaseOfCommonStockToOperatingActivities: {
         label: 'Repurchase Of Common Stock To Operating Activities',
         values: map([_.map(repurchaseOfCommonStock, value => -value || 0), cashFromOperations], devide),
-      }
+      },
+      freeCashFlow: {
+        label: 'Free Cash Flow',
+        values: Dictionary.getFreeCashFlow(data),
+      },
+      freeCashFlowPerShare: {
+        label: 'Free Cash Flow Per Share',
+        values: Dictionary.getFreeCashFlowPerShare(data),
+      },
     },
     other: {
       operatingIncomeToPlantPropertyAndEquipmentNet: {
