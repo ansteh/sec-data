@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, OnChanges, Input } from '@angular/core';
 
 import { ScaleEngineService } from './scale-engine.service';
 
@@ -9,7 +9,7 @@ import * as _ from 'lodash';
   templateUrl: './scale-engine.component.html',
   styleUrls: ['./scale-engine.component.scss']
 })
-export class ScaleEngineComponent implements OnInit {
+export class ScaleEngineComponent implements OnInit, OnChanges {
 
   @Input() metrics: any[] = [];
 
@@ -28,6 +28,10 @@ export class ScaleEngineComponent implements OnInit {
     this.select('buffet');
   }
 
+  ngOnChanges() {
+    this.createReport();
+  }
+
   select(name) {
     this.filename = name;
     this.getTemplate();
@@ -40,9 +44,7 @@ export class ScaleEngineComponent implements OnInit {
       .getTemplate(name)
       .subscribe((template) => {
         this.template = template;
-
-        this.report = this.engine.createReport(this.metrics, template);
-        console.log('report', this.report);
+        this.createReport();
       });
   }
 
@@ -62,6 +64,13 @@ export class ScaleEngineComponent implements OnInit {
       .subscribe((filenames) => {
         this.filenames = filenames;
       });
+  }
+
+  private createReport() {
+    if(!this.report && this.metrics && this.template) {
+      this.report = this.engine.createReport(this.metrics, this.template);
+      console.log('report', this.report);
+    }
   }
 
 }

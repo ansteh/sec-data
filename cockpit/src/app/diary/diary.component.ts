@@ -177,7 +177,7 @@ export class DiaryComponent implements OnInit {
           .filter(stock => stock[property] > 0)
           // .filter(stock => stock['deps_mos'] > 0)
           // .filter(stock => stock['oeps_mos'] > 0)
-          // .filter(stock => stock['fcf_mos'] > 0)
+          .filter(stock => stock['fcf_mos'] > 0.5)
           .orderBy(['valuation.score', property], ['desc', 'asc'])
           .map((stock) => {
             return _.assign(

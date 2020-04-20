@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import * as _ from 'lodash';
 
 import { getCAGR, getUps, growthRate } from '../formulas/growth';
+import { getStandardDeviation } from '../formulas/statsmodel';
 
 const CATEGORIES = {
   "durable": 2,
@@ -48,6 +49,10 @@ const TRENDS = {
   "TREND_UP": {
     label: "Upward Trend",
     formula: values => [getUps(values)],
+  },
+  "CONSISTENCY": {
+    label: "Consistency",
+    formula: values => [getStandardDeviation(values)],
   },
 };
 

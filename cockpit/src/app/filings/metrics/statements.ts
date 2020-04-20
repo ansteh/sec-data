@@ -70,6 +70,9 @@ export const getIncomeMargins = (data) => {
   const paidTax = map([preTaxIncome, netIncome], ([a, b]) => { return a-b; });
   const dilutedEPS = getValues('incomeStatement.dilutedEPS', data);
 
+  const cashAndEquivalents = getValues('balanceSheet.cashAndEquivalents', data);
+  const inventory = getValues('balanceSheet.inventory', data);
+  const accountsReceivableNet = getValues('balanceSheet.accountsReceivableNet', data);
   const totalCurrentAssets = getValues('balanceSheet.totalCurrentAssets', data);
   const plantPropertyAndEquipmentNet = getValues('balanceSheet.plantPropertyAndEquipmentNet', data);
   const goodwill = getValues('balanceSheet.goodwill', data);
@@ -101,6 +104,8 @@ export const getIncomeMargins = (data) => {
   const capitalExpendituresPerShare = map([capitalExpenditures, weightedAverageDilutedSharesOutstanding], ([a, b]) => {
     return !b ? 0 : (-a)/b;
   });
+
+  const freeCashFlow = Dictionary.getFreeCashFlow(data);
 
   // TODO: (29) - Property, Plant and Equipment - do not spend a ton of money
   // TODO: (30) - Goodwill - bought durable or medicore businesses - increase over a number of years => assume buying companies
@@ -163,6 +168,18 @@ export const getIncomeMargins = (data) => {
       },
     },
     balanceSheet: {
+      cashAndEquivalentsToOperatingEarningsRatio: {
+        label: 'Cash And Equivalents to Operating Earnings Ratio',
+        values: map([cashAndEquivalents, operatingIncome], devide),
+      },
+      inventoryToOperatingEarningsRatio: {
+        label: 'Inventory to Operating Earnings Ratio',
+        values: map([inventory, operatingIncome], devide),
+      },
+      accountsReceivableNetToRevenueRatio: {
+        label: 'Inventory to Operating Earnings Ratio',
+        values: map([accountsReceivableNet, revenue], devide),
+      },
       currentRatio: {
         label: 'Current Ratio',
         values: map([totalCurrentAssets, totalCurrentLiabilities], devide),
@@ -231,11 +248,15 @@ export const getIncomeMargins = (data) => {
       },
       freeCashFlow: {
         label: 'Free Cash Flow',
-        values: Dictionary.getFreeCashFlow(data),
+        values: freeCashFlow,
       },
       freeCashFlowPerShare: {
         label: 'Free Cash Flow Per Share',
         values: Dictionary.getFreeCashFlowPerShare(data),
+      },
+      yearsToPayoffLongTermDebtViaFreeCashFlow: {
+        label: 'Years to payoff Long Term Debt via Free Cash Flow',
+        values: map([freeCashFlow, longTermDebt], ([a, b]) => Dictionary.getYearsToPayoffLongTermDebt(a, b)),
       },
     },
     other: {
