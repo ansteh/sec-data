@@ -4,6 +4,30 @@ import { DiaryService } from './diary.service';
 
 import * as _ from 'lodash';
 
+const BENCHMARKS = {
+  worst: {
+    health: {
+      danger: 0,
+      medicore: 0.4,
+      durable: 0.8,
+    },
+  },
+  medicore: {
+    health: {
+      danger: 0.2,
+      medicore: 0.6,
+      durable: 0.9,
+    },
+  },
+  durable: {
+    health: {
+      danger: 0.4,
+      medicore: 0.7,
+      durable: 1,
+    },
+  }
+};
+
 const profile = (stock) => {
   let health = 0;
   if(stock.debtToEquity <= 1) health += 1;
@@ -51,7 +75,8 @@ const analyse = (portfolio, benchmarks) => {
   _.forEach(stocks, (stock) => {
     const value = getNominalValue(stock);
     stock.weight = value/totalValue;
-    stock.marginOfSafety = stock.marginOfSafety || stock.stock.marginOfSafety;
+    // stock.marginOfSafety = stock.marginOfSafety || stock.stock.marginOfSafety;
+    stock.marginOfSafety = stock.stock.fcf_mos; //stock.marginOfSafety || stock.stock.marginOfSafety;
 
     if(stock.marginOfSafety) {
       marginOfSafety += stock.weight * stock.marginOfSafety;
@@ -169,28 +194,6 @@ export class DiaryComponent implements OnInit {
         }
       });
 
-      const findByScores = (property = 'fcf_mos') => {
-        return _
-          .chain(this.summary.stocks)
-          .filter(stock => _.get(stock, 'valuation.score') > 50)
-          .filter(property)
-          .filter(stock => stock[property] > 0)
-          // .filter(stock => stock['deps_mos'] > 0)
-          // .filter(stock => stock['oeps_mos'] > 0)
-          .filter(stock => stock['fcf_mos'] > 0.5)
-          .orderBy(['valuation.score', property], ['desc', 'asc'])
-          .map((stock) => {
-            return _.assign(
-              {},
-              stock.valuation,
-              _.pick(stock, ['deps_mos', 'oeps_mos', 'fcf_mos']),
-            );
-          })
-          .value();
-      };
-
-      console.log(findByScores());
-
       this.summary.portfolio.forEach((item) => {
         item.stock = _.find(this.summary.stocks, (stock) => {
           return _.last(stock.ticker.split(':')) === item.ticker;
@@ -215,86 +218,64 @@ export class DiaryComponent implements OnInit {
       this.candidates = this.getCandidates(this.summary.stocks);
       this.evaluatePortfolio();
 
-      // analysis
+      // DCFs:
 
-      const benchmarks = {
-        worst: {
-          health: {
-            danger: 0,
-            medicore: 0.4,
-            durable: 0.8,
-          },
-        },
-        medicore: {
-          health: {
-            danger: 0.2,
-            medicore: 0.6,
-            durable: 0.9,
-          },
-        },
-        durable: {
-          health: {
-            danger: 0.4,
-            medicore: 0.7,
-            durable: 1,
-          },
-        }
+      const findByScores = (property = 'fcf_mos') => {
+        return _
+          .chain(this.summary.stocks)
+          .filter(stock => _.get(stock, 'valuation.score') > 50)
+          .filter(property)
+          .filter(stock => stock[property] > 0)
+          // .filter(stock => stock['deps_mos'] > 0)
+          // .filter(stock => stock['oeps_mos'] > 0)
+          .filter(stock => stock['fcf_mos'] > 0.7)
+          .orderBy(['valuation.score', property], ['desc', 'asc'])
+          .value();
       };
 
-      const portfolioAnalysis = analyse(this.summary.portfolio, benchmarks.worst);
-      console.log('portfolio');
-      console.log('worst', portfolioAnalysis);
-      console.log('medicore', analyse(this.summary.portfolio, benchmarks.medicore));
-      console.log('durable', analyse(this.summary.portfolio, benchmarks.durable));
-      console.log('portfolio company score:', getValuation(this.summary.portfolio));
-
-      let budget = portfolioAnalysis.value,
-        count = 20,
-        budgetPerStock = budget/count;
-
-      // console.log('starting budget', budget);
-      // console.log('budgetPerStock', budgetPerStock);
-
-      const candidates = _
-        .chain(this.candidates)
-        .filter(item => item.health === 'durable')
-        .filter(item => item.growth === 'durable')
-        .filter(item => _.includes(['VERY HIGH', 'HIGH'], item.uncertainty) === false)
-        .take(count)
-        .orderBy(['price'], ['desc'])
-        .map((stock, index) => {
-          let amount = _.floor(Math.min(budget, budgetPerStock)/stock.price);
-          if(amount === 0 && budget > stock.price) amount = 1;
-          budget -= amount * stock.price;
-
-          return { count: amount, stock };
+      const preview = _
+        .chain(findByScores())
+        .map((stock) => {
+          return _.assign(
+            {},
+            stock.valuation,
+            _.pick(stock, ['deps_mos', 'oeps_mos', 'fcf_mos']),
+          );
         })
-        .orderBy(['marginOfSafety'], ['desc'])
         .value();
 
-      if(budget > 0) {
-        do {
-          const stock = _.find(candidates, item => budget > item.stock.price);
+      console.log('preview', preview);
 
-          if(stock) {
-            const amount = _.floor(Math.min(budget, budgetPerStock)/stock.stock.price);
-            console.log('add to ', stock, amount);
-            stock.count += amount;
-            budget -= amount * stock.stock.price;
-          } else {
-            break;
-          }
+      const filterMidTerm = (candidates) => {
+        return _
+          .chain(candidates)
+          .filter(item => item.health === 'durable')
+          .filter(item => item.growth === 'durable')
+          .filter(item => _.includes(['VERY HIGH', 'HIGH'], item.uncertainty) === false)
+          .value();
+      };
 
-        } while(budget > 0);
-      }
+      // Audit:
 
-      // console.log('remaining budget', budget);
-      // console.log('candidates', candidates);
-      console.log('portfolio after audit');
-      console.log('worst', analyse(candidates, benchmarks.worst));
-      console.log('medicore', analyse(candidates, benchmarks.medicore));
-      console.log('durable', analyse(candidates, benchmarks.durable));
-      console.log('portfolio company score:', getValuation(candidates));
+      const benchmarks = BENCHMARKS;
+
+      const current = this.createAudit('current portfolio', this.summary.portfolio);
+      this.logAudit(current);
+
+      // const candidates = filterMidTerm(this.candidates);
+      // const candidates = filterMidTerm(findByScores());
+      // const candidates = _.shuffle(findByScores());
+      const candidates = findByScores();
+
+      const counterPortfolio = this.createPortfolio({
+        candidates,
+        budget: current.value,
+        // count: 7,
+      });
+      console.log('counterPortfolio', counterPortfolio);
+
+      const counter = this.createAudit('counter portfolio', counterPortfolio);
+      this.logAudit(counter);
     });
   }
 
@@ -341,6 +322,75 @@ export class DiaryComponent implements OnInit {
       .orderBy(['marginOfSafety'], ['desc'])
       .take(this.portfolio.sells.length)
       .value();
+  }
+
+  private createAudit(label: string, portfolio: any) {
+    const benchmarks = BENCHMARKS;
+
+    const audit = {
+      label,
+      scenarios: {},
+      score: null,
+      value: null,
+    };
+
+    _.forOwn(benchmarks, (setup, scenario) => {
+      audit.scenarios[scenario] = analyse(portfolio, setup);
+      audit.value = audit.scenarios[scenario].value;
+    });
+
+    audit.score = getValuation(portfolio);
+
+    return audit;
+  }
+
+  logAudit(audit: any) {
+    console.log(audit.label);
+
+    _.forOwn(audit.scenarios, (results, scenario) => {
+      console.log(scenario, results);
+    });
+
+    console.log('portfolio company score:', audit.score);
+  }
+
+  createPortfolio({ candidates, budget, count = 20}) {
+    let budgetPerStock = budget/count;
+
+    // console.log('starting budget', budget);
+    // console.log('budgetPerStock', budgetPerStock);
+
+    const portfolio = _
+      .chain(candidates)
+      .take(count)
+      .orderBy(['price'], ['desc'])
+      .map((stock, index) => {
+        let amount = _.floor(Math.min(budget, budgetPerStock)/stock.price);
+        if(amount === 0 && budget > stock.price) amount = 1;
+        budget -= amount * stock.price;
+
+        return { count: amount, stock };
+      })
+      .orderBy(['marginOfSafety'], ['desc'])
+      .value();
+
+    if(budget > 0) {
+      do {
+        const stock = _.find(portfolio, item => budget > item.stock.price);
+
+        if(stock) {
+          const amount = _.floor(Math.min(budget, budgetPerStock)/stock.stock.price);
+          console.log('add to ', stock, amount);
+          stock.count += amount;
+          budget -= amount * stock.stock.price;
+        } else {
+          break;
+        }
+
+      } while(budget > 0);
+    }
+
+    return portfolio;
   }
 
 }
