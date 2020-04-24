@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
 import { Observable, forkJoin } from 'rxjs';
-import { map, mergeMap } from 'rxjs/operators';
+import { map, mergeMap, take } from 'rxjs/operators';
 
 import { flatten } from './../filings';
 import * as Pricing from './../metrics/pricing';
@@ -47,7 +47,12 @@ export class ScaleEngineService {
           const entities = flatten(stock);
           const source = _.pick(entities, ['statements', 'margins']);
           const report: any = Scale.report(CONTEXT, source, template);
-          report.dcfs = Pricing.getDCFs(entities.statements);
+
+          report.dcfs = {
+            longterm: Pricing.getDCFs(entities.statements),
+            caped: Pricing.getDCFs(entities.statements, { maxGrowthRate: 0.2 }),
+            midterm: Pricing.getDCFs(entities.statements, { years: 5, discountRate: 0.07, maxGrowthRate: 0.2 }),
+          };
 
           return { ticker, stock, report };
         }));
@@ -61,6 +66,8 @@ export class ScaleEngineService {
       return _
         .chain(stocks)
         .map(({ ticker, report }) => {
+          // return Object.assign({ ticker }, report);
+
           return {
             ticker,
             score: report.score.value,
@@ -72,7 +79,11 @@ export class ScaleEngineService {
         .value();
     };
 
-    return this.getTickers().pipe(mergeMap(getReports), map(createScores));
+    return this.getTickers().pipe(
+      // map(stocks => _.take(stocks, 5)),
+      mergeMap(getReports),
+      map(createScores)
+    );
   }
 
   private getTickers(): Observable<any> {

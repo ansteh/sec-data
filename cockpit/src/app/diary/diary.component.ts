@@ -187,10 +187,10 @@ export class DiaryComponent implements OnInit {
         profile(item);
 
         if(item.valuation) {
-          const { dcfs } = item.valuation;
-          if(dcfs.dilutedEPS > 0) item.deps_mos = 1 - item.price/dcfs.dilutedEPS;
-          if(dcfs.operatingEPS > 0) item.oeps_mos = 1 - item.price/dcfs.operatingEPS;
-          if(dcfs.freeCashFlow > 0) item.fcf_mos = 1 - item.price/dcfs.freeCashFlow;
+          const dcfs = item.valuation.dcfs.longterm;
+          if(dcfs.deps > 0) item.deps_mos = 1 - item.price/dcfs.deps;
+          if(dcfs.oeps > 0) item.oeps_mos = 1 - item.price/dcfs.oeps;
+          if(dcfs.fcf > 0) item.fcf_mos = 1 - item.price/dcfs.fcf;
         }
       });
 
@@ -354,7 +354,7 @@ export class DiaryComponent implements OnInit {
     console.log('portfolio company score:', audit.score);
   }
 
-  createPortfolio({ candidates, budget, count = 20}) {
+  createPortfolio({ candidates, budget, count = 20 }) {
     let budgetPerStock = budget/count;
 
     // console.log('starting budget', budget);

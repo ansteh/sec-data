@@ -41,7 +41,7 @@ const analyseDiscounts = (series, label) => {
   console.log('average price by CAGRs', _.mean(_.values(discounts)));
 };
 
-export const getDCFs = (data) => {
+export const getDCFs = (data, options) => {
   const dilutedEPS = getValues('incomeStatement.dilutedEPS', data);
   const operatingEPS = Dictionary.getOperatingIncomePerShare(data);
   const freeCashFlow = Dictionary.getFreeCashFlowPerShare(data);
@@ -55,9 +55,9 @@ export const getDCFs = (data) => {
   // console.log('stock rate', getIntrinsicValue(freeCashFlow, { discountRate: 0.12 }));
 
   return {
-    dilutedEPS: getIntrinsicValue(dilutedEPS),
-    operatingEPS: getIntrinsicValue(operatingEPS),
-    freeCashFlow: getIntrinsicValue(freeCashFlow),
+    deps: getIntrinsicValue(dilutedEPS, options),
+    oeps: getIntrinsicValue(operatingEPS, options),
+    fcf: getIntrinsicValue(freeCashFlow, options),
   };
 };
 
