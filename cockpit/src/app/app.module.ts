@@ -38,6 +38,7 @@ import { ScaleEngineComponent } from './filings/scale-engine/scale-engine.compon
 import { ScaleClauseComponent } from './filings/scale-engine/scale-clause/scale-clause.component';
 import { ScaleDataSourceComponent } from './filings/scale-engine/scale-data-source/scale-data-source.component';
 import { ScaleTemplateComponent } from './filings/scale-engine/scale-template/scale-template.component';
+import { ScaleRankingComponent } from './filings/scale-ranking/scale-ranking.component';
 
 import { DiaryComponent } from './diary/diary.component';
 import { DataTableComponent } from './diary/data-table/data-table.component';
@@ -72,6 +73,7 @@ import { DataTableComponent } from './diary/data-table/data-table.component';
     InterpreterComponent,
     DiaryComponent,
     DataTableComponent,
+    ScaleRankingComponent,
   ],
   imports: [
     BrowserModule,

@@ -72,6 +72,7 @@ export class ScaleEngineService {
             ticker,
             score: report.score.value,
             avg: report.score.avg,
+            change: report.score.value - report.score.avg,
             dcfs: report.dcfs,
           };
         })

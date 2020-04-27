@@ -166,7 +166,7 @@ export class DiaryComponent implements OnInit {
     ]
   };
 
-  constructor(private diary:  DiaryService) { }
+  constructor(private diary: DiaryService) { }
 
   ngOnInit() {
     this.diary.getDays().subscribe((days) => {

@@ -1,0 +1,101 @@
+<table mat-table [dataSource]="reports" class="mat-elevation-z8">
+
+  <ng-container matColumnDef="ticker">
+    <th mat-header-cell *matHeaderCellDef style="padding: 0 10px;">
+      ticker
+    </th>
+    <td mat-cell *matCellDef="let item">
+      {{ item.ticker }}
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="score">
+    <th mat-header-cell *matHeaderCellDef style="padding: 0 10px;">
+      score
+    </th>
+    <td mat-cell *matCellDef="let item" class="mat-cell-number">
+      {{ item.score | number : '1.0-0' }}
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="avg">
+    <th mat-header-cell *matHeaderCellDef style="padding: 0 10px;">
+      average
+    </th>
+    <td mat-cell *matCellDef="let item" class="mat-cell-number">
+      {{ item.avg | number : '1.0-0' }}
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="change">
+    <th mat-header-cell *matHeaderCellDef style="padding: 0 10px; min-width: 60px; text-align:center;">
+      move
+    </th>
+    <td mat-cell *matCellDef="let item" [ngClass]="{ 'change-positive': item.change >= 0 }" style="text-align:center;">
+      {{ item.change | number : '1.0-0' }}
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="price">
+    <th mat-header-cell *matHeaderCellDef style="padding: 0 10px; min-width: 60px; text-align:center;">
+      price
+    </th>
+    <td mat-cell *matCellDef="let item" class="mat-cell-number">
+      <!-- {{ item.price | number : '1.2-2' }} -->
+      {{ item.price | number : '1.2-2' }}
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="diluted">
+    <th mat-header-cell *matHeaderCellDef style="padding: 0 10px;">
+      diluted eps
+    </th>
+    <td mat-cell *matCellDef="let item" class="mat-cell-number">
+      <!-- {{ item.price | number : '1.2-2' }} -->
+      {{ getMeasure(item).deps | number : '1.2-2' }}
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="operating">
+    <th mat-header-cell *matHeaderCellDef style="padding: 0 10px;">
+      operating eps
+    </th>
+    <td mat-cell *matCellDef="let item" class="mat-cell-number">
+      <!-- {{ item.price | number : '1.2-2' }} -->
+      {{ getMeasure(item).oeps | number : '1.2-2' }}
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="fcf">
+    <th mat-header-cell *matHeaderCellDef style="padding: 0 10px;">
+      free cash flow
+    </th>
+    <td mat-cell *matCellDef="let item" class="mat-cell-number" [ngClass]="{ 'change-positive': getMeasure(item).fcf >= 0 }">
+      <!-- {{ item.price | number : '1.2-2' }} -->
+      {{ getMeasure(item).fcf | number : '1.2-2' }}
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="mean">
+    <th mat-header-cell *matHeaderCellDef style="padding: 0 10px;">
+      mean
+    </th>
+    <td mat-cell *matCellDef="let item" class="mat-cell-number">
+      <!-- {{ item.price | number : '1.2-2' }} -->
+      {{ getMean(item) | number : '1.2-2' }}
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="estimate">
+    <th mat-header-cell *matHeaderCellDef style="padding: 0 10px;">
+      estimate
+    </th>
+    <td mat-cell *matCellDef="let item" class="mat-cell-number">
+      <!-- {{ item.price | number : '1.2-2' }} -->
+      {{ (item.estimate ? item.estimate : null) | number : '1.2-2' }}
+    </td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns;" routerLink="/stock/filings/{{ row.ticker }}"></tr>
+</table>

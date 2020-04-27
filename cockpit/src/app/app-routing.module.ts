@@ -18,6 +18,7 @@ import { StockOpportunitiesComponent } from './stock-market/stock-opportunities/
 
 import { TransactionsComponent } from './imports/transactions/transactions.component';
 import { FilingsComponent } from './filings/filings.component';
+import { ScaleRankingComponent } from './filings/scale-ranking/scale-ranking.component';
 
 const routes: Routes = [
   {
@@ -31,6 +32,10 @@ const routes: Routes = [
   {
     path: 'diary',
     component: DiaryComponent
+  },
+  {
+    path: 'rankings',
+    component: ScaleRankingComponent
   },
   {
     path: 'portfolio',
