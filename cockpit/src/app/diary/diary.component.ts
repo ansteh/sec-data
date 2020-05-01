@@ -1,32 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 
 import { DiaryService } from './diary.service';
+import * as Audit from './audit';
 
 import * as _ from 'lodash';
-
-const BENCHMARKS = {
-  worst: {
-    health: {
-      danger: 0,
-      medicore: 0.4,
-      durable: 0.8,
-    },
-  },
-  medicore: {
-    health: {
-      danger: 0.2,
-      medicore: 0.6,
-      durable: 0.9,
-    },
-  },
-  durable: {
-    health: {
-      danger: 0.4,
-      medicore: 0.7,
-      durable: 1,
-    },
-  }
-};
 
 const profile = (stock) => {
   let health = 0;
@@ -58,63 +35,27 @@ const getEstimatedValue = (stock) => {
     .value();
 };
 
-const getNominalValue = ({ count, stock }) => {
-  return count * stock.price;
-};
+const preparePortfolio = (stocks) => {
+  // console.log('stocks', stocks);
 
-const analyse = (portfolio, benchmarks) => {
-  const assets = _.filter(portfolio, stock => stock.count);
-  const [stocks, unmatches] = _.partition(assets, item => item.stock);
-  // if(unmatches.length > 0) console.log('unmatches', unmatches);
-
-  let totalValue = _.sumBy(stocks, getNominalValue),
-    marginOfSafety = 0,
-    downside = 0,
-    upside = 0;
-
-  _.forEach(stocks, (stock) => {
-    const value = getNominalValue(stock);
-    stock.weight = value/totalValue;
-    // stock.marginOfSafety = stock.marginOfSafety || stock.stock.marginOfSafety;
-    stock.marginOfSafety = stock.stock.fcf_mos; //stock.marginOfSafety || stock.stock.marginOfSafety;
-
-    if(stock.marginOfSafety) {
-      marginOfSafety += stock.weight * stock.marginOfSafety;
-      downside += benchmarks.health[stock.stock.health] * value * (1 + stock.marginOfSafety);
-      upside += value * (1 + stock.marginOfSafety);
-    }
-  });
-
-  totalValue = _.round(totalValue, 2);
-  downside = _.round(downside, 2);
-  upside = _.round(upside, 2);
-
-  // console.log('stocks', _.map(stocks, 'stock'));
-
-  return {
-    value: totalValue,
-    downside: downside/totalValue-1,
-    upside: upside/totalValue-1,
-    range: {
-      downside,
-      upside,
-    },
-    marginOfSafety,
-    misfits: _.filter(stocks, stock => !stock.marginOfSafety)
-  };
-};
-
-const getValuation = (positions) => {
   return _
-    .chain(positions)
-    .sumBy((position) => {
-      if(_.has(position, 'stock.valuation.score')) {
-        return position.weight * _.get(position, 'stock.valuation.score') || 0;
-      } else {
-        console.log(`No score defined for:`, position);
-        return 0;
-      }
+    .chain(stocks)
+    .filter(position => _.get(position, 'count'))
+    .map((position: any) => {
+      const { stock } = position;
+
+      return {
+        ticker: _.get(position, 'ticker'),
+        weight: _.get(position, 'weight'),
+        score: _.get(stock, 'valuation.score'),
+        value: _.get(position, 'value'),
+        margin: _.get(position, 'marginOfSafety'),
+
+        count: _.get(position, 'count'),
+        price: _.get(stock, 'price'),
+      };
     })
+    .orderBy(['weight'], ['desc'])
     .value();
 };
 
@@ -131,6 +72,10 @@ export class DiaryComponent implements OnInit {
 
   public portfolio: any;
   public candidates: any[];
+
+  public audit: any = {
+    portfolio: null,
+  };
 
   public columns: any = {
     portfolio: [
@@ -233,18 +178,18 @@ export class DiaryComponent implements OnInit {
           .value();
       };
 
-      const preview = _
-        .chain(findByScores())
-        .map((stock) => {
-          return _.assign(
-            {},
-            stock.valuation,
-            _.pick(stock, ['deps_mos', 'oeps_mos', 'fcf_mos']),
-          );
-        })
-        .value();
-
-      console.log('preview', preview);
+      // const preview = _
+      //   .chain(findByScores())
+      //   .map((stock) => {
+      //     return _.assign(
+      //       {},
+      //       stock.valuation,
+      //       _.pick(stock, ['deps_mos', 'oeps_mos', 'fcf_mos']),
+      //     );
+      //   })
+      //   .value();
+      //
+      // console.log('preview', preview);
 
       const filterMidTerm = (candidates) => {
         return _
@@ -256,11 +201,9 @@ export class DiaryComponent implements OnInit {
       };
 
       // Audit:
-
-      const benchmarks = BENCHMARKS;
-
-      const current = this.createAudit('current portfolio', this.summary.portfolio);
+      const current = Audit.createAudit('current portfolio', this.summary.portfolio);
       this.logAudit(current);
+      this.audit.portfolio = preparePortfolio(this.summary.portfolio);
 
       // const candidates = filterMidTerm(this.candidates);
       // const candidates = filterMidTerm(findByScores());
@@ -274,7 +217,7 @@ export class DiaryComponent implements OnInit {
       });
       console.log('counterPortfolio', counterPortfolio);
 
-      const counter = this.createAudit('counter portfolio', counterPortfolio);
+      const counter = Audit.createAudit('counter portfolio', counterPortfolio);
       this.logAudit(counter);
     });
   }
@@ -322,26 +265,6 @@ export class DiaryComponent implements OnInit {
       .orderBy(['marginOfSafety'], ['desc'])
       .take(this.portfolio.sells.length)
       .value();
-  }
-
-  private createAudit(label: string, portfolio: any) {
-    const benchmarks = BENCHMARKS;
-
-    const audit = {
-      label,
-      scenarios: {},
-      score: null,
-      value: null,
-    };
-
-    _.forOwn(benchmarks, (setup, scenario) => {
-      audit.scenarios[scenario] = analyse(portfolio, setup);
-      audit.value = audit.scenarios[scenario].value;
-    });
-
-    audit.score = getValuation(portfolio);
-
-    return audit;
   }
 
   logAudit(audit: any) {

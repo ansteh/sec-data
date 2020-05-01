@@ -41,16 +41,18 @@ export class ScaleRankingComponent implements OnInit {
     'avg',
     'change',
     'price',
-    'diluted',
-    'operating',
-    'fcf',
-    'mean',
+    'measure.deps',
+    'measure.oeps',
+    'measure.fcf',
+    'measure.mean',
     'estimate',
   ];
 
   public reports: any[] = [];
+  public sortedReports: any[] = [];
+
   public entryType: string = 'mos';
-  public periode: string = 'caped';
+  public periode: string = 'longterm';
 
   constructor(private diary: DiaryService, private engine: ScaleEngineService) { }
 
@@ -58,35 +60,29 @@ export class ScaleRankingComponent implements OnInit {
     this.getReports();
   }
 
-  getMeasure(row): any {
-    return _.get(row, [this.entryType, this.periode]) || {};
-  }
+  sortData(event: any) {
+    console.log('event', event);
 
-  getMean(row): any {
-    const measure = this.getMeasure(row);
+    if(event.direction === '') {
+      this.sortedReports = this.reports;
+    } else {
+      const getValue = (item) => {
+        const value = _.get(item, event.active);
+        return value ? value : { desc: -1, asc: 1 }[event.direction]*1000;
+      };
 
-    return _
-      .chain(properties)
-      .map(property => measure[property])
-      .filter()
-      .mean()
-      .value();
-  }
-
-  getEstimate(row): any {
-    const mean = this.getMean(row);
-
-    if(mean > 0) {
-      return mean * row.score;
+      this.sortedReports = _.orderBy(
+        this.reports,
+        [getValue, 'score'],
+        [event.direction, 'desc']
+      );
     }
-
-    return 0;
   }
 
   sortByEstimate() {
-    _.forEach(this.reports, (report) => {
-      report.estimate = this.getEstimate(report);
-    });
+    // _.forEach(this.reports, (report) => {
+    //   report.estimate = this.getEstimate(report);
+    // });
 
     this.reports = _.orderBy(this.reports, ['estimate', 'score'], ['desc', 'desc']);
   }
@@ -128,9 +124,42 @@ export class ScaleRankingComponent implements OnInit {
       }))
       .subscribe((reports: any) => {
         this.reports = reports;
-        this.sortByEstimate();
+        this.setFrames();
         console.log('this.reports', this.reports);
+        this.sortedReports = _.cloneDeep(this.reports);
       });
   }
 
+  setFrames() {
+    _.forEach(this.reports, (report) => {
+      report.estimate = this.getEstimate(report);
+      report.measure = this.getMeasure(report);
+      report.measure.mean = this.getMean(report);
+    });
+  }
+
+  getMeasure(row): any {
+    return _.get(row, [this.entryType, this.periode]) || {};
+  }
+
+  getMean(row): any {
+    const measure = this.getMeasure(row);
+
+    return _
+      .chain(properties)
+      .map(property => measure[property])
+      .filter()
+      .mean()
+      .value();
+  }
+
+  getEstimate(row): any {
+    const mean = this.getMean(row);
+
+    if(mean > 0) {
+      return mean * row.score;
+    }
+
+    return 0;
+  }
 }

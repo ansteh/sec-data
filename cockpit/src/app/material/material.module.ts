@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-
 import {
   MatButtonModule,
   MatButtonToggleModule,
@@ -14,6 +13,7 @@ import {
   MatTableModule,
   MatOptionModule,
   MatSelectModule,
+  MatSortModule,
 } from '@angular/material';
 
 const modules = [
@@ -28,6 +28,7 @@ const modules = [
   MatSliderModule,
   MatOptionModule,
   MatSelectModule,
+  MatSortModule,
 ];
 
 @NgModule({

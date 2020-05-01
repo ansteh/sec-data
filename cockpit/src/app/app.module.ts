@@ -42,6 +42,8 @@ import { ScaleRankingComponent } from './filings/scale-ranking/scale-ranking.com
 
 import { DiaryComponent } from './diary/diary.component';
 import { DataTableComponent } from './diary/data-table/data-table.component';
+import { PortfolioCalibrationComponent } from './diary/portfolio-calibration/portfolio-calibration.component';
+import { PortfolioCompositionComponent } from './diary/portfolio-composition/portfolio-composition.component';
 
 @NgModule({
   declarations: [
@@ -59,21 +61,29 @@ import { DataTableComponent } from './diary/data-table/data-table.component';
     StockOpportunitiesComponent,
     CreateStockComponent,
     PortfolioSimulatorComponent,
+
+    // filings:
     FilingsComponent,
     FinancialStatementComponent,
     TrendExaminationComponent,
     TrendExaminationPreviewsComponent,
 
+    // filings scaling:
     ScaleEngineComponent,
     ScaleClauseComponent,
     ScaleDataSourceComponent,
     ScaleTemplateComponent,
+    ScaleRankingComponent,
 
     CsvImportComponent,
     InterpreterComponent,
+
+    // Diary
     DiaryComponent,
     DataTableComponent,
-    ScaleRankingComponent,
+    PortfolioCalibrationComponent,
+    PortfolioCompositionComponent,
+
   ],
   imports: [
     BrowserModule,

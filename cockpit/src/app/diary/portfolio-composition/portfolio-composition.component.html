@@ -1,0 +1,54 @@
+<!-- <pre>{{ stocks | json }}</pre> -->
+
+<table mat-table [dataSource]="stocks" class="mat-elevation-z8">
+  <ng-container matColumnDef="ticker">
+    <th mat-header-cell *matHeaderCellDef>
+      ticker
+    </th>
+    <td mat-cell *matCellDef="let item">
+      {{ item.ticker }}
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="weight">
+    <th mat-header-cell *matHeaderCellDef>
+      weight
+    </th>
+    <td mat-cell *matCellDef="let item" class="mat-cell-number">
+      {{ item.weight | number : '1.2-2' }}
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="score">
+    <th mat-header-cell *matHeaderCellDef>
+      score
+    </th>
+    <td mat-cell *matCellDef="let item" class="mat-cell-number">
+      {{ item.score | number : '1.0-0' }}
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="value">
+    <th mat-header-cell *matHeaderCellDef>
+      value
+    </th>
+    <td mat-cell *matCellDef="let item" class="mat-cell-number">
+      <!-- {{ item.price | number : '1.2-2' }} -->
+      {{ item.value | number : '1.2-2' }}
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="margin">
+    <th mat-header-cell *matHeaderCellDef>
+      margin
+    </th>
+    <td mat-cell *matCellDef="let item" class="mat-cell-number">
+      <!-- {{ item.price | number : '1.2-2' }} -->
+      {{ item.margin | number : '1.2-2' }}
+    </td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  <!-- routerLink="/stock/filings/{{ row.ticker }}" -->
+</table>
