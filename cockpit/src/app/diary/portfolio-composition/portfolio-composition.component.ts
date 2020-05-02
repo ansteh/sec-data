@@ -31,7 +31,7 @@ export class PortfolioCompositionComponent implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges) {
     if(changes.portfolio) {
       this.audit = Audit.createAudit(this.portfolio, this.name || 'Portfolio');
-      // Audit.log(this.audit);
+      Audit.log(this.audit);
     }
   }
 }

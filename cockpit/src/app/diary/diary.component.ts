@@ -180,12 +180,13 @@ export class DiaryComponent implements OnInit {
 
       // Audit:
       this.audit.portfolio = this.summary.portfolio;
-      
+
       // const candidates = filterMidTerm(this.candidates);
       // const candidates = filterMidTerm(findByScores());
       // const candidates = _.shuffle(findByScores());
       const candidates = findByScores();
-      this.audit.universe = candidates;
+      // console.log('universe', candidates);
+      this.audit.universe = _.shuffle(candidates);
 
       // const current = Audit.createAudit(this.summary.portfolio, 'current portfolio');
       // Audit.log(current);

@@ -116,7 +116,10 @@ export const getPositions = (positions) => {
       const { stock } = position;
 
       return {
-        ticker: _.get(position, 'ticker') || _.get(stock, 'valuation.ticker'),
+        ticker: _.get(position, 'ticker')
+          || _.get(stock, 'valuation.ticker')
+          || _.get(stock, 'ticker'),
+
         weight: _.get(position, 'weight'),
         score: _.get(stock, 'valuation.score'),
         value: _.get(position, 'value') || getNominalValue(position),
