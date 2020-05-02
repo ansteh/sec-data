@@ -24,7 +24,7 @@ const BENCHMARKS = {
   }
 };
 
-export const createAudit = (label: string, portfolio: any) => {
+export const createAudit = (portfolio: any, label?: string) => {
   const benchmarks = BENCHMARKS;
 
   const audit = {
@@ -32,6 +32,7 @@ export const createAudit = (label: string, portfolio: any) => {
     scenarios: {},
     score: null,
     value: null,
+    positions: null,
   };
 
   _.forOwn(benchmarks, (setup, scenario) => {
@@ -40,30 +41,31 @@ export const createAudit = (label: string, portfolio: any) => {
   });
 
   audit.score = getValuation(portfolio);
+  audit.positions = getPositions(portfolio);
 
   return audit;
 }
 
 const analyse = (portfolio, benchmarks) => {
-  const assets = _.filter(portfolio, stock => stock.count);
-  const [stocks, unmatches] = _.partition(assets, item => item.stock);
+  const assets = _.filter(portfolio, position => position.count);
+  const [positions, unmatches] = _.partition(assets, item => item.stock);
   // if(unmatches.length > 0) console.log('unmatches', unmatches);
 
-  let totalValue = _.sumBy(stocks, getNominalValue),
+  let totalValue = _.sumBy(positions, getNominalValue),
     marginOfSafety = 0,
     downside = 0,
     upside = 0;
 
-  _.forEach(stocks, (stock) => {
-    const value = getNominalValue(stock);
-    stock.weight = value/totalValue;
-    // stock.marginOfSafety = stock.marginOfSafety || stock.stock.marginOfSafety;
-    stock.marginOfSafety = stock.stock.fcf_mos; //stock.marginOfSafety || stock.stock.marginOfSafety;
+  _.forEach(positions, (position) => {
+    const value = getNominalValue(position);
+    position.weight = value/totalValue;
+    // position.marginOfSafety = position.marginOfSafety || position.stock.marginOfSafety;
+    position.marginOfSafety = position.stock.fcf_mos; //position.marginOfSafety || position.stock.marginOfSafety;
 
-    if(stock.marginOfSafety) {
-      marginOfSafety += stock.weight * stock.marginOfSafety;
-      downside += benchmarks.health[stock.stock.health] * value * (1 + stock.marginOfSafety);
-      upside += value * (1 + stock.marginOfSafety);
+    if(position.marginOfSafety) {
+      marginOfSafety += position.weight * position.marginOfSafety;
+      downside += benchmarks.health[position.stock.health] * value * (1 + position.marginOfSafety);
+      upside += value * (1 + position.marginOfSafety);
     }
   });
 
@@ -71,7 +73,7 @@ const analyse = (portfolio, benchmarks) => {
   downside = _.round(downside, 2);
   upside = _.round(upside, 2);
 
-  // console.log('stocks', _.map(stocks, 'stock'));
+  // console.log('stocks', _.map(positions, 'stock'));
 
   return {
     value: totalValue,
@@ -82,7 +84,7 @@ const analyse = (portfolio, benchmarks) => {
       upside,
     },
     marginOfSafety,
-    misfits: _.filter(stocks, stock => !stock.marginOfSafety)
+    misfits: _.filter(positions, position => !position.marginOfSafety),
   };
 };
 
@@ -103,3 +105,38 @@ const getValuation = (positions) => {
     })
     .value();
 };
+
+export const getPositions = (positions) => {
+  // console.log('stocks', stocks);
+
+  return _
+    .chain(positions)
+    .filter(position => _.get(position, 'count'))
+    .map((position: any) => {
+      const { stock } = position;
+
+      return {
+        ticker: _.get(position, 'ticker') || _.get(stock, 'valuation.ticker'),
+        weight: _.get(position, 'weight'),
+        score: _.get(stock, 'valuation.score'),
+        value: _.get(position, 'value') || getNominalValue(position),
+        margin: _.get(position, 'marginOfSafety'),
+
+        count: _.get(position, 'count'),
+        price: _.get(stock, 'price'),
+      };
+    })
+    .orderBy(['weight'], ['desc'])
+    .value();
+};
+
+export const log = (audit: any) => {
+  console.log(audit.label);
+  console.log('positions:', audit.positions);
+
+  _.forOwn(audit.scenarios, (results, scenario) => {
+    console.log(scenario, results);
+  });
+
+  console.log('portfolio company score:', audit.score);
+}

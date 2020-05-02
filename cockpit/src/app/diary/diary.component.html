@@ -1,4 +1,10 @@
-<sec-portfolio-composition [stocks]="audit.portfolio"></sec-portfolio-composition>
+<div *ngIf="audit?.portfolio">
+  <sec-portfolio-calibration
+    [name]="Portfolio"
+    [portfolio]="audit.portfolio"
+    [universe]="audit.universe">
+  </sec-portfolio-calibration>
+</div>
 
 <mat-form-field>
   <mat-select placeholder="day" [(ngModel)]="day" name="day" (selectionChange)="getSummary(day)">

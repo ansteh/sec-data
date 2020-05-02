@@ -1,3 +1,9 @@
-<p>
-  portfolio-calibration works!
-</p>
+<div class="row">
+  <div *ngIf="portfolio" class="column">
+    <sec-portfolio-composition [portfolio]="portfolio"></sec-portfolio-composition>
+  </div>
+
+  <div *ngIf="opposition" class="column">
+    <sec-portfolio-composition [portfolio]="opposition"></sec-portfolio-composition>
+  </div>
+</div>

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 
 import { DiaryService } from './diary.service';
 import * as Audit from './audit';
+import * as Portfolio from './portfolio';
 
 import * as _ from 'lodash';
 
@@ -35,30 +36,6 @@ const getEstimatedValue = (stock) => {
     .value();
 };
 
-const preparePortfolio = (stocks) => {
-  // console.log('stocks', stocks);
-
-  return _
-    .chain(stocks)
-    .filter(position => _.get(position, 'count'))
-    .map((position: any) => {
-      const { stock } = position;
-
-      return {
-        ticker: _.get(position, 'ticker'),
-        weight: _.get(position, 'weight'),
-        score: _.get(stock, 'valuation.score'),
-        value: _.get(position, 'value'),
-        margin: _.get(position, 'marginOfSafety'),
-
-        count: _.get(position, 'count'),
-        price: _.get(stock, 'price'),
-      };
-    })
-    .orderBy(['weight'], ['desc'])
-    .value();
-};
-
 @Component({
   selector: 'sec-diary',
   templateUrl: './diary.component.html',
@@ -75,6 +52,7 @@ export class DiaryComponent implements OnInit {
 
   public audit: any = {
     portfolio: null,
+    universe: null
   };
 
   public columns: any = {
@@ -201,24 +179,26 @@ export class DiaryComponent implements OnInit {
       };
 
       // Audit:
-      const current = Audit.createAudit('current portfolio', this.summary.portfolio);
-      this.logAudit(current);
-      this.audit.portfolio = preparePortfolio(this.summary.portfolio);
-
+      this.audit.portfolio = this.summary.portfolio;
+      
       // const candidates = filterMidTerm(this.candidates);
       // const candidates = filterMidTerm(findByScores());
       // const candidates = _.shuffle(findByScores());
       const candidates = findByScores();
+      this.audit.universe = candidates;
 
-      const counterPortfolio = this.createPortfolio({
-        candidates,
-        budget: current.value,
-        // count: 7,
-      });
-      console.log('counterPortfolio', counterPortfolio);
+      // const current = Audit.createAudit(this.summary.portfolio, 'current portfolio');
+      // Audit.log(current);
 
-      const counter = Audit.createAudit('counter portfolio', counterPortfolio);
-      this.logAudit(counter);
+      // const counterPortfolio = Portfolio.create({
+      //   candidates,
+      //   budget: current.value,
+      //   // count: 7,
+      // });
+      // console.log('counterPortfolio', counterPortfolio);
+      //
+      // const counter = Audit.createAudit(counterPortfolio, 'counter portfolio');
+      // Audit.log(counter);
     });
   }
 
@@ -265,55 +245,6 @@ export class DiaryComponent implements OnInit {
       .orderBy(['marginOfSafety'], ['desc'])
       .take(this.portfolio.sells.length)
       .value();
-  }
-
-  logAudit(audit: any) {
-    console.log(audit.label);
-
-    _.forOwn(audit.scenarios, (results, scenario) => {
-      console.log(scenario, results);
-    });
-
-    console.log('portfolio company score:', audit.score);
-  }
-
-  createPortfolio({ candidates, budget, count = 20 }) {
-    let budgetPerStock = budget/count;
-
-    // console.log('starting budget', budget);
-    // console.log('budgetPerStock', budgetPerStock);
-
-    const portfolio = _
-      .chain(candidates)
-      .take(count)
-      .orderBy(['price'], ['desc'])
-      .map((stock, index) => {
-        let amount = _.floor(Math.min(budget, budgetPerStock)/stock.price);
-        if(amount === 0 && budget > stock.price) amount = 1;
-        budget -= amount * stock.price;
-
-        return { count: amount, stock };
-      })
-      .orderBy(['marginOfSafety'], ['desc'])
-      .value();
-
-    if(budget > 0) {
-      do {
-        const stock = _.find(portfolio, item => budget > item.stock.price);
-
-        if(stock) {
-          const amount = _.floor(Math.min(budget, budgetPerStock)/stock.stock.price);
-          console.log('add to ', stock, amount);
-          stock.count += amount;
-          budget -= amount * stock.stock.price;
-        } else {
-          break;
-        }
-
-      } while(budget > 0);
-    }
-
-    return portfolio;
   }
 
 }
