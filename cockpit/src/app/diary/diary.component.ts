@@ -153,6 +153,7 @@ export class DiaryComponent implements OnInit {
           // .filter(stock => stock['oeps_mos'] > 0)
           .filter(stock => stock['fcf_mos'] > 0.7)
           .orderBy(['valuation.score', property], ['desc', 'asc'])
+          // .orderBy(['valuation.score'], ['desc'])
           .value();
       };
 
@@ -185,8 +186,8 @@ export class DiaryComponent implements OnInit {
       // const candidates = filterMidTerm(findByScores());
       // const candidates = _.shuffle(findByScores());
       const candidates = findByScores();
-      // console.log('universe', candidates);
-      this.audit.universe = _.shuffle(candidates);
+      console.log('universe', candidates);
+      this.audit.universe = candidates;
 
       // const current = Audit.createAudit(this.summary.portfolio, 'current portfolio');
       // Audit.log(current);

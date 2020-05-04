@@ -1,5 +1,7 @@
 import * as _ from 'lodash';
 
+import * as Portfolio from './portfolio';
+
 const BENCHMARKS = {
   worst: {
     health: {
@@ -118,7 +120,7 @@ export const getPositions = (positions) => {
       return {
         ticker: _.get(position, 'ticker')
           || _.get(stock, 'valuation.ticker')
-          || _.get(stock, 'ticker'),
+          || _.last((_.get(stock, 'ticker') || '').split(':')),
 
         weight: _.get(position, 'weight'),
         score: _.get(stock, 'valuation.score'),
@@ -142,4 +144,50 @@ export const log = (audit: any) => {
   });
 
   console.log('portfolio company score:', audit.score);
-}
+};
+
+export const findHighestScoreCandidates = (universe: any[], loops = 100) => {
+  let counter = 0, state = { audit: null, candidates: null };
+
+  do {
+    const portfolio = Portfolio.create({
+      budget: 100000,
+      candidates: _.shuffle(universe),
+    });
+
+    const audit = createAudit(portfolio);
+
+    // if(higherScore(audit, state.audit)) {
+    if(higherValue(audit, state.audit)) {
+      console.log('audit', audit);
+      state.audit = audit;
+      state.candidates = _
+        .chain(audit.positions)
+        .map(({ ticker }) => {
+          if(ticker) {
+            return _.find(universe, (stock) => {
+              return ticker === _.last(stock.ticker.split(':'));
+            });
+          }
+        })
+        // .filter()
+        .value();
+    }
+
+    counter += 1;
+  } while(counter < loops);
+
+  return state.candidates;
+};
+
+const higherScore = (audit, counterpart) => {
+  return _.get(audit, 'score', 0) > _.get(counterpart, 'score', 0);
+};
+
+const higherValue = (audit, counterpart) => {
+  return getScoreValue(audit) > getScoreValue(counterpart);
+};
+
+const getScoreValue = (audit) => {
+  return _.get(audit, 'score', 0) * _.get(audit, 'scenarios.worst.downside', 0);
+};

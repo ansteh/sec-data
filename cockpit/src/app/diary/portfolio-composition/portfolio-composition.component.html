@@ -1,12 +1,62 @@
 <!-- <pre>{{ stocks | json }}</pre> -->
 <!-- <pre>{{ audit.positions | json }}</pre> -->
 
-<table mat-table [dataSource]="audit.positions" class="mat-elevation-z8">
+<div *ngIf="audit" style="font-family: Roboto,'Helvetica Neue',sans-serif; font-size: 16px; padding: 8px 0;">
+  <div class="row mat-elevation-z2" style="padding: 8px 0;">
+    <div class="column" style="width: 30%;">
+      <span>{{ audit.label }}</span>
+    </div>
+
+    <div class="column" style="width: 30%; text-align: right;">
+      <div class="value-label">Score</div>
+      <div>{{ audit.score | number : '1.0-0' }}</div>
+    </div>
+
+    <div class="column" style="width: 30%; text-align: right;">
+      <div class="value-label">Value</div>
+      <div>{{ audit.value | number : '1.2-2' }}</div>
+    </div>
+  </div>
+
+  <br>
+
+  <div class="mat-elevation-z2" style="padding: 8px 0;">
+    <div class="row">
+      <div class="column" style="width: 30%;">
+        <div class="value-label">Scenario</div>
+      </div>
+
+      <div class="column" style="width: 30%; text-align: right;">
+        <div class="value-label">Downside</div>
+      </div>
+
+      <div class="column" style="width: 30%; text-align: right;">
+        <div class="value-label">Upside</div>
+      </div>
+    </div>
+
+    <div *ngFor="let scenario of audit.scenarios | keyvalue" class="row">
+      <div class="column" style="width: 30%;">
+        <span>{{ scenario.key }}</span>
+      </div>
+
+      <div class="column" style="width: 30%; text-align: right;">
+        <span [ngStyle]="{ 'color': scenario.value.downside >= 0 ? '#2ECC40' : '#FF4136' }">{{ formatPerc(scenario.value.downside) | number : '1.2-2' }}%</span>
+      </div>
+
+      <div class="column" style="width: 30%; text-align: right;">
+        <span [ngStyle]="{ 'color': scenario.value.upside >= 0 ? '#2ECC40' : '#FF4136' }">{{ formatPerc(scenario.value.upside) | number : '1.2-2' }}%</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<table mat-table [dataSource]="audit.positions" class="mat-elevation-z2">
   <ng-container matColumnDef="ticker">
-    <th mat-header-cell *matHeaderCellDef>
+    <th mat-header-cell *matHeaderCellDef style="min-width:50px;max-width:50px;">
       ticker
     </th>
-    <td mat-cell *matCellDef="let item">
+    <td mat-cell *matCellDef="let item" style="min-width:50px;max-width:50px;">
       {{ item.ticker }}
     </td>
   </ng-container>
@@ -56,6 +106,17 @@
     <td mat-cell *matCellDef="let item" class="mat-cell-number">
       <!-- {{ item.price | number : '1.2-2' }} -->
       {{ item.price | number : '1.2-2' }}
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="menu" stickyEnd>
+    <th mat-header-cell *matHeaderCellDef style="min-width: 20px;"></th>
+    <td mat-cell *matCellDef="let element" style="min-width: 20px;">
+      <!-- <button mat-icon-button aria-label="remove candidate" (click)="emitAction({ action: 'remove', candidate: element })"> -->
+      <button mat-icon-button aria-label="remove candidate" (click)="remove.emit(element)">
+        <mat-icon>delete</mat-icon>
+      </button>
+      <!-- <mat-icon>more_vert</mat-icon> -->
     </td>
   </ng-container>
 

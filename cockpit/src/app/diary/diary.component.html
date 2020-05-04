@@ -1,3 +1,9 @@
+<mat-form-field style="margin-left: 8px;">
+  <mat-select placeholder="day" [(ngModel)]="day" name="day" (selectionChange)="getSummary(day)">
+    <mat-option *ngFor="let option of days" value="{{ option }}">{{ option }}</mat-option>
+  </mat-select>
+</mat-form-field>
+
 <div *ngIf="audit?.portfolio">
   <sec-portfolio-calibration
     [name]="Portfolio"
@@ -5,12 +11,6 @@
     [universe]="audit.universe">
   </sec-portfolio-calibration>
 </div>
-
-<mat-form-field>
-  <mat-select placeholder="day" [(ngModel)]="day" name="day" (selectionChange)="getSummary(day)">
-    <mat-option *ngFor="let option of days" value="{{ option }}">{{ option }}</mat-option>
-  </mat-select>
-</mat-form-field>
 
 <div style="width: 500px;" *ngIf="summary?.portfolio">
   <div>value: {{ portfolio.value }}</div>

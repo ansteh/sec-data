@@ -3,10 +3,10 @@ import * as _ from 'lodash';
 export const create = ({ candidates, budget, count = 20, smooth = true }) => {
   let budgetPerStock = budget/count;
 
+  // console.log('candidates', candidates);
   // console.log('starting budget', budget);
   // console.log('budgetPerStock', budgetPerStock);
 
-  console.log('candidates', candidates);
   const portfolio = _
     .chain(candidates)
     .take(count)
@@ -46,4 +46,8 @@ export const create = ({ candidates, budget, count = 20, smooth = true }) => {
   }
 
   return portfolio;
-}
+};
+
+const getOrders = ({ current, target }) => {
+
+};
