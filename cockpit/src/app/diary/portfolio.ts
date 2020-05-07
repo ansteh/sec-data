@@ -48,6 +48,46 @@ export const create = ({ candidates, budget, count = 20, smooth = true }) => {
   return portfolio;
 };
 
-const getOrders = ({ current, target }) => {
+export const getOrders = ({ current, target }) => {
+  console.log('orders current', current);
+  console.log('orders target', target);
 
+  const stocks = {
+    current: _.keyBy(current.positions, 'ticker'),
+    target: _.keyBy(target.positions, 'ticker'),
+  };
+
+  const tickers = _
+    .chain(_.keys(stocks.current).concat(_.keys(stocks.target)))
+    .uniq()
+    .filter()
+    .sort()
+    .value();
+
+  // console.log('tickers', tickers);
+
+  const orders = _
+    .chain(tickers)
+    .map((ticker) => {
+      const current = _.get(stocks, ['current', ticker]);
+      const target = _.get(stocks, ['target', ticker]);
+
+      const price = _.get(target, 'price') || _.get(current, 'price');
+      const change = _.get(target, 'count', 0) - _.get(current, 'count', 0);
+
+      return {
+        ticker,
+        count: _.get(target, 'count', 0),
+        change,
+        // fee: 0.5 + (Math.abs(change) * price * 0.01),
+        fee: 0.5 + (Math.abs(change) * 0.004),
+      };
+    })
+    .filter(order => order.change !== 0)
+    .value();
+
+  return {
+    fee: _.sumBy(orders, 'fee'),
+    orders,
+  };
 };

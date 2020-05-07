@@ -46,7 +46,7 @@ export const createAudit = (portfolio: any, label?: string) => {
   audit.positions = getPositions(portfolio);
 
   return audit;
-}
+};
 
 const analyse = (portfolio, benchmarks) => {
   const assets = _.filter(portfolio, position => position.count);
@@ -66,8 +66,8 @@ const analyse = (portfolio, benchmarks) => {
 
     if(position.marginOfSafety) {
       marginOfSafety += position.weight * position.marginOfSafety;
-      downside += benchmarks.health[position.stock.health] * value * (1 + position.marginOfSafety);
-      upside += value * (1 + position.marginOfSafety);
+      downside += Math.max(0, benchmarks.health[position.stock.health] * value * (1 + position.marginOfSafety));
+      upside += Math.max(0, value * (1 + position.marginOfSafety));
     }
   });
 
@@ -94,6 +94,11 @@ const getNominalValue = ({ count, stock }) => {
   return count * stock.price;
 };
 
+const getFairValue = (margin, price) => {
+  // console.log(margin, price);
+  return price/(1 - margin) || 0;
+};
+
 const getValuation = (positions) => {
   return _
     .chain(positions)
@@ -101,7 +106,7 @@ const getValuation = (positions) => {
       if(_.has(position, 'stock.valuation.score')) {
         return position.weight * _.get(position, 'stock.valuation.score') || 0;
       } else {
-        console.log(`No score defined for:`, position);
+        // console.log(`No score defined for:`, position);
         return 0;
       }
     })
@@ -117,6 +122,10 @@ export const getPositions = (positions) => {
     .map((position: any) => {
       const { stock } = position;
 
+      // const margin = _.get(stock, 'marginOfSafety');
+      // const price = _.get(stock, 'price');
+      // const fairValue = getFairValue(margin, price);
+
       return {
         ticker: _.get(position, 'ticker')
           || _.get(stock, 'valuation.ticker')
@@ -124,7 +133,7 @@ export const getPositions = (positions) => {
 
         weight: _.get(position, 'weight'),
         score: _.get(stock, 'valuation.score'),
-        value: _.get(position, 'value') || getNominalValue(position),
+        value: _.get(position, 'value') || getNominalValue(position),
         margin: _.get(position, 'marginOfSafety'),
 
         count: _.get(position, 'count'),

@@ -88,6 +88,7 @@ export const getIncomeMargins = (data) => {
   const longTermDebt = getValues('balanceSheet.longTermDebt', data);
   const totalLiabilities = getValues('balanceSheet.totalLiabilities', data);
   const totalAssets = getValues('balanceSheet.totalAssets', data);
+  const tangibleCommonEquity = Dictionary.getTangibleCommonEquity(data);
 
   const commonDividendsPaid = getValues('cashflowStatement.commonDividendsPaid', data);
   const repurchaseOfCommonStock = getValues('cashflowStatement.repurchaseOfCommonStock', data);
@@ -227,6 +228,10 @@ export const getIncomeMargins = (data) => {
       treasuryShareAdjustedReturnOnEquity: {
         label: 'Treasury share-adjusted Return on Equity (ROE)',
         values: map([netIncome, treasuryShareAdjustedTotalEquity], devide),
+      },
+      netIncomeToTangibleCommonEquity: {
+        label: 'Net Income To Tangible Common Equity Ratio (TCE / net tangible equity capital)',
+        values: map([netIncome, tangibleCommonEquity], devide),
       },
     },
     cashflowStatement: {

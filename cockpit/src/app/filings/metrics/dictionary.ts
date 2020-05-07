@@ -64,3 +64,21 @@ export const getYearsToPayoffLongTermDebt = (netIncome, longTermDebt) => {
 
   return null;
 };
+
+// usually used for banks
+// https://www.fool.com/investing/2019/03/15/why-warren-buffett-thinks-jpmorgan-could-soar-50.aspx
+// https://en.wikipedia.org/wiki/Tangible_common_equity
+export const getTangibleCommonEquity = (data) => {
+  const totalEquity = getValues('balanceSheet.totalEquity', data);
+  const totalPreferredEquity = getValues('balanceSheet.totalPreferredEquity', data);
+  const goodwill = getValues('balanceSheet.goodwill', data);
+  const otherIntangibleAssets = getValues('balanceSheet.otherIntangibleAssets', data);
+
+  let tangibleCommonEquity = subtract(totalEquity, totalPreferredEquity);
+  tangibleCommonEquity = subtract(totalEquity, goodwill);
+  tangibleCommonEquity = subtract(totalEquity, otherIntangibleAssets);
+
+  // console.log(tangibleCommonEquity);
+
+  return tangibleCommonEquity;
+};

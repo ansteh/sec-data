@@ -18,6 +18,7 @@ export class PortfolioCalibrationComponent implements OnInit {
 
   public candidates: any[] = null;
   public opposition: any[] = [];
+  public orders: any = { fee: null, orders: null };
 
   public method: string = 'REBALANCE';
   private methods: any = {
@@ -34,7 +35,7 @@ export class PortfolioCalibrationComponent implements OnInit {
 
   ngOnChanges(changes: SimpleChanges) {
     if(changes.universe) {
-      this.rebalance();
+      this.refreshOpposition();
       // this.findOppisition();
     }
   }
@@ -48,10 +49,17 @@ export class PortfolioCalibrationComponent implements OnInit {
 
   refreshOpposition() {
     this.methods[this.method]();
+    this.getOrders();
   }
 
   remove(candidate: any) {
-    _.remove(this.candidates, { ticker: candidate.ticker });
+    // console.log(candidate, this.candidates);
+
+    _.remove(this.candidates, (stock) => {
+      return stock.ticker
+        && candidate.ticker === _.last(stock.ticker.split(':'));
+    });
+
     this.refreshOpposition();
   }
 
@@ -85,7 +93,7 @@ export class PortfolioCalibrationComponent implements OnInit {
     });
   }
 
-  findOppisition() {
+  private findOppisition() {
     // console.log('this.universe', this.universe);
     const candidates = Audit.findHighestScoreCandidates(this.universe, 1000);
     console.log('findHighestScoreCandidates', candidates);
@@ -100,6 +108,15 @@ export class PortfolioCalibrationComponent implements OnInit {
       candidates,
       // count: 7,
     });
+  }
+
+  private getOrders() {
+    this.orders = Portfolio.getOrders({
+      current: Audit.createAudit(this.portfolio),
+      target: Audit.createAudit(this.opposition),
+    });
+
+    console.log(this.orders);
   }
 
 }
