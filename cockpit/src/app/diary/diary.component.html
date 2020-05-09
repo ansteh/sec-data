@@ -4,6 +4,12 @@
   </mat-select>
 </mat-form-field>
 
+<mat-form-field style="margin-left: 8px;">
+  <mat-select placeholder="universe" [(ngModel)]="universe.selected" name="universe" (selectionChange)="setUniverse(universe.selected)">
+    <mat-option *ngFor="let option of universe.options" value="{{ option }}">{{ option }}</mat-option>
+  </mat-select>
+</mat-form-field>
+
 <div *ngIf="audit?.portfolio">
   <sec-portfolio-calibration
     [name]="Portfolio"

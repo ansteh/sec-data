@@ -36,6 +36,61 @@ const getEstimatedValue = (stock) => {
     .value();
 };
 
+// FILTERS:
+const filterMidTerm = (candidates) => {
+  return _
+    .chain(candidates)
+    .filter(item => item.health === 'durable')
+    .filter(item => item.growth === 'durable')
+    .filter(item => _.includes(['VERY HIGH', 'HIGH'], item.uncertainty) === false)
+    .value();
+};
+
+const findByScores = (stocks, property = 'fcf_mos') => {
+  return _
+    .chain(stocks)
+    .filter(stock => _.get(stock, 'valuation.score') > 50)
+    .filter(property)
+    .filter(stock => stock[property] > 0)
+    // .filter(stock => stock['deps_mos'] > 0)
+    // .filter(stock => stock['oeps_mos'] > 0)
+    .filter(stock => stock['fcf_mos'] > 0.7)
+    .orderBy(['valuation.score', property], ['desc', 'asc'])
+    // .orderBy(['valuation.score'], ['desc'])
+    .value();
+};
+
+const findAllByScoreMargin = (stocks, scenario = 'longterm', dcfType = 'fcf') => {
+  return _
+    .chain(stocks)
+    .filter(stock => _.get(stock, 'valuation.score') > 50)
+    // .take(1)
+    .forEach(stock => stock.marginScore = getScoreByMargin(stock, scenario, dcfType))
+    // .filter(stock => stock.marginScore > 0)
+    // .filter(stock => stock['deps_mos'] > 0)
+    // .filter(stock => stock['oeps_mos'] > 0)
+    .filter(stock => stock['fcf_mos'] > 0.2)
+    .orderBy(['marginScore', 'valuation.score'], ['desc', 'desc'])
+    // .orderBy(['valuation.score'], ['desc'])
+    // .map(item => _.pick(item, ['ticker', 'marginScore']))
+    .value();
+};
+
+const getScoreByMargin = (item, scenario = 'longterm', dcfType = 'fcf') => {
+  if(item.valuation) {
+    const dcfs = item.valuation.dcfs[scenario];
+    const marginOfSafety = dcfs[dcfType] > 0 ? 1 - item.price/dcfs[dcfType] : 0;
+
+    let score = item.valuation.score * (1 + marginOfSafety);
+    score = Math.max(score, 0);
+    score = Math.min(score, 100);
+
+    return score;
+  }
+
+  return 0;
+};
+
 @Component({
   selector: 'sec-diary',
   templateUrl: './diary.component.html',
@@ -53,6 +108,15 @@ export class DiaryComponent implements OnInit {
   public audit: any = {
     portfolio: null,
     universe: null
+  };
+
+  public universe: any = {
+    selected: 'SCORES',
+    getters: {
+      'SCORES': _ => findByScores(this.summary.stocks),
+      'SCORES_MIDTERM': _ => filterMidTerm(findByScores(this.summary.stocks)),
+      'CANDIDATES': _ => this.candidates,
+    },
   };
 
   public columns: any = {
@@ -89,7 +153,9 @@ export class DiaryComponent implements OnInit {
     ]
   };
 
-  constructor(private diary: DiaryService) { }
+  constructor(private diary: DiaryService) {
+    this.universe.options = _.keys(this.universe.getters);
+  }
 
   ngOnInit() {
     this.diary.getDays().subscribe((days) => {
@@ -140,67 +206,7 @@ export class DiaryComponent implements OnInit {
 
       this.candidates = this.getCandidates(this.summary.stocks);
       this.evaluatePortfolio();
-
-      // DCFs:
-
-      const findByScores = (property = 'fcf_mos') => {
-        return _
-          .chain(this.summary.stocks)
-          .filter(stock => _.get(stock, 'valuation.score') > 50)
-          .filter(property)
-          .filter(stock => stock[property] > 0)
-          // .filter(stock => stock['deps_mos'] > 0)
-          // .filter(stock => stock['oeps_mos'] > 0)
-          .filter(stock => stock['fcf_mos'] > 0.7)
-          .orderBy(['valuation.score', property], ['desc', 'asc'])
-          // .orderBy(['valuation.score'], ['desc'])
-          .value();
-      };
-
-      // const preview = _
-      //   .chain(findByScores())
-      //   .map((stock) => {
-      //     return _.assign(
-      //       {},
-      //       stock.valuation,
-      //       _.pick(stock, ['deps_mos', 'oeps_mos', 'fcf_mos']),
-      //     );
-      //   })
-      //   .value();
-      //
-      // console.log('preview', preview);
-
-      const filterMidTerm = (candidates) => {
-        return _
-          .chain(candidates)
-          .filter(item => item.health === 'durable')
-          .filter(item => item.growth === 'durable')
-          .filter(item => _.includes(['VERY HIGH', 'HIGH'], item.uncertainty) === false)
-          .value();
-      };
-
-      // Audit:
-      this.audit.portfolio = this.summary.portfolio;
-
-      // const candidates = filterMidTerm(this.candidates);
-      // const candidates = filterMidTerm(findByScores());
-      // const candidates = _.shuffle(findByScores());
-      const candidates = findByScores();
-      // console.log('universe', candidates);
-      this.audit.universe = candidates;
-
-      // const current = Audit.createAudit(this.summary.portfolio, 'current portfolio');
-      // Audit.log(current);
-
-      // const counterPortfolio = Portfolio.create({
-      //   candidates,
-      //   budget: current.value,
-      //   // count: 7,
-      // });
-      // console.log('counterPortfolio', counterPortfolio);
-      //
-      // const counter = Audit.createAudit(counterPortfolio, 'counter portfolio');
-      // Audit.log(counter);
+      this.setUniverse(this.universe.selected);
     });
   }
 
@@ -247,6 +253,22 @@ export class DiaryComponent implements OnInit {
       .orderBy(['marginOfSafety'], ['desc'])
       .take(this.portfolio.sells.length)
       .value();
+  }
+
+  setUniverse(selected?: string) {
+    selected = selected || this.universe.selected;
+
+    this.audit.portfolio = this.summary.portfolio;
+    const getter = this.universe.getters[selected];
+    this.audit.universe = getter ? getter() : [];
+
+    // console.log('universe', this.audit.universe);
+
+    // const candidates = filterMidTerm(this.candidates);
+    // const candidates = filterMidTerm(findByScores(this.summary.stocks));
+    // const candidates = _.shuffle(findByScores(this.summary.stocks));
+    // const candidates = findAllByScoreMargin(this.summary.stocks);
+    // const candidates = filterMidTerm(findAllByScoreMargin(this.summary.stocks));
   }
 
 }

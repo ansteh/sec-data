@@ -6,21 +6,21 @@ const BENCHMARKS = {
   worst: {
     health: {
       danger: 0,
-      medicore: 0.4,
-      durable: 0.8,
+      medicore: 0.2,
+      durable: 0.4,
     },
   },
   medicore: {
     health: {
       danger: 0.2,
-      medicore: 0.6,
-      durable: 0.9,
+      medicore: 0.4,
+      durable: 0.8,
     },
   },
   durable: {
     health: {
       danger: 0.4,
-      medicore: 0.7,
+      medicore: 0.8,
       durable: 1,
     },
   }
@@ -38,7 +38,7 @@ export const createAudit = (portfolio: any, label?: string) => {
   };
 
   _.forOwn(benchmarks, (setup, scenario) => {
-    audit.scenarios[scenario] = analyse(portfolio, setup);
+    audit.scenarios[scenario] = analyse(portfolio, setup, scenario);
     audit.value = audit.scenarios[scenario].value;
   });
 
@@ -48,7 +48,7 @@ export const createAudit = (portfolio: any, label?: string) => {
   return audit;
 };
 
-const analyse = (portfolio, benchmarks) => {
+const analyse = (portfolio, benchmarks, scenario) => {
   const assets = _.filter(portfolio, position => position.count);
   const [positions, unmatches] = _.partition(assets, item => item.stock);
   // if(unmatches.length > 0) console.log('unmatches', unmatches);
@@ -64,10 +64,17 @@ const analyse = (portfolio, benchmarks) => {
     // position.marginOfSafety = position.marginOfSafety || position.stock.marginOfSafety;
     position.marginOfSafety = position.stock.fcf_mos; //position.marginOfSafety || position.stock.marginOfSafety;
 
-    if(position.marginOfSafety) {
+    // TODO: adjust curreny conversion or stock splits
+    if(position.marginOfSafety && ['NYSE:BRK.B', 'DB:LUK'].indexOf(position.stock.ticker) === -1) {
       marginOfSafety += position.weight * position.marginOfSafety;
-      downside += Math.max(0, benchmarks.health[position.stock.health] * value * (1 + position.marginOfSafety));
-      upside += Math.max(0, value * (1 + position.marginOfSafety));
+      // downside += Math.max(0, benchmarks.health[position.stock.health] * value * (1 + position.marginOfSafety));
+      // upside += Math.max(0, value * benchmarks.health['durable'] * (1 + position.marginOfSafety));
+
+      const fairPrice = getFairValue(position.marginOfSafety, position.stock.price);
+      const fairValue = fairPrice * position.count;
+      // console.log(position.stock.ticker, position.stock.price, fairValue, value);
+      downside += Math.max(0, benchmarks.health[position.stock.health] * fairValue);
+      upside += Math.max(0, benchmarks.health['durable'] * fairValue);
     }
   });
 
@@ -79,8 +86,8 @@ const analyse = (portfolio, benchmarks) => {
 
   return {
     value: totalValue,
-    downside: downside/totalValue-1,
-    upside: upside/totalValue-1,
+    downside: 1 - totalValue/downside,
+    upside: 1 - totalValue/upside,
     range: {
       downside,
       upside,

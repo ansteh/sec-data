@@ -147,8 +147,8 @@ export class ScaleRankingComponent implements OnInit {
 
     return _
       .chain(properties)
-      .map(property => measure[property])
-      .filter()
+      .map(property => measure[property] || 0)
+      // .filter()
       .mean()
       .value();
   }

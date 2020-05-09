@@ -35,19 +35,21 @@ export class PortfolioCalibrationComponent implements OnInit {
 
   ngOnChanges(changes: SimpleChanges) {
     if(changes.universe) {
-      this.refreshOpposition();
+      this.reset();
       // this.findOppisition();
     }
   }
 
   toggleMethod() {
-    setTimeout(() => {
-      this.candidates = null;
-      this.refreshOpposition();
-    });
+    setTimeout(() => { this.reset(); });
   }
 
-  refreshOpposition() {
+  private reset() {
+    this.candidates = null;
+    this.refreshOpposition();
+  }
+
+  private refreshOpposition() {
     this.methods[this.method]();
     this.getOrders();
   }
