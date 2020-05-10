@@ -42,6 +42,16 @@ const analyseDiscounts = (series, label) => {
 };
 
 export const getDCFs = (data, options) => {
+  return _.reduce(['deps', 'oeps', 'fcf'], (dcfs, property) => {
+    if(data[property]) {
+      dcfs[property] = getIntrinsicValue(data[property], options);
+    }
+
+    return dcfs;
+  }, {});
+};
+
+export const extractDCFs = (data, options) => {
   const dilutedEPS = getValues('incomeStatement.dilutedEPS', data);
   const operatingEPS = Dictionary.getOperatingIncomePerShare(data);
   const freeCashFlow = Dictionary.getFreeCashFlowPerShare(data);
@@ -62,8 +72,9 @@ export const getDCFs = (data, options) => {
 };
 
 export const getIntrinsicValue = (series, options) => {
-  const rate = getCAGR(series);
-  const value = _.last(series);
+  const { rate, value } = _.isArray(series)
+    ? { rate: getCAGR(series), value: _.last(series) }
+    : series;
 
   const { maxGrowthRate } = options || {};
 
@@ -91,7 +102,7 @@ export const getValuations = (data) => {
   // console.log('avgPrices', avgPrices);
   // console.log('longTermRate', longTermRate);
   // analyseDiscounts(dilutedEPS, 'dilutedEPS');
-  // console.log(getDCFs(data));
+  // console.log(extractDCFs(data));
 
   return {
     preTaxAverageBondEquityYield: {

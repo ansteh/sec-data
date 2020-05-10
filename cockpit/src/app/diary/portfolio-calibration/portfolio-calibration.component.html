@@ -4,6 +4,12 @@
     <mat-button-toggle value="OPPOSITION">OPPOSITION</mat-button-toggle>
   </mat-button-toggle-group>
 
+  <mat-form-field style="margin-left: 8px;">
+    <mat-select placeholder="years" [(ngModel)]="years.value" name="years" (selectionChange)="setDCFs()">
+      <mat-option *ngFor="let years of years.options" [value]="years">{{ years }} Years</mat-option>
+    </mat-select>
+  </mat-form-field>
+
   <!-- <button mat-raised-button color="primary" (click)="rebalance()">REBALANCE</button> -->
 </div>
 

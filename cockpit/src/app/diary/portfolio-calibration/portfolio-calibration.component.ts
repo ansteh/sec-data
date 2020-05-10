@@ -2,8 +2,17 @@ import { Component, OnInit, OnChanges, Input, SimpleChanges } from '@angular/cor
 
 import * as Audit from './../audit';
 import * as Portfolio from './../portfolio';
+import * as Reports from './../../filings/metrics/reports';
 
 import * as _ from 'lodash';
+
+const assignDCFs = (position, years) => {
+  const cagrs = _.get(position, 'stock.valuation.statements.cagrs');
+  if(cagrs) {
+    // console.log(Reports.getDCFs(cagrs));
+    _.set(position, 'stock.valuation.dcfs', Reports.getDCFs(cagrs, years));
+  }
+};
 
 @Component({
   selector: 'sec-portfolio-calibration',
@@ -26,6 +35,11 @@ export class PortfolioCalibrationComponent implements OnInit {
     'OPPOSITION': this.createOpposition.bind(this),
   };
 
+  public years: any = {
+    value: 10,
+    options: [5, 10],
+  };
+
   constructor() { }
 
   ngOnInit() {
@@ -42,6 +56,18 @@ export class PortfolioCalibrationComponent implements OnInit {
 
   toggleMethod() {
     setTimeout(() => { this.reset(); });
+  }
+
+  setDCFs() {
+    // TODO: fix: stock.fcf_mos is not updated
+    console.log('years', this.years.value);
+    this.setDCFsFor(this.portfolio);
+    this.setDCFsFor(this.universe);
+    this.reset();
+  }
+
+  private setDCFsFor(positions: any[]) {
+    _.forEach(positions, pos => assignDCFs(pos, this.years.value));
   }
 
   private reset() {

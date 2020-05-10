@@ -4,8 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, forkJoin } from 'rxjs';
 import { map, mergeMap, take } from 'rxjs/operators';
 
-import { flatten } from './../filings';
-import * as Pricing from './../metrics/pricing';
+import { createSummary } from './../metrics/reports';
 import * as Scale from './../metrics/scale';
 import { CONTEXT } from './scale-context.service';
 
@@ -43,19 +42,7 @@ export class ScaleEngineService {
   createReports(template: any): Observable<any> {
     const getReport = (ticker) => {
       return this.http.get(`${apiUrl}/filings/${ticker}`)
-        .pipe(map((stock) => {
-          const entities = flatten(stock);
-          const source = _.pick(entities, ['statements', 'margins']);
-          const report: any = Scale.report(CONTEXT, source, template);
-
-          report.dcfs = {
-            longterm: Pricing.getDCFs(entities.statements),
-            caped: Pricing.getDCFs(entities.statements, { maxGrowthRate: 0.2 }),
-            midterm: Pricing.getDCFs(entities.statements, { years: 5, discountRate: 0.07, maxGrowthRate: 0.2 }),
-          };
-
-          return { ticker, stock, report };
-        }));
+        .pipe(map(stock => createSummary({ ticker, template, stock })));
     };
 
     const getReports = tickers => forkJoin(...tickers.map(getReport));
@@ -74,6 +61,7 @@ export class ScaleEngineService {
             avg: report.score.avg,
             change: report.score.value - report.score.avg,
             dcfs: report.dcfs,
+            statements: report.statements,
           };
         })
         .orderBy(['score'], ['desc'])
