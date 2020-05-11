@@ -11,6 +11,15 @@ const assignDCFs = (position, years) => {
   if(cagrs) {
     // console.log(Reports.getDCFs(cagrs));
     _.set(position, 'stock.valuation.dcfs', Reports.getDCFs(cagrs, years));
+
+    // TODO: fix: stock.fcf_mos is not updated
+    const { stock } = position;
+    if(stock.valuation) {
+      const dcfs = stock.valuation.dcfs.longterm;
+      if(dcfs.deps > 0) stock.deps_mos = 1 - stock.price/dcfs.deps;
+      if(dcfs.oeps > 0) stock.oeps_mos = 1 - stock.price/dcfs.oeps;
+      if(dcfs.fcf > 0) stock.fcf_mos = 1 - stock.price/dcfs.fcf;
+    }
   }
 };
 
@@ -59,9 +68,11 @@ export class PortfolioCalibrationComponent implements OnInit {
   }
 
   setDCFs() {
-    // TODO: fix: stock.fcf_mos is not updated
-    console.log('years', this.years.value);
+    // console.log('years', this.years.value);
+
     this.setDCFsFor(this.portfolio);
+    this.portfolio = this.portfolio.slice(0); // force refresh
+
     this.setDCFsFor(this.universe);
     this.reset();
   }

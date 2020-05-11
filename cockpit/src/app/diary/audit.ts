@@ -61,18 +61,15 @@ const analyse = (portfolio, benchmarks, scenario) => {
   _.forEach(positions, (position) => {
     const value = getNominalValue(position);
     position.weight = value/totalValue;
-    // position.marginOfSafety = position.marginOfSafety || position.stock.marginOfSafety;
     position.marginOfSafety = position.stock.fcf_mos; //position.marginOfSafety || position.stock.marginOfSafety;
 
     // TODO: adjust curreny conversion or stock splits
     if(position.marginOfSafety && ['NYSE:BRK.B', 'DB:LUK'].indexOf(position.stock.ticker) === -1) {
       marginOfSafety += position.weight * position.marginOfSafety;
-      // downside += Math.max(0, benchmarks.health[position.stock.health] * value * (1 + position.marginOfSafety));
-      // upside += Math.max(0, value * benchmarks.health['durable'] * (1 + position.marginOfSafety));
 
       const fairPrice = getFairValue(position.marginOfSafety, position.stock.price);
       const fairValue = fairPrice * position.count;
-      // console.log(position.stock.ticker, position.stock.price, fairValue, value);
+
       downside += Math.max(0, benchmarks.health[position.stock.health] * fairValue);
       upside += Math.max(0, benchmarks.health['durable'] * fairValue);
     }
