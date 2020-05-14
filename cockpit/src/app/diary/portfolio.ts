@@ -9,6 +9,9 @@ export const create = ({ candidates, budget, count = 20, smooth = true }) => {
 
   const portfolio = _
     .chain(candidates)
+    // .orderBy(['valuation.score'], ['desc'])
+    // .orderBy(['fcf_mos'], ['desc'])
+    // .orderBy(getEstimate, ['desc'])
     .take(count)
     .orderBy(['price'], ['desc'])
     .map((stock, index) => {
@@ -46,6 +49,14 @@ export const create = ({ candidates, budget, count = 20, smooth = true }) => {
   }
 
   return portfolio;
+};
+
+const getEstimate = (candidate) => {
+  const margin = _.get(candidate, 'fcf_mos') || 0;
+  const score = _.get(candidate, 'valuation.score') || 0;
+  // console.log({ margin, score });
+
+  return margin * 0.3 + score/50*0.7;
 };
 
 export const getOrders = ({ current, target }) => {

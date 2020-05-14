@@ -64,14 +64,17 @@ const analyse = (portfolio, benchmarks, scenario) => {
     position.marginOfSafety = position.stock.fcf_mos; //position.marginOfSafety || position.stock.marginOfSafety;
 
     // TODO: adjust curreny conversion or stock splits
-    if(position.marginOfSafety && ['NYSE:BRK.B', 'DB:LUK'].indexOf(position.stock.ticker) === -1) {
+    if(position.marginOfSafety && ['NYSE:BRK.B', 'DB:LUK', 'NYSE:BXG'].indexOf(position.stock.ticker) === -1) {
       marginOfSafety += position.weight * position.marginOfSafety;
 
       const fairPrice = getFairValue(position.marginOfSafety, position.stock.price);
       const fairValue = fairPrice * position.count;
 
-      downside += Math.max(0, benchmarks.health[position.stock.health] * fairValue);
-      upside += Math.max(0, benchmarks.health['durable'] * fairValue);
+      position.downside = Math.max(0, benchmarks.health[position.stock.health] * fairValue);
+      position.upside = Math.max(0, benchmarks.health['durable'] * fairValue);
+
+      downside += position.downside;
+      upside += position.upside;
     }
   });
 
@@ -142,6 +145,9 @@ export const getPositions = (positions) => {
 
         count: _.get(position, 'count'),
         price: _.get(stock, 'price'),
+
+        downside: _.get(position, 'downside'),
+        upside: _.get(position, 'upside'),
       };
     })
     .orderBy(['weight'], ['desc'])
