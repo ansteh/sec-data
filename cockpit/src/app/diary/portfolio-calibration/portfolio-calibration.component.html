@@ -26,4 +26,13 @@
       (remove)="remove($event)">
     </sec-portfolio-composition>
   </div>
+
+  <div *ngIf="alternates?.length > 0" class="column">
+    <sec-portfolio-composition
+      [name]="'Alternatives'"
+      [portfolio]="alternates"
+      [options]="{ menu: true }"
+      (remove)="insert($event)">
+    </sec-portfolio-composition>
+  </div>
 </div>

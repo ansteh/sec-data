@@ -23,6 +23,10 @@ const assignDCFs = (position, years) => {
   }
 };
 
+const isStock = _.curry((ticker, stock) => {
+  return stock.ticker && ticker === _.last(stock.ticker.split(':'));
+});
+
 @Component({
   selector: 'sec-portfolio-calibration',
   templateUrl: './portfolio-calibration.component.html',
@@ -36,6 +40,7 @@ export class PortfolioCalibrationComponent implements OnInit {
 
   public candidates: any[] = null;
   public opposition: any[] = [];
+  public alternates: any[] = [];
   public orders: any = { fee: null, orders: null };
 
   public method: string = 'REBALANCE';
@@ -88,16 +93,40 @@ export class PortfolioCalibrationComponent implements OnInit {
 
   private refreshOpposition() {
     this.methods[this.method]();
+    this.refreshAlternates();
     this.getOrders();
+  }
+
+  private refreshAlternates() {
+    const stocks = _
+      .chain(this.opposition)
+      .map('stock')
+      .filter(stock => stock.ticker)
+      .value();
+
+    const source = this.method === 'REBALANCE'
+      ? _.chain(this.portfolio).map('stock').filter().value()
+      : this.universe;
+
+    const alternates = _.difference(source, stocks);
+
+    this.alternates = Portfolio.create({
+      budget: 100000,
+      candidates: alternates,
+      count: alternates.length,
+    });
   }
 
   remove(candidate: any) {
     // console.log(candidate, this.candidates);
+    _.remove(this.candidates, isStock(candidate.ticker));
+    this.refreshOpposition();
+  }
 
-    _.remove(this.candidates, (stock) => {
-      return stock.ticker
-        && candidate.ticker === _.last(stock.ticker.split(':'));
-    });
+  insert(candidate: any) {
+    const source = this.method === 'REBALANCE' ? this.portfolio : this.universe;
+    const stock = _.find(source, isStock(candidate.ticker));
+    if(stock) this.candidates.push(stock);
 
     this.refreshOpposition();
   }
@@ -118,6 +147,7 @@ export class PortfolioCalibrationComponent implements OnInit {
     const audit = Audit.createAudit(this.portfolio);
     this.candidates = this.candidates || this.portfolio;
     this.candidates = this.candidates.slice(0);
+    console.log(this.candidates);
 
     const candidates = _
       .chain(this.candidates)
@@ -132,22 +162,22 @@ export class PortfolioCalibrationComponent implements OnInit {
     });
   }
 
-  private findOppisition() {
-    // console.log('this.universe', this.universe);
-    const candidates = Audit.findHighestScoreCandidates(this.universe, 1000);
-    console.log('findHighestScoreCandidates', candidates);
-
-    this.method = 'OPPOSITION';
-    const audit = Audit.createAudit(this.portfolio);
-    this.candidates = this.candidates || this.universe;
-    this.candidates = this.candidates.slice(0);
-
-    this.opposition = Portfolio.create({
-      budget: audit.value,
-      candidates,
-      // count: 7,
-    });
-  }
+  // private findOppisition() {
+  //   // console.log('this.universe', this.universe);
+  //   const candidates = Audit.findHighestScoreCandidates(this.universe, 1000);
+  //   console.log('findHighestScoreCandidates', candidates);
+  //
+  //   this.method = 'OPPOSITION';
+  //   const audit = Audit.createAudit(this.portfolio);
+  //   this.candidates = this.candidates || this.universe;
+  //   this.candidates = this.candidates.slice(0);
+  //
+  //   this.opposition = Portfolio.create({
+  //     budget: audit.value,
+  //     candidates,
+  //     // count: 7,
+  //   });
+  // }
 
   private getOrders() {
     this.orders = Portfolio.getOrders({
