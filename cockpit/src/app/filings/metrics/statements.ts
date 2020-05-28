@@ -57,6 +57,7 @@ const inspectRetainedEarnings = (data) => {
 
 export const getIncomeMargins = (data) => {
   // console.log('data', data, getAllEntries(data));
+  // console.log('getAltmanZScore', Dictionary.getAltmanZScore(data));
 
   const revenue = getValues('incomeStatement.revenue', data);
   const grossProfit = getValues('incomeStatement.grossProfit', data);

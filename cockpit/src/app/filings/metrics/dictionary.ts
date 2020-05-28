@@ -82,3 +82,41 @@ export const getTangibleCommonEquity = (data) => {
 
   return tangibleCommonEquity;
 };
+
+export const getAltmanZScore = (data) => {
+  return map([
+    getValues('incomeStatement.revenue', data),
+    getEBIT(data),
+    getValues('balanceSheet.totalAssets', data),
+    getValues('balanceSheet.totalLiabilities', data),
+    getValues('balanceSheet.retainedEarnings', data),
+    getWorkingCapital(data)
+  ], ([
+    revenue,
+    ebit,
+    totalAssets,
+    totalLiabilities,
+    retainedEarnings,
+    workingCapital
+  ]) => {
+    return 1.2 * (workingCapital/totalAssets)
+         + 1.4 * (retainedEarnings/totalAssets)
+         + 3.3 * (ebit/totalAssets)
+         + 0.6 //* (marketCap/totalLiabilities)
+         + 1.0 * (revenue/totalAssets);
+  });
+};
+
+export const getWorkingCapital = (data) => {
+  const totalCurrentAssets = getValues('balanceSheet.totalCurrentAssets', data);
+  const totalCurrentLiabilities = getValues('balanceSheet.totalCurrentLiabilities', data);
+
+  return subtract(totalCurrentAssets, totalCurrentLiabilities);;
+};
+
+export const getEBIT = (data) => {
+  const preTaxIncome = getValues('incomeStatement.preTaxIncome', data);
+  const interestExpense = getValues('incomeStatement.interestExpense', data);
+
+  return subtract(preTaxIncome, interestExpense);
+};
