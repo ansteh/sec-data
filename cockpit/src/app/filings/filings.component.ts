@@ -10,9 +10,12 @@ import * as _ from 'lodash';
 import * as Cashflow from './formulas/cashflow';
 import * as Discount from './formulas/discount-model';
 import * as Earnings from './formulas/earnings';
+import * as Options from './formulas/options';
 
 import { createSeries, fakeSeries, getFilingView, flatten } from './filings';
 import { growthRate } from './formulas/growth';
+
+// Options.test();
 
 // TODO:
 // chapter 19: net earnings durability

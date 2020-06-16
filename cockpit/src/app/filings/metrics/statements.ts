@@ -57,7 +57,7 @@ const inspectRetainedEarnings = (data) => {
 
 export const getIncomeMargins = (data) => {
   // console.log('data', data, getAllEntries(data));
-  // console.log('getAltmanZScore', Dictionary.getAltmanZScore(data));
+  console.log('AltmanZScore', Dictionary.getAltmanZScore(data));
 
   const revenue = getValues('incomeStatement.revenue', data);
   const grossProfit = getValues('incomeStatement.grossProfit', data);
@@ -275,6 +275,12 @@ export const getIncomeMargins = (data) => {
         values: map([totalDebt, plantPropertyAndEquipmentNet], devide),
       },
     },
+    // fundamental: {
+    //   altmanZScore: {
+    //     label: 'Altman Z-Score',
+    //     values: Dictionary.getAltmanZScore(data),
+    //   },
+    // },
     valuations,
   };
 };

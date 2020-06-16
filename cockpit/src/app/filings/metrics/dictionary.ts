@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 
-import { devide, subtract, getAllEntries, getValues, map } from './util';
+import { add, devide, subtract, getAllEntries, getValues, map } from './util';
 
 export const getCapitalExpendituresToEarningsOver10Years = (data, earningsStatement = 'incomeStatement.netIncome') => {
   const capex = getValues('cashflowStatement.capitalExpenditures', data) || [];
@@ -84,25 +84,46 @@ export const getTangibleCommonEquity = (data) => {
 };
 
 export const getAltmanZScore = (data) => {
+  console.log('TODO: getAltmanZScore missing correct market cap');
+
   return map([
     getValues('incomeStatement.revenue', data),
     getEBIT(data),
     getValues('balanceSheet.totalAssets', data),
     getValues('balanceSheet.totalLiabilities', data),
     getValues('balanceSheet.retainedEarnings', data),
-    getWorkingCapital(data)
+    getWorkingCapital(data),
+    getMarketCap(data),
   ], ([
     revenue,
     ebit,
     totalAssets,
     totalLiabilities,
     retainedEarnings,
-    workingCapital
+    workingCapital,
+    marketCap,
   ]) => {
+    // console.log({
+    //   revenue,
+    //   ebit,
+    //   totalAssets,
+    //   totalLiabilities,
+    //   retainedEarnings,
+    //   workingCapital
+    // });
+    //
+    // console.log({
+    //   x1: 1.2 * (workingCapital/totalAssets),
+    //   x2: 1.4 * (retainedEarnings/totalAssets),
+    //   x3: 3.3 * (ebit/totalAssets),
+    //   x4: 0.6 * (marketCap/totalLiabilities),
+    //   x5: 1.0 * (revenue/totalAssets),
+    // });
+
     return 1.2 * (workingCapital/totalAssets)
          + 1.4 * (retainedEarnings/totalAssets)
          + 3.3 * (ebit/totalAssets)
-         + 0.6 //* (marketCap/totalLiabilities)
+         + 0.6 * (marketCap/totalLiabilities)
          + 1.0 * (revenue/totalAssets);
   });
 };
@@ -119,4 +140,12 @@ export const getEBIT = (data) => {
   const interestExpense = getValues('incomeStatement.interestExpense', data);
 
   return subtract(preTaxIncome, interestExpense);
+};
+
+export const getMarketCap = (data) => {
+  console.log('TODO: getMarketCap missing prices');
+  const dilutedShares = getValues('incomeStatement.weightedAverageDilutedSharesOutstanding', data);
+  const prices = _.map(dilutedShares, x => 352);
+
+  return map([dilutedShares, prices], ([a, b]) => { return a*b; });
 };
