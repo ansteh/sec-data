@@ -44,6 +44,7 @@ import { DiaryComponent } from './diary/diary.component';
 import { DataTableComponent } from './diary/data-table/data-table.component';
 import { PortfolioCalibrationComponent } from './diary/portfolio-calibration/portfolio-calibration.component';
 import { PortfolioCompositionComponent } from './diary/portfolio-composition/portfolio-composition.component';
+import { MarketComponent } from './market/market.component';
 
 @NgModule({
   declarations: [
@@ -83,6 +84,7 @@ import { PortfolioCompositionComponent } from './diary/portfolio-composition/por
     DataTableComponent,
     PortfolioCalibrationComponent,
     PortfolioCompositionComponent,
+    MarketComponent,
 
   ],
   imports: [

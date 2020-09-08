@@ -8,6 +8,9 @@ import { CandidatesComponent } from './candidates/candidates.component';
 import { InterpreterComponent } from './imports/interpreter/interpreter.component';
 import { DiaryComponent } from './diary/diary.component';
 import { LoginComponent } from './auth/login/login.component';
+
+import { MarketComponent } from './market/market.component';
+
 import { PortfolioComponent } from './portfolio/portfolio.component';
 import { PortfolioSimulatorComponent } from './portfolio/portfolio-simulator/portfolio-simulator.component';
 import { StocksComponent } from './stocks/stocks.component';
@@ -32,6 +35,10 @@ const routes: Routes = [
   {
     path: 'diary',
     component: DiaryComponent
+  },
+  {
+    path: 'market',
+    component: MarketComponent
   },
   {
     path: 'rankings',
