@@ -2,7 +2,10 @@ import { Component, OnInit } from '@angular/core';
 
 import * as Commit from './lib/commit';
 import * as Portfolio from './lib/portfolio';
+import * as Trade from './lib/trade';
 import * as Universe from './lib/universe';
+
+Trade.test();
 
 @Component({
   selector: 'sec-market',
@@ -23,6 +26,7 @@ export class MarketComponent implements OnInit {
 
     this.universe = Universe.createTestUnviverse();
     this.portfolio = Portfolio.createPortfolio(this.universe);
+    this.getPositions();
 
     this.portfolio.getPositions()
       .then(positions => console.log('positions', positions))
@@ -34,7 +38,7 @@ export class MarketComponent implements OnInit {
   }
 
   private async getPositions(): Promise<void> {
-    this.positions = this.portfolio.getPositions();
+    this.positions = await this.portfolio.getPositions();
   }
 
 }
