@@ -1,0 +1,4 @@
+// # Product
+//   - id
+//   - currencyId
+//   - name
