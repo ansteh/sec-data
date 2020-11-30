@@ -24,7 +24,7 @@
   - balance
   - products
 
-# Universe
+# Economy
   - id
   - balance
   - products

@@ -1,26 +1,44 @@
-// # Account (for product)
-//   - id
-//   - productId ?
-//   - history
-//   - balance
+import {
+  Account,
+  Balance,
+  Transaction,
+} from './interfaces/account';
 
-export interface Balance {
-  date: Date;
-  value: number;
+export interface Options {
+  name: string;
+  balance?: Balance;
+  history?: Array<Transaction>;
 };
 
-export interface Transaction {
-  date: Date;
-  amount: number;
-  price: number;
-  value: number;
-};
+export const createAccount = ({
+  name,
+  balance,
+  history,
+}: Options): Account => {
+  history = history || [];
+  balance = balance || {
+    date: new Date(),
+    value: 0,
+  };
 
-export interface Account {
-  readonly id?: string;
-  readonly balance: Balance;
-  readonly history: Array<Transaction>;
+  const getBalance = () => {
+    return balance;
+  };
 
-  getBalance(): any;
-  getHistory(): any;
+  const getHistory = () => {
+    return history;
+  };
+
+  const addTransaction = (transaction) => {
+    this.history.push(transaction);
+
+    balance.date = new Date();
+    balance.value += transaction.value;
+  };
+
+  return {
+    addTransaction,
+    getBalance,
+    getHistory,
+  };
 };
