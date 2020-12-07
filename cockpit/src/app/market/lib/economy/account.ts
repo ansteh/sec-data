@@ -5,12 +5,17 @@ import {
 } from './interfaces/account';
 
 export interface Options {
+  id?: string;
+  productId?: string;
   name: string;
+
   balance?: Balance;
   history?: Array<Transaction>;
 };
 
 export const createAccount = ({
+  id,
+  productId,
   name,
   balance,
   history,

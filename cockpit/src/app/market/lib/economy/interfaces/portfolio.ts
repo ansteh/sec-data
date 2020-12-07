@@ -5,5 +5,9 @@ export interface Portfolio {
   id: string;
   balance: Balance;
   accounts: Array<Account>;
-  products: Array<Product>;
+  // products: Array<Product>;
+
+  addTransaction(productId: string, transaction: Transaction): void;
+  getBalance(): Balance;
+  getHistory(): Array<Transaction>;
 };

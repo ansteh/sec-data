@@ -19,6 +19,7 @@ export interface Transaction {
 
 export interface Account {
   readonly id?: string;
+  readonly productId?: string;
   readonly balance: Balance;
   readonly history: Array<Transaction>;
 
