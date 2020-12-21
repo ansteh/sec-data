@@ -8,40 +8,54 @@ import {
   Portfolio
 } from './interfaces/portfolio';
 
-export interface Options {
+export interface PortfolioOptions {
   id?: string;
-  name: string;
+  name?: string;
   accounts?: Array<Account>;
   balance?: Balance;
 };
 
 import { createAccount } from './account';
 
+const flatten = (collection: Array<Array<any>>): Array<any>=> {
+  const items = [];
+
+  (collection || []).forEach((subItems) => {
+    subItems.forEach(item => items.push(item));
+  });
+
+  return items;
+};
+
 export const createPortfolio = ({
   id,
   name,
   accounts,
   balance,
-  history,
-}: Options): Account => {
+}: PortfolioOptions): Portfolio => {
   accounts = accounts || [];
-  balance = balance || { date: new Date(), value: 0 };
-  history = history || [];
-
+  balance = balance || { date: new Date(), value: 0, amount: 0 };
+  
+  const getId = () => {
+    return id;
+  };
+  
   const getBalance = () => {
     return balance;
   };
 
-  const getHistory = () => {
-    return (accounts || [])
-      .map(account => account.getHistory())
+  const getHistory = (): Array<Transaction> => {
+    let transactions = (accounts || [])
+      .map(account => account.getHistory());
+
+    return flatten(transactions)
       .sort(transaction => transaction.date);
   };
 
   const addTransaction = (productId, transaction) => {
     const account = findOrCreateAccount(productId);
     account.addTransaction(transaction);
-    addToBalance(transaction.value);
+    addToBalance(transaction);
   };
 
   const findOrCreateAccount = (productId): Account => {
@@ -49,18 +63,20 @@ export const createPortfolio = ({
 
     if(!account) {
       account = createAccount({ productId });
-      accounts.addAccount(account);
+      accounts.push(account);
     }
 
     return account;
   };
 
-  const addToBalance = (value: number) => {
+  const addToBalance = (transaction: Transaction) => {
     balance.date = new Date();
-    balance.value += value;
+    balance.value += transaction.value;
+    balance.amount += transaction.amount;
   };
 
   return {
+    getId,
     addTransaction,
     getBalance,
     getHistory,

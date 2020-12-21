@@ -7,7 +7,7 @@ import {
 export interface Options {
   id?: string;
   productId?: string;
-  name: string;
+  name?: string;
 
   balance?: Balance;
   history?: Array<Transaction>;
@@ -24,21 +24,23 @@ export const createAccount = ({
   balance = balance || {
     date: new Date(),
     value: 0,
+    amount: 0,
   };
 
   const getBalance = () => {
     return balance;
   };
 
-  const getHistory = () => {
+  const getHistory = (): Array<Transaction> => {
     return history;
   };
 
-  const addTransaction = (transaction) => {
+  const addTransaction = (transaction): void => {
     this.history.push(transaction);
 
     balance.date = new Date();
     balance.value += transaction.value;
+    balance.amount += transaction.amount;
   };
 
   return {

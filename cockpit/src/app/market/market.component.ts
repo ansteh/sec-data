@@ -7,6 +7,19 @@ import * as Universe from './lib/universe';
 
 Trade.test();
 
+import { createEconomy } from './lib/economy/economy';
+const economy = createEconomy({
+  products: [
+    {
+      id: 1,
+      name: 'product',
+      currencyId: 1,
+    }
+  ]
+});
+
+// console.log(economy.addTransaction(1, 1, ));
+
 @Component({
   selector: 'sec-market',
   templateUrl: './market.component.html',

@@ -7,6 +7,7 @@
 export interface Balance {
   date: Date;
   value: number;
+  amount: number;
 };
 
 export interface Transaction {
@@ -20,8 +21,8 @@ export interface Transaction {
 export interface Account {
   readonly id?: string;
   readonly productId?: string;
-  readonly balance: Balance;
-  readonly history: Array<Transaction>;
+  // readonly balance: Balance;
+  // readonly history: Array<Transaction>;
 
   addTransaction(transaction: Transaction): void;
   getBalance(): Balance;

@@ -30,4 +30,7 @@
   - products
   - portfolios
 
+# Market
+  - productId
+
 # Trader
