@@ -17,6 +17,9 @@ export interface Economy {
   // // markets: Array<Market>;
   // portfolios: Array<Portfolio>;
   // products: Array<Product>;
+  
+  addTransaction(portfolioId: number, productId: number, transaction: Transaction): void;
+  getBalance(): Balance;
 };
 
 export interface EconomyState {
@@ -61,7 +64,12 @@ export const createEconomy = ({
     balance.amount += transaction.amount;
   };
   
+  const getBalance = () => {
+    return Object.assign({}, balance);
+  };
+  
   return {
     addTransaction,
+    getBalance,
   };
 };

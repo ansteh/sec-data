@@ -36,7 +36,7 @@ export const createAccount = ({
   };
 
   const addTransaction = (transaction): void => {
-    this.history.push(transaction);
+    history.push(transaction);
 
     balance.date = new Date();
     balance.value += transaction.value;

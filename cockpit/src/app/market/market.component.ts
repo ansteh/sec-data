@@ -18,7 +18,34 @@ const economy = createEconomy({
   ]
 });
 
-// console.log(economy.addTransaction(1, 1, ));
+economy.addTransaction(1, 1, {
+  date: new Date(),
+  amount: 4,
+  price: 2,
+  value: 8,
+});
+
+console.log('economy.getBalance', economy.getBalance());
+
+economy.addTransaction(1, 1, {
+  date: new Date(),
+  amount: 5,
+  price: 10,
+  value: 50,
+});
+
+console.log('economy.getBalance', economy.getBalance());
+
+setTimeout(() => {
+  economy.addTransaction(1, 1, {
+    date: new Date(),
+    amount: -10,
+    price: 8,
+    value: -80,
+  });
+
+  console.log('economy.getBalance', economy.getBalance());
+}, 2000);
 
 @Component({
   selector: 'sec-market',
