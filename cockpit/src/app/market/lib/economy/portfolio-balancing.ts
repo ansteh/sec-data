@@ -9,10 +9,9 @@ export interface SimulationSettings {
 };
 
 export interface PortfolioBalancing {
-  addPortfolioAgent(): void;
+  addPortfolioAgent(portfolioAgent: PortfolioAgent): void;
   trade(): void;
 };
-
 
 export const createPortfolioBalancing = ({
   economy: Economy,
