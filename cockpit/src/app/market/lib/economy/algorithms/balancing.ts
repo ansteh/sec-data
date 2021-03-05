@@ -63,7 +63,7 @@ const createPortfolioManager = ({
 };
 
 // should be not here: count, budget, budgetPerStock
-const filterSecurities = (candidates, count, budget, budgetPerStock) => {
+const filterSecurities = (candidates) => {
   // console.log('candidates', candidates);
 
   return _
@@ -71,6 +71,21 @@ const filterSecurities = (candidates, count, budget, budgetPerStock) => {
     // .orderBy(['valuation.score'], ['desc'])
     // .orderBy(['fcf_mos'], ['desc'])
     // .orderBy(getEstimate, ['desc'])
+    .orderBy(['price'], ['desc'])
+    // .orderBy(['marginOfSafety'], ['desc'])
+    .value();
+};
+
+export const createPortfolio = ({
+  securities,
+  budget,
+  count = 20,
+  smooth = true,
+}) => {
+  let budgetPerStock = budget/count;
+  
+  const portfolio = _
+    .chain(securities)
     .take(count)
     .orderBy(['price'], ['desc'])
     .map((stock, index) => {
@@ -80,26 +95,16 @@ const filterSecurities = (candidates, count, budget, budgetPerStock) => {
 
       return { count: amount, stock };
     })
-    .orderBy(['marginOfSafety'], ['desc'])
     .value();
-};
-
-export const balanceSecurities = ({
-  securities,
-  budget,
-  count = 20,
-  smooth = true,
-}) => {
-  let budgetPerStock = budget/count;
 
   // console.log('starting budget', budget);
   // console.log('budgetPerStock', budgetPerStock);
 
-  if(budget > 0 && securities.length > 0) {
+  if(budget > 0 && portfolio.length > 0) {
     let used = [];
 
     do {
-      const stock = _.find(securities, (item) => {
+      const stock = _.find(portfolio, (item) => {
         return budget > item.stock.price
           && (smooth ? used.indexOf(item) === -1 : true);
       });
@@ -119,7 +124,7 @@ export const balanceSecurities = ({
     } while(budget > 0);
   }
 
-  return securities;
+  return portfolio;
 };
 
 export const getOrders = ({ current, target }) => {
