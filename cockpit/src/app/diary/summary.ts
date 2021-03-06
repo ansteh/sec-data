@@ -1,3 +1,5 @@
+import * as Reports from './../filings/metrics/reports';
+
 import * as _ from 'lodash';
 
 export const prepare = (summary) => {
@@ -67,4 +69,26 @@ const getEstimatedValue = (stock) => {
     .filter(_.isNumber)
     .mean()
     .value();
+};
+
+export const setDCFs = (positions: any[], years: number) => {
+  _.forEach(positions, pos => assignDCFs(pos, years));
+  return positions;
+};
+
+export const assignDCFs = (position, years) => {
+  const cagrs = _.get(position, 'stock.valuation.statements.cagrs');
+  if(cagrs) {
+    // console.log(Reports.getDCFs(cagrs));
+    _.set(position, 'stock.valuation.dcfs', Reports.getDCFs(cagrs, years));
+
+    // TODO: fix: stock.fcf_mos is not updated
+    const { stock } = position;
+    if(stock.valuation) {
+      const dcfs = stock.valuation.dcfs.longterm;
+      if(dcfs.deps > 0) stock.deps_mos = 1 - stock.price/dcfs.deps;
+      if(dcfs.oeps > 0) stock.oeps_mos = 1 - stock.price/dcfs.oeps;
+      if(dcfs.fcf > 0) stock.fcf_mos = 1 - stock.price/dcfs.fcf;
+    }
+  }
 };

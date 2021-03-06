@@ -2,26 +2,9 @@ import { Component, OnInit, OnChanges, Input, SimpleChanges } from '@angular/cor
 
 import * as Audit from './../audit';
 import * as Portfolio from './../portfolio';
-import * as Reports from './../../filings/metrics/reports';
+import { assignDCFs } from './../summary';
 
 import * as _ from 'lodash';
-
-const assignDCFs = (position, years) => {
-  const cagrs = _.get(position, 'stock.valuation.statements.cagrs');
-  if(cagrs) {
-    // console.log(Reports.getDCFs(cagrs));
-    _.set(position, 'stock.valuation.dcfs', Reports.getDCFs(cagrs, years));
-
-    // TODO: fix: stock.fcf_mos is not updated
-    const { stock } = position;
-    if(stock.valuation) {
-      const dcfs = stock.valuation.dcfs.longterm;
-      if(dcfs.deps > 0) stock.deps_mos = 1 - stock.price/dcfs.deps;
-      if(dcfs.oeps > 0) stock.oeps_mos = 1 - stock.price/dcfs.oeps;
-      if(dcfs.fcf > 0) stock.fcf_mos = 1 - stock.price/dcfs.fcf;
-    }
-  }
-};
 
 const isStock = _.curry((ticker, stock) => {
   return stock.ticker && ticker === _.last(stock.ticker.split(':'));
