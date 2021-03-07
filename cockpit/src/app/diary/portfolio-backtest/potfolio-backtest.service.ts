@@ -27,10 +27,6 @@ const rebalance = ({ portfolio, candidates }) => {
   });
 };
 
-const getOpposition = ({ portfolio, candidates }) =>  {
-  
-};
-
 @Injectable({
   providedIn: 'root'
 })
@@ -64,46 +60,65 @@ export class PotfolioBacktestService {
     
     let portfolio;
     
+    const generate = (date: string, summary: Snapshot) => {
+      if(!(portfolio || summary.portfolio)) return;
+      
+      summary.portfolio = portfolio || summary.portfolio;
+      summary = Summary.prepare(summary);
+      
+      const current: any = {
+        portfolio: Summary.setDCFs(summary.portfolio, years),
+      };
+      
+      current.audit = Audit.createAudit(current.portfolio);
+      
+      // portfolio = Summary.setDCFs(summary.portfolio, years);
+      // const audit = Audit.createAudit(portfolio);
+      // console.log('backtest audit', audit);
+      // console.log('backtest summary', summary);
+
+      const universe = Summary.setDCFs(summary.stocks, years); // universe
+      const candidates = _.shuffle(universe).filter(stock => stock.price > 0);
+      
+      const opposition: any = {};
+      
+      opposition.portfolio = Portfolio.create({
+        budget: current.audit.value + 700,
+        candidates,
+        // count: 7,
+      });
+      
+      opposition.portfolio = opposition.portfolio.map(({ count, stock }) => {
+        return {
+          count,
+          stock,
+          
+          name: stock.name,
+          ticker: _.last(stock.ticker.split(':')),
+          value: stock.price * count,
+        };
+      });
+      
+      opposition.audit = Audit.createAudit(opposition.portfolio);
+      
+      const state = Object.assign({ date }, opposition);
+      
+      state.orders = Portfolio.getOrders({
+        current: current.audit,
+        target: opposition.audit,
+      });
+      
+      portfolio = opposition.portfolio;
+      
+      return state;
+    };
+    
     return from(dates)
       .pipe(
         mergeMap((date: string) => {
-          return this.getSummary(date);
+          return this.getSummary(date)
+            .pipe(map(summary => generate(date, summary)));
         }),
-        map((summary: Snapshot) => {
-          if(!(portfolio || summary.portfolio)) return;
-          
-          summary.portfolio = portfolio || summary.portfolio;
-          summary = Summary.prepare(summary);
-          
-          portfolio = Summary.setDCFs(summary.portfolio, years);
-          const audit = Audit.createAudit(portfolio);
-          console.log('audit', audit);
-          
-          history.push({
-            audit,
-            portfolio,
-          });
-
-          const universe = Summary.setDCFs(summary.stocks, years); // universe
-          const candidates = _.shuffle(universe);
-          
-          const opposition = Portfolio.create({
-            budget: audit.value,
-            candidates,
-            // count: 7,
-          });
-          
-          portfolio = opposition.map(({ count, stock }) => {
-            return {
-              count,
-              name: stock.name,
-              ticker: _.last(stock.ticker.split(':')),
-              value: stock.price * count,
-            };
-          });
-          
-          return portfolio;
-        })
       );
   }
   

@@ -60,8 +60,8 @@ const getEstimate = (candidate) => {
 };
 
 export const getOrders = ({ current, target }) => {
-  console.log('orders current', current);
-  console.log('orders target', target);
+  // console.log('orders current', current);
+  // console.log('orders target', target);
 
   const stocks = {
     current: _.keyBy(current.positions, 'ticker'),

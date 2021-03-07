@@ -11,7 +11,9 @@ import { PotfolioBacktestService } from './potfolio-backtest.service';
   styleUrls: ['./portfolio-backtest.component.scss']
 })
 export class PortfolioBacktestComponent implements OnInit {
-
+  
+  public snaphot: any;
+  
   constructor(
     private backtestService: PotfolioBacktestService,
     private diary: DiaryService
@@ -30,7 +32,8 @@ export class PortfolioBacktestComponent implements OnInit {
     this.diary.getDays()
       .pipe(mergeMap(days => this.backtestService.backtest(days)))
       .subscribe((result: any) => {
-        console.log('result backtest:', result);
+        this.snaphot = result;
+        console.log('backtest snaphot:', this.snaphot);
       });
   }
 
