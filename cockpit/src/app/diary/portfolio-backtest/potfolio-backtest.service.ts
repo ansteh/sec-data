@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 
 import { from, Observable } from 'rxjs';
-import { mergeMap, map } from 'rxjs/operators';
+import { concatMap, mergeMap, map } from 'rxjs/operators';
 
 import { DiaryService } from './../diary.service';
 
@@ -39,7 +39,7 @@ export class PotfolioBacktestService {
         
     return from(dates)
       .pipe(
-        mergeMap((date: string) => {
+        concatMap((date: string) => {
           return this.getSummary(date);
         }),
         map((summary: Snapshot) => {
@@ -115,7 +115,7 @@ export class PotfolioBacktestService {
     
     return from(dates)
       .pipe(
-        mergeMap((date: string) => {
+        concatMap((date: string) => {
           return this.getSummary(date)
             .pipe(map(summary => generate(date, summary)));
         }),
@@ -125,6 +125,25 @@ export class PotfolioBacktestService {
   getSummary(date: string): Observable<any> {
     return this.diary.getSummary(date)
       // .pipe(map(Summary.prepare));
+  }
+  
+  getChartData(snaphots: any[]): any {
+    return snaphots.map((snaphot) => {
+      // console.log(snaphot.date, new Date(snaphot.date));
+      
+      return {
+        date: snaphot.date,
+        rate: snaphot.audit.value,
+        
+        // entries: {
+        //   portfolio: {
+        //     ticker: 'portfolio',
+        //     date: snaphot.date,
+        //     rate: snaphot.audit.value,
+        //   }
+        // },
+      };
+    });
   }
   
 }

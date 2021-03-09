@@ -13,6 +13,8 @@ import { PotfolioBacktestService } from './potfolio-backtest.service';
 export class PortfolioBacktestComponent implements OnInit {
   
   public snaphot: any;
+  public snaphots: any = [];
+  public series: any;
   
   constructor(
     private backtestService: PotfolioBacktestService,
@@ -28,12 +30,16 @@ export class PortfolioBacktestComponent implements OnInit {
     //   });
   }
   
-  backtest() {    
+  backtest() {
     this.diary.getDays()
       .pipe(mergeMap(days => this.backtestService.backtest(days)))
       .subscribe((result: any) => {
-        this.snaphot = result;
-        console.log('backtest snaphot:', this.snaphot);
+        if(result) {
+          console.log('backtest snaphot:', result);
+          this.snaphots.push(result);
+          this.snaphot = result;
+          this.series = this.backtestService.getChartData(this.snaphots);
+        }
       });
   }
 
