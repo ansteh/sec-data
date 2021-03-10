@@ -5,6 +5,8 @@ import { mergeMap } from 'rxjs/operators';
 import { DiaryService } from './../diary.service';
 import { PotfolioBacktestService } from './potfolio-backtest.service';
 
+import { getPointData } from './backtest.util';
+
 @Component({
   selector: 'sec-portfolio-backtest',
   templateUrl: './portfolio-backtest.component.html',
@@ -14,7 +16,9 @@ export class PortfolioBacktestComponent implements OnInit {
   
   public snaphot: any;
   public snaphots: any = [];
-  public series: any;
+  
+  public point: any;
+  public series: any[];
   
   constructor(
     private backtestService: PotfolioBacktestService,
@@ -31,6 +35,8 @@ export class PortfolioBacktestComponent implements OnInit {
   }
   
   backtest() {
+    this.series = [];
+    
     this.diary.getDays()
       .pipe(mergeMap(days => this.backtestService.backtest(days)))
       .subscribe((result: any) => {
@@ -38,7 +44,9 @@ export class PortfolioBacktestComponent implements OnInit {
           console.log('backtest snaphot:', result);
           this.snaphots.push(result);
           this.snaphot = result;
-          this.series = this.backtestService.getChartData(this.snaphots);
+          this.point = getPointData(this.snaphot);
+          this.series.push(this.point);
+          // this.series = this.series.slice(0);
         }
       });
   }

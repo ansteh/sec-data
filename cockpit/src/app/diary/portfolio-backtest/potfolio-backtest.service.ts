@@ -27,6 +27,8 @@ const rebalance = ({ portfolio, candidates }) => {
   });
 };
 
+import { getPointData } from './backtest.util';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -40,7 +42,7 @@ export class PotfolioBacktestService {
     return from(dates)
       .pipe(
         concatMap((date: string) => {
-          return this.getSummary(date);
+          return this.diary.getSummary(date);
         }),
         map((summary: Snapshot) => {
           const portfolio = Summary.setDCFs(summary.portfolio, years);
@@ -113,37 +115,19 @@ export class PotfolioBacktestService {
       return state;
     };
     
+    const generateSnapshot = (date: string) => {
+      return this.diary.getSummary(date)
+        .pipe(map(summary => generate(date, summary)));
+    };
+    
     return from(dates)
       .pipe(
-        concatMap((date: string) => {
-          return this.getSummary(date)
-            .pipe(map(summary => generate(date, summary)));
-        }),
+        concatMap(generateSnapshot)
       );
   }
   
-  getSummary(date: string): Observable<any> {
-    return this.diary.getSummary(date)
-      // .pipe(map(Summary.prepare));
-  }
-  
   getChartData(snaphots: any[]): any {
-    return snaphots.map((snaphot) => {
-      // console.log(snaphot.date, new Date(snaphot.date));
-      
-      return {
-        date: snaphot.date,
-        rate: snaphot.audit.value,
-        
-        // entries: {
-        //   portfolio: {
-        //     ticker: 'portfolio',
-        //     date: snaphot.date,
-        //     rate: snaphot.audit.value,
-        //   }
-        // },
-      };
-    });
+    return snaphots.map(getPointData);
   }
   
 }
