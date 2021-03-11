@@ -46,7 +46,7 @@ export class PortfolioBacktestComponent implements OnInit {
           this.snaphot = result;
           this.point = getPointData(this.snaphot);
           this.series.push(this.point);
-          // this.series = this.series.slice(0);
+          this.series = this.series.slice(0);
         }
       });
   }

@@ -232,8 +232,8 @@ export class PortfolioAuditComponent implements OnInit, OnChanges {
     if(this.point) {
       this.closes.push(createClose(this.point));
       
-      // this.chart.data.datasets = this.chart.data.datasets.slice(0, 2);
-      // this.chart.data.datasets.push(...this.getTrendDatasets());
+      this.chart.data.datasets = this.chart.data.datasets.slice(0, 2);
+      this.chart.data.datasets.push(...this.getTrendDatasets());
       
       this.addStockPoints();
       

@@ -14,25 +14,42 @@ export const getPointData = (snapshot) => {
     // },
   };
 };
- 
-export function timeline(dates: string[]) {
-  dates = dates.slice(0);
-  
+
+const TIMELINE_OPTIONS = {
+  batched: true,
+};
+
+export function timeline(dates: string[], options = TIMELINE_OPTIONS) {
   return (observable) => new Observable(function(observer) {
-    let states = [];
-    let waitinglist = [],
+    dates = dates.slice(0);
+    let states = dates.map(x => undefined);
+    
+    const tryNext = () => {
+      const index = states.indexOf(undefined);
+      
+      if(index > 0) {
+        nextAll(states.slice(0, index));
+        states = states.slice(index);
+        dates = dates.slice(index);
+      } else if(index === -1 && states.length > 0) {
+        nextAll(states);
+        states = [];
+        dates = [];
+      }
+    };
+    
+    const nextAll = (states) => {
+      if(options.batched) {
+        observer.next(states);
+      } else {
+        states.forEach(state => observer.next(state));
+      }
+    };
     
     const subscription = observable.subscribe({
       next(state) {
-        const index = dates.indexOf(state.date);
-        
-        if(index === 0) {
-          states.push(state);
-          observer.next(states);
-          states = [];
-        } else {
-          
-        }
+        states[dates.indexOf(state.date)] = state;
+        tryNext();
       },
       error(err) {
         observer.error(err);
@@ -79,3 +96,19 @@ export function delay(delayInMillis) {
     }
   });
 }
+
+// timeline example:
+import { from } from 'rxjs';
+import { mergeMap, map } from 'rxjs/operators';
+import * as _ from 'lodash';
+
+const dates = ['1', '2', '3'];
+const candidates = _.shuffle(dates);
+console.log('candidates', candidates);
+
+from(candidates)
+  .pipe(
+    map((date) => { return { date }; }),
+    timeline(dates, { batched: false })
+  )
+  .subscribe(console.log);

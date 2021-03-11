@@ -27,7 +27,7 @@ const rebalance = ({ portfolio, candidates }) => {
   });
 };
 
-import { getPointData } from './backtest.util';
+import { getPointData, timeline } from './backtest.util';
 
 @Injectable({
   providedIn: 'root'
