@@ -82,16 +82,18 @@ export const getOrders = ({ current, target }) => {
     .map((ticker) => {
       const current = _.get(stocks, ['current', ticker]);
       const target = _.get(stocks, ['target', ticker]);
-
+      
+      const count = _.get(target, 'count', 0);
       const price = _.get(target, 'price') || _.get(current, 'price');
       const change = _.get(target, 'count', 0) - _.get(current, 'count', 0);
 
       return {
         ticker,
-        count: _.get(target, 'count', 0),
+        count,
+        price,
         change,
         // fee: 0.5 + (Math.abs(change) * price * 0.01),
-        fee: 0.5 + (Math.abs(change) * 0.004),
+        fee: (change != 0) ? 0.5 + (Math.abs(change) * 0.004) : 0,
       };
     })
     .filter(order => order.change !== 0)

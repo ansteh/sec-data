@@ -11,6 +11,7 @@ import * as Reports from './../../filings/metrics/reports';
 import * as Summary from './../summary';
 
 export interface Snapshot {
+  date?: string;
   portfolio: any[];
   stocks: any[];
 };
@@ -29,6 +30,13 @@ const rebalance = ({ portfolio, candidates }) => {
 
 import { getPointData, timeline } from './backtest.util';
 
+const EXCEPTIONS = [
+  "OXY",
+  "MYL",
+  "SDLP",
+  "WORK",
+];
+
 @Injectable({
   providedIn: 'root'
 })
@@ -41,14 +49,13 @@ export class PotfolioBacktestService {
         
     return from(dates)
       .pipe(
-        concatMap((date: string) => {
-          return this.diary.getSummary(date);
-        }),
+        concatMap(this.getSummary.bind(this)),
         map((summary: Snapshot) => {
           const portfolio = Summary.setDCFs(summary.portfolio, years);
           const audit = Audit.createAudit(portfolio);
           
           return {
+            date: summary.date,
             audit,
             portfolio,
           };
@@ -63,7 +70,7 @@ export class PotfolioBacktestService {
     let portfolio;
     
     const generate = (date: string, summary: Snapshot) => {
-      if(!(portfolio || summary.portfolio)) return;
+      if(!(portfolio || summary.portfolio)) return { date };
       
       summary.portfolio = portfolio || summary.portfolio;
       summary = Summary.prepare(summary);
@@ -80,12 +87,14 @@ export class PotfolioBacktestService {
       // console.log('backtest summary', summary);
 
       const universe = Summary.setDCFs(summary.stocks, years); // universe
-      const candidates = _.shuffle(universe).filter(stock => stock.price > 0);
+      const candidates = _.shuffle(universe)
+        .filter(stock => EXCEPTIONS.indexOf(_.last(stock.ticker.split(':'))) === -1)
+        .filter(stock => stock.price > 0);
       
       const opposition: any = {};
       
       opposition.portfolio = Portfolio.create({
-        budget: current.audit.value + 700,
+        budget: current.audit.value, // + 700
         candidates,
         // count: 7,
       });
@@ -122,12 +131,26 @@ export class PotfolioBacktestService {
     
     return from(dates)
       .pipe(
-        concatMap(generateSnapshot)
+        // concatMap(generateSnapshot),
+        
+        mergeMap(this.getSummary.bind(this)),
+        timeline(dates, { batched: false }),
+        map((summary: Snapshot) => generate(summary.date, summary))
       );
   }
   
   getChartData(snaphots: any[]): any {
     return snaphots.map(getPointData);
   }
+  
+  getSummary(date: string): Observable<Snapshot> {
+    return this.diary.getSummary(date)
+      .pipe(
+        map((summary) => {
+          summary.date = date;
+          return summary
+        })
+      );
+  };
   
 }

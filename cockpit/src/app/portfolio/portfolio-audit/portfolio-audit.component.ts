@@ -64,6 +64,7 @@ export class PortfolioAuditComponent implements OnInit, OnChanges {
         },
 				scales: {
 					xAxes: [{
+            // type: 'timeseries',
 						type: 'time',
 						distribution: 'series',
 						ticks: {
@@ -225,7 +226,7 @@ export class PortfolioAuditComponent implements OnInit, OnChanges {
       _.last(_.filter(this.closes, point => point.y)),
     ];
     
-    this.datasets.general.data = direction;   
+    this.datasets.general.data = direction;
   }
   
   private addPoint() {

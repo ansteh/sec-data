@@ -5,7 +5,8 @@ import { mergeMap } from 'rxjs/operators';
 import { DiaryService } from './../diary.service';
 import { PotfolioBacktestService } from './potfolio-backtest.service';
 
-import { getPointData } from './backtest.util';
+import { getPointData, getPerformance } from './backtest.util';
+import { getCompoundAnnualGrowthRate } from './../../filings/formulas/growth';
 
 @Component({
   selector: 'sec-portfolio-backtest',
@@ -40,13 +41,22 @@ export class PortfolioBacktestComponent implements OnInit {
     this.diary.getDays()
       .pipe(mergeMap(days => this.backtestService.backtest(days)))
       .subscribe((result: any) => {
-        if(result) {
-          console.log('backtest snaphot:', result);
+        if(result && result.audit) {
+          console.log('backtest snaphot:', result);          
           this.snaphots.push(result);
           this.snaphot = result;
           this.point = getPointData(this.snaphot);
           this.series.push(this.point);
           this.series = this.series.slice(0);
+          
+          console.log('performance', getPerformance(this.snaphots));
+          
+          console.log('growth rate', getCompoundAnnualGrowthRate(
+            this.snaphots[0].audit.value,
+            result.audit.value,
+            1
+          ));
+
         }
       });
   }
