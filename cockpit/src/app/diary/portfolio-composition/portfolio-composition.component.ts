@@ -39,7 +39,7 @@ export class PortfolioCompositionComponent implements OnInit, OnChanges {
       // console.log('create audit', this.portfolio.length);
       this.audit = Audit.createAudit(this.portfolio, this.name || 'Portfolio');
       // Audit.log(this.audit);
-      // console.log(this.audit);
+      console.log(this.audit);
     }
   }
 

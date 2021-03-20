@@ -35,6 +35,7 @@ export const createAudit = (portfolio: any, label?: string) => {
     score: null,
     value: null,
     positions: null,
+    dividendYield: null,
   };
 
   _.forOwn(benchmarks, (setup, scenario) => {
@@ -44,7 +45,8 @@ export const createAudit = (portfolio: any, label?: string) => {
 
   audit.score = getValuation(portfolio);
   audit.positions = getPositions(portfolio);
-
+  audit.dividendYield = getDividendYield(audit.positions);
+  
   return audit;
 };
 
@@ -142,6 +144,7 @@ export const getPositions = (positions) => {
         score: _.get(stock, 'valuation.score'),
         value: _.get(position, 'value') || getNominalValue(position),
         margin: _.get(position, 'marginOfSafety'),
+        dividendYield: _.get(stock, 'dividendYield'),
 
         count: _.get(position, 'count'),
         price: _.get(stock, 'price'),
@@ -152,6 +155,13 @@ export const getPositions = (positions) => {
     })
     .orderBy(['weight'], ['desc'])
     .value();
+};
+
+const getDividendYield = (positions) => {
+  return _.sumBy(positions, (position) => {
+    return (position.weight || 0)
+         * (position.dividendYield || 0);
+  });
 };
 
 export const log = (audit: any) => {

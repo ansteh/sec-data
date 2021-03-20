@@ -17,7 +17,22 @@
       <div>{{ audit.value | number : '1.2-2' }}</div>
     </div>
   </div>
+  
+  <div class="row mat-elevation-z2" style="padding: 8px 0;">
+    <div class="column" style="width: 30%;">
+      <div class="value-label"></div>
+    </div>
 
+    <div class="column" style="width: 30%; text-align: right;">
+      <div class="value-label"></div>
+    </div>
+    
+    <div class="column" style="width: 30%; text-align: right;">
+      <div class="value-label">Dividend Yield</div>
+      <div>{{ (audit.dividendYield * 100) | number : '1.2-2' }}%</div>
+    </div>
+  </div>
+  
   <br>
 
   <div class="mat-elevation-z2" style="padding: 8px 0;">
